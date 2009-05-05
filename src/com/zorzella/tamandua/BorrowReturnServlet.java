@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class MemberChooserServlet extends HttpServlet {
+public class BorrowReturnServlet extends HttpServlet {
 
-  private static final Logger log = Logger.getLogger(MemberChooserServlet.class.getName());
+  private static final Logger log = Logger.getLogger(BorrowReturnServlet.class.getName());
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
     AdminOrDie.adminOrDie(req, resp);
 
@@ -28,7 +28,7 @@ public class MemberChooserServlet extends HttpServlet {
     ps.println("<html>");
     ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
     ps.println("<body>");
-    ps.println("<form action='borrowreturn' method='POST'>");
+    ps.println("<form action='borrowreturn'>");
     PersistenceManager pm = PMF.get().getPersistenceManager();
 
     try {

@@ -44,6 +44,14 @@
     <servlet-name>member</servlet-name>
     <url-pattern>/member</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>borrowreturn</servlet-name>
+    <servlet-class>com.zorzella.tamandua.BorrowReturnServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>borrowreturn</servlet-name>
+    <url-pattern>/borrowreturn</url-pattern>
+  </servlet-mapping>
 
 
 
