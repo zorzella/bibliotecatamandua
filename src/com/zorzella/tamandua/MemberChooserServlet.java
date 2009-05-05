@@ -18,7 +18,7 @@ public class MemberChooserServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-    AdminOrDie.adminOrDie();
+    AdminOrDie.adminOrDie(req, resp);
 
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);

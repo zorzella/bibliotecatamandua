@@ -22,7 +22,7 @@ public class UploadServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-    AdminOrDie.adminOrDie();
+    AdminOrDie.adminOrDie(req, resp);
 
     resp.setCharacterEncoding(Constants.encoding);
     resp.setContentType("text/plain");
