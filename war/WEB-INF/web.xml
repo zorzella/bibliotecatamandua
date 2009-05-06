@@ -37,6 +37,14 @@
     <url-pattern>/list</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>dump</servlet-name>
+    <servlet-class>com.zorzella.tamandua.DumpServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dump</servlet-name>
+    <url-pattern>/dump</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>member</servlet-name>
     <servlet-class>com.zorzella.tamandua.MemberChooserServlet</servlet-class>
   </servlet>

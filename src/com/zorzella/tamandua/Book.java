@@ -1,7 +1,11 @@
 package com.zorzella.tamandua;
 
+import com.google.appengine.repackaged.com.google.common.collect.Lists;
+
 import com.ibm.icu.text.Collator;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -26,35 +30,37 @@ public class Book implements Comparable<Book> {
     private String titulo;
     
     @Persistent
+    private String isbn;
+    
+    @Persistent
     private String autor;
     
     @Persistent
-    private boolean pagGrossa;
-    
-    @Persistent
-    private boolean rima;
+    private Boolean especial;
     
     @Persistent
     private String tamanho;
     
     @Persistent
-    private String desc;
+    private List<String> tags;
     
-    @Persistent
-    private String nota;
-
-    public Book(String paradeiro, String toca, String titulo, String autor,
-        boolean pagGrossa, boolean rima, String tamanho, String desc, String nota) {
+    public Book(
+        String paradeiro, 
+        String toca, 
+        String isbn, 
+        String titulo,
+        String autor,
+        boolean especial, 
+        String tamanho) {
       super();
       this.paradeiro = paradeiro;
       this.toca = toca;
       this.titulo = titulo;
+      this.isbn = isbn;
       this.autor = autor;
-      this.pagGrossa = pagGrossa;
-      this.rima = rima;
+      this.especial = especial;
       this.tamanho = tamanho;
-      this.desc = desc;
-      this.nota = nota;
+      this.tags = Lists.newArrayList();
     }
 
     public Long getId() {
@@ -65,6 +71,14 @@ public class Book implements Comparable<Book> {
       return paradeiro;
     }
 
+    public void addTag(String tag) {
+      tags.add(tag);
+    }
+
+    public void removeTag(String tag) {
+      tags.remove(tag);
+    }
+    
     public void setParadeiro(String paradeiro) {
       this.paradeiro = paradeiro;
     }
@@ -75,6 +89,10 @@ public class Book implements Comparable<Book> {
 
     public void setToca(String toca) {
       this.toca = toca;
+    }
+
+    public String getIsbn() {
+      return isbn;
     }
 
     public String getTitulo() {
@@ -93,22 +111,10 @@ public class Book implements Comparable<Book> {
       this.autor = autor;
     }
 
-    public boolean isPagGrossa() {
-      return pagGrossa;
+    public boolean isEspecial() {
+      return especial;
     }
-
-    public void setPagGrossa(boolean pagGrossa) {
-      this.pagGrossa = pagGrossa;
-    }
-
-    public boolean isRima() {
-      return rima;
-    }
-
-    public void setRima(boolean rima) {
-      this.rima = rima;
-    }
-
+    
     public String getTamanho() {
       return tamanho;
     }
@@ -117,36 +123,49 @@ public class Book implements Comparable<Book> {
       this.tamanho = tamanho;
     }
 
-    public String getDesc() {
-      return desc;
-    }
-
-    public void setDesc(String desc) {
-      this.desc = desc;
-    }
-
-    public String getNota() {
-      return nota;
-    }
-
-    public void setNota(String nota) {
-      this.nota = nota;
+    @SuppressWarnings("unchecked")
+    private List<String> getTags() {
+      if (tags == null) {
+        return Collections.EMPTY_LIST;
+      }
+      return tags;
     }
     
     @Override
     public String toString() {
       return String.format(
-          "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+          "%s,%s,%s,%s,%s,%s,%s,%s,%s",
           id, 
           paradeiro, 
           toca, 
+          isbn,
           quote(titulo), 
           quote(autor), 
-          pagGrossa, 
-          rima, 
+          especial,
           tamanho, 
-          desc,
-          nota);
+          getTags());
+    }
+
+    public String toDebugString() {
+      StringBuilder result = new StringBuilder("id:" + id + " ");
+      
+      if (especial) {
+        result.append("<especial> ");
+      }
+      maybeAdd(result, "paradeiro", paradeiro);
+      maybeAdd(result, "toca", toca);
+      maybeAdd(result, "isbn", isbn);
+      maybeAdd(result, "titulo", titulo);
+      maybeAdd(result, "autor", autor);
+      maybeAdd(result, "tamanho", tamanho);
+      result.append("tags:" + getTags());
+      return result.toString();
+    }
+
+    private void maybeAdd(StringBuilder result, String key, String value) {
+      if (value.trim().length() > 0) {
+        result.append(key + ":[" + value + "] ");
+      }
     }
 
     private static String quote(String string) {

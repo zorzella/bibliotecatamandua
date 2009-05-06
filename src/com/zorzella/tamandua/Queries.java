@@ -8,25 +8,31 @@ import javax.jdo.PersistenceManager;
 
 public class Queries {
 
-  @SuppressWarnings("unchecked")
   public static Collection<Book> getSortedBooks(PersistenceManager pm) {
-    Collection<Book> result = new TreeSet<Book>();
-    result.addAll((Collection<Book>)pm.newQuery(Book.class).execute());
-    return result;
+    return new TreeSet<Book>(allBooks(pm));
   }
 
-  @SuppressWarnings("unchecked")
+  public static Collection<Book> getUnSortedBooks(PersistenceManager pm) {
+    return allBooks(pm);
+  }
+
   public static Collection<Book> getFancySortedBooks(PersistenceManager pm) {
     Collection<Book> result = new TreeSet<Book>(new FancyMemberComparator());
-    result.addAll((Collection<Book>)pm.newQuery(Book.class).execute());
-    return result;
-  }
-  
-  @SuppressWarnings("unchecked")
-  public static Collection<Member> getSortedMembers(PersistenceManager pm) {
-    Collection<Member> result = new TreeSet<Member>();
-    result.addAll((Collection<Member>)pm.newQuery(Member.class).execute());
+    result.addAll(allBooks(pm));
     return result;
   }
 
+  @SuppressWarnings("unchecked")
+  private static Collection<Book> allBooks(PersistenceManager pm) {
+    return (Collection<Book>)pm.newQuery(Book.class).execute();
+  }
+  
+  public static Collection<Member> getSortedMembers(PersistenceManager pm) {
+    return new TreeSet<Member>(allMembers(pm));
+  }
+
+  @SuppressWarnings("unchecked")
+  private static Collection<Member> allMembers(PersistenceManager pm) {
+    return (Collection<Member>)pm.newQuery(Member.class).execute();
+  }
 }

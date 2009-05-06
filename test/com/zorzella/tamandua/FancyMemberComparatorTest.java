@@ -27,7 +27,7 @@ public class FancyMemberComparatorTest extends TestCase {
 	}
 
 	private Book book(String titulo, String paradeiro) {
-		return new Book(paradeiro, "", titulo, "", false, false, "", "", "");
+		return new Book(paradeiro, "", "", titulo, "", false, "");
 	}
 	
 }

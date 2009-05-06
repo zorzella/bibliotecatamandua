@@ -8,13 +8,13 @@ import junit.framework.TestCase;
 public class BookTest extends TestCase {
 
   public void testToString() throws Exception {
-    Book book = new Book("a", "b", "c", "d", true, true, "g", "h", "i");
-    assertEquals("null,a,b,c,d,true,true,g,h,i", book.toString());
+    Book book = new Book("a", "b", "c", "d", "e", false, "g");
+    assertEquals("null,a,b,c,d,e,false,g,[]", book.toString());
   }
 
   public void testToStringWithComma() throws Exception {
-    Book book = new Book("a", "b", "c,0", "d", true, true, "g", "h", "i");
-    assertEquals("null,a,b,\"c,0\",d,true,true,g,h,i", book.toString());
+    Book book = new Book("a", "b", "c", "d,0", "e,0", false, "g");
+    assertEquals("null,a,b,c,\"d,0\",\"e,0\",false,g,[]", book.toString());
   }
   
 }

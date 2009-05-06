@@ -58,16 +58,27 @@ public class UploadServlet extends HttpServlet {
         continue;
       }
       List<String> parsed = parseLine(line, 9);
+      
+      boolean pagGrossa = getBoolean(parsed.get(5));
+      boolean rima = getBoolean(parsed.get(7));
+      boolean especial = getBoolean(parsed.get(8));
       Book book = new Book(
           parsed.get(0), 
           parsed.get(1), 
-          parsed.get(2), 
           parsed.get(3), 
-          getBoolean(parsed.get(4)), 
-          getBoolean(parsed.get(5)), 
-          parsed.get(6), 
-          parsed.get(7),
-          parsed.get(8));
+          parsed.get(2),
+          parsed.get(4),
+          especial,
+          parsed.get(6));
+      
+      if (pagGrossa) {
+        book.addTag("pagina-grossa");
+      }
+
+      if (rima) {
+        book.addTag("rima");
+      }
+      
       pm.makePersistent(book);
       ps.println(book);  
     }
@@ -111,7 +122,7 @@ public class UploadServlet extends HttpServlet {
   }
 
   private static boolean getBoolean(String string) {
-    return string.length() > 0;
+    return string.trim().length() > 0;
   }
 
   static List<String> parseLine(String line, int numOfFields) {

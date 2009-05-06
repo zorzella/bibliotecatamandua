@@ -20,6 +20,18 @@ public class MemberChooserServlet extends HttpServlet {
 
     AdminOrDie.adminOrDie(req, resp);
 
+    PersistenceManager pm = PMF.get().getPersistenceManager();
+    try {
+      go(resp, pm);
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+    } finally {
+      pm.close();
+    }
+  }
+
+  private void go(HttpServletResponse resp, PersistenceManager pm)
+      throws IOException {
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
     PrintWriter ps = new PrintWriter(
@@ -28,37 +40,35 @@ public class MemberChooserServlet extends HttpServlet {
     ps.println("<html>");
     ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
     ps.println("<body>");
+    printForm(pm, ps);
+    ps.println("</html></body>");
+
+    ps.flush();
+    resp.getOutputStream().close();
+  }
+
+  static void printForm(PersistenceManager pm, PrintWriter ps) {
     ps.println("<form action='borrowreturn' method='POST'>");
-    PersistenceManager pm = PMF.get().getPersistenceManager();
 
-    try {
-      Collection<Member> members = Queries.getSortedMembers(pm);
+    Collection<Member> members = Queries.getSortedMembers(pm);
 
-      ps.println("<select name='member'>");
-      for (Member member : members) {
-        ps.printf("<option value='%s'>%s (%s %s)</option>\n", 
-            member.getCodigo(), member.getCodigo(), member.getNome(), member.getSobrenome());
-      }
-      ps.println("</select><br>");
-      
-      Collection<Book> books = Queries.getFancySortedBooks(pm);
-
-      for (Book book : books) {
-        ps.printf("<input type='checkbox' name='%s'> [%s] %s <br>\n",
-            book.getId(), book.getParadeiro(), book.getTitulo());
-      }
-
-      ps.println("<br><input type='submit' value='Empresta e Devolve'>");
-      ps.println("</form>");
-      ps.println("</html></body>");
-
-      ps.flush();
-      resp.getOutputStream().close();
-
-    } catch (RuntimeException e) {
-      e.printStackTrace();
-    } finally {
-      pm.close();
+    ps.println("<select name='member'>");
+    for (Member member : members) {
+      ps.printf("<option value='%s'>%s (%s %s)</option>\n", 
+          member.getCodigo(), member.getCodigo(), member.getNome(), member.getSobrenome());
     }
+    ps.println("</select>");
+    ps.println("<input type='submit' value='Empresta e Devolve'><br>");
+
+    Collection<Book> books = Queries.getFancySortedBooks(pm);
+
+    for (Book book : books) {
+      ps.printf("<input type='checkbox' name='%s-%s'> [%s] %s <br>\n",
+          book.getParadeiro().length() > 0 ? "r" : "b", 
+              book.getId(), book.getParadeiro(), book.getTitulo());
+    }
+
+    ps.println("<br><input type='submit' value='Empresta e Devolve'>");
+    ps.println("</form>");
   }
 }
