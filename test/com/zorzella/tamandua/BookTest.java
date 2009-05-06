@@ -16,5 +16,6 @@ public class BookTest extends TestCase {
     Book book = new Book("a", "b", "c", "d,0", "e,0", false, "g");
     assertEquals("null,a,b,c,\"d,0\",\"e,0\",false,g,[]", book.toString());
   }
+
   
 }

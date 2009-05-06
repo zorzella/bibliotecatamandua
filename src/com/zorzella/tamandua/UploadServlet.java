@@ -62,11 +62,12 @@ public class UploadServlet extends HttpServlet {
       boolean pagGrossa = getBoolean(parsed.get(5));
       boolean rima = getBoolean(parsed.get(7));
       boolean especial = getBoolean(parsed.get(8));
+      String titulo = dismangle(parsed.get(2));
       Book book = new Book(
           parsed.get(0), 
           parsed.get(1), 
           parsed.get(3), 
-          parsed.get(2),
+          titulo,
           parsed.get(4),
           especial,
           parsed.get(6));
@@ -82,6 +83,34 @@ public class UploadServlet extends HttpServlet {
       pm.makePersistent(book);
       ps.println(book);  
     }
+  }
+
+  private String dismangle(String string) {
+    if (string.toLowerCase().endsWith(", a")) {
+      return "A " + string.substring(0, string.length() - 3);
+    }
+    if (string.toLowerCase().endsWith(", o")) {
+      return "O " + string.substring(0, string.length() - 3);
+    }
+    if (string.toLowerCase().endsWith(", um")) {
+      return "Um " + string.substring(0, string.length() - 4);
+    }
+    if (string.toLowerCase().endsWith(", uma")) {
+      return "Uma " + string.substring(0, string.length() - 5);
+    }
+    if (string.toLowerCase().endsWith(", as")) {
+      return "As " + string.substring(0, string.length() - 4);
+    }
+    if (string.toLowerCase().endsWith(", os")) {
+      return "Os " + string.substring(0, string.length() - 4);
+    }
+    if (string.toLowerCase().endsWith(", uns")) {
+      return "Uns " + string.substring(0, string.length() - 5);
+    }
+    if (string.toLowerCase().endsWith(", umas")) {
+      return "Umas " + string.substring(0, string.length() - 6);
+    }
+    return string;
   }
 
   private void persistMembers(

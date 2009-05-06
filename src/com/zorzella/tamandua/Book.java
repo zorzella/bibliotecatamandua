@@ -16,10 +16,18 @@ import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Book implements Comparable<Book> {
+  
+  public enum Type {
+    BOOK,
+  }
+  
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Long id;
 
+    @Persistent
+    private Type type;
+    
     @Persistent
     private String paradeiro;
     
@@ -53,6 +61,7 @@ public class Book implements Comparable<Book> {
         boolean especial, 
         String tamanho) {
       super();
+      this.type = Type.BOOK;
       this.paradeiro = paradeiro;
       this.toca = toca;
       this.titulo = titulo;
@@ -123,8 +132,7 @@ public class Book implements Comparable<Book> {
       this.tamanho = tamanho;
     }
 
-    @SuppressWarnings("unchecked")
-    private List<String> getTags() {
+    @SuppressWarnings("unchecked") List<String> getTags() {
       if (tags == null) {
         return Collections.EMPTY_LIST;
       }
@@ -179,7 +187,32 @@ public class Book implements Comparable<Book> {
     private static final Collator collator = Collator.getInstance(Locale.US);
     
     @Override
-    public int compareTo(Book o) {
-      return collator.compare(titulo, o.titulo);
+    public int compareTo(Book that) {
+      String tituloOne = strip(titulo);
+      String tituloOther = strip(that.titulo);
+      return collator.compare(tituloOne, tituloOther);
+    }
+
+    private String strip(String toStrip) {
+      if (
+          (toStrip.toLowerCase().startsWith("a ")) ||
+          (toStrip.toLowerCase().startsWith("o "))) {
+        return toStrip.substring(2);
+      }
+      if (
+          (toStrip.toLowerCase().startsWith("as ")) ||
+          (toStrip.toLowerCase().startsWith("os ")) ||
+          (toStrip.toLowerCase().startsWith("um "))) {
+        return toStrip.substring(3);
+      }
+      if (
+          (toStrip.toLowerCase().startsWith("uma ")) ||
+          (toStrip.toLowerCase().startsWith("uns "))) {
+        return toStrip.substring(4);
+      }
+      if (toStrip.toLowerCase().startsWith("umas ")) {
+        return toStrip.substring(5);
+      }
+      return toStrip;
     }
 }

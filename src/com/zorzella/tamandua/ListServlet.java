@@ -18,7 +18,7 @@ public class ListServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-    resp.setContentType("text/plain");
+    resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
     PrintWriter ps = new PrintWriter(
         new OutputStreamWriter(resp.getOutputStream(), Constants.encoding));
@@ -26,12 +26,30 @@ public class ListServlet extends HttpServlet {
     PersistenceManager pm = PMF.get().getPersistenceManager();
     try {
 
+      Html.htmlHeadBody(ps);
+      
+      ps.println("<table>" +
+            "<th>Onde</th>" +
+      		"<th>Titulo</th>" +
+            "<th>Autor</th>" +
+            "<th>Tamanho</th>" +
+            "<th>Tags</th>" +
+      		"");
       Collection<Book> sortedBooks = Queries.getSortedBooks(pm);
 
       for (Book book : sortedBooks) {
-        ps.println(book);  
+        ps.printf("<tr>" +
+        		"<td align='right'>%s</td>" +
+        		"<td>%s</td>" +
+        		"<td>%s</td>" +
+        		"<td>%s</td>" +
+        		"<td>%s</td>" +
+        		"\n", 
+            book.getParadeiro() + "&nbsp;" + book.getToca(), book.getTitulo(), book.getAutor(), 
+            book.getTamanho(), book.getTags());  
       }
 
+      ps.println("</body></html>");
       ps.flush();
       resp.getOutputStream().close();
 

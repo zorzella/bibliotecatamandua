@@ -37,9 +37,7 @@ public class MemberChooserServlet extends HttpServlet {
     PrintWriter ps = new PrintWriter(
         new OutputStreamWriter(resp.getOutputStream(), Constants.encoding));
 
-    ps.println("<html>");
-    ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
-    ps.println("<body>");
+    Html.htmlHeadBody(ps);
     printForm(pm, ps);
     ps.println("</html></body>");
 
