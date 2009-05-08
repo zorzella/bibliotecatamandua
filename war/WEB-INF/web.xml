@@ -37,6 +37,22 @@
     <url-pattern>/list</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>modifyitems</servlet-name>
+    <servlet-class>com.zorzella.tamandua.ModifyItemsServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>modifyitems</servlet-name>
+    <url-pattern>/modifyitems</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>modifymembers</servlet-name>
+    <servlet-class>com.zorzella.tamandua.ModifyMembersServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>modifymembers</servlet-name>
+    <url-pattern>/modifymembers</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>dump</servlet-name>
     <servlet-class>com.zorzella.tamandua.DumpServlet</servlet-class>
   </servlet>

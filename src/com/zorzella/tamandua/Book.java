@@ -5,6 +5,7 @@ import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import com.ibm.icu.text.Collator;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,6 +49,9 @@ public class Book implements Comparable<Book> {
     
     @Persistent
     private String tamanho;
+
+    @Persistent
+    private Date desde;
     
     @Persistent
     private List<String> tags;
@@ -81,6 +85,9 @@ public class Book implements Comparable<Book> {
     }
 
     public void addTag(String tag) {
+      if (tags == null) {
+        tags = Lists.newArrayList();
+      }
       tags.add(tag);
     }
 

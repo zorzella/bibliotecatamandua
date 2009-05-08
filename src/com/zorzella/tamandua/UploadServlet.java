@@ -1,6 +1,15 @@
 package com.zorzella.tamandua;
 
+import com.google.appengine.repackaged.com.google.common.base.Join;
 import com.google.appengine.repackaged.com.google.common.collect.Lists;
+
+import com.ibm.icu.impl.duration.DateFormatter;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -8,6 +17,7 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
@@ -31,9 +41,11 @@ public class UploadServlet extends HttpServlet {
 
     PersistenceManager pm = PMF.get().getPersistenceManager();
 
-    @SuppressWarnings("unchecked")
-    Collection<Book> books = (Collection<Book>)pm.newQuery(Book.class).execute();
+//    @SuppressWarnings("unchecked")
+    Collection<Book> books = Queries.getUnSortedItems(pm);//(Collection<Book>)pm.newQuery(Book.class).execute();
     pm.deletePersistentAll(books);
+    Collection<Member> members = Queries.getSortedMembers(pm);
+    pm.deletePersistentAll(members);
 
     try {
       ps.println("***** Books *****");
@@ -121,33 +133,70 @@ public class UploadServlet extends HttpServlet {
       if (line.length() == 0) {
         continue;
       }
-      List<String> parsed = parseLine(line, 12);
+      List<String> parsed = parseLine(line, 17);
+      String codigo = parsed.get(0);
+      String nome = parsed.get(1);
+      String sobrenome = parsed.get(2);
+      String email = parsed.get(4);
+      String pai = parsed.get(5);
+      String mae = parsed.get(6);
+      String endereco = parsed.get(7);
+      String cidade = parsed.get(8);
+      String estado = parsed.get(9);
+      String zip = parsed.get(10);
+      String fone = parsed.get(11);
+      String fone2 = parsed.get(12);
       Member member = new Member(
-          parsed.get(0), 
-          parsed.get(1), 
-          parsed.get(2), 
+          codigo, 
+          nome, 
+          sobrenome, 
           getDate(parsed.get(3)), 
-          parsed.get(4), 
-          parsed.get(5), 
-          parsed.get(6), 
-          parsed.get(7),
-          getInt(parsed.get(8)),
-          getInt(parsed.get(9)),
-          getBoolean(parsed.get(10)),
-          getDate(parsed.get(11)));
+          email, 
+          pai, 
+          mae, 
+          endereco,
+          cidade, 
+          estado, 
+          zip, 
+          fone, 
+          fone2, 
+          getInt(parsed.get(13)),
+          getInt(parsed.get(14)),
+          getBoolean(parsed.get(15)),
+          getDate(parsed.get(16)));
       pm.makePersistent(member);
       ps.println(member);  
     }
   }
 
   private int getInt(String string) {
-    // TODO
-    return 0;
+    if (string.startsWith("$")) {
+      string = string.substring(1);
+    }
+    string = string.trim();
+    if (string.length() == 0) {
+      return 0;
+    }
+    return Integer.parseInt(string);
   }
 
   private Date getDate(String string) {
-    return null;
-    //    return new DateFormat().parse(string.replace("/", "/01/"));
+    
+    if (string.trim().length() == 0) {
+      return null;
+    }
+    
+    String[] split = string.split("/");
+    if (split.length == 2) {
+      string = split[0] + "/01/" + split[1];
+    }
+    DateTimeFormatter fmt = org.joda.time.format.DateTimeFormat.shortDate();
+    Locale locale = Locale.US;
+    DateTimeZone timeZone = DateTimeZone.forID("America/Los_Angeles");
+
+    DateTime result = fmt.withZone(timeZone).parseDateTime(string);
+
+    return result.toDate();
   }
 
   private static boolean getBoolean(String string) {

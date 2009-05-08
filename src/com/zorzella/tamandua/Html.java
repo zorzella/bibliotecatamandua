@@ -11,4 +11,12 @@ public class Html {
     ps.println("<body>");
   }
 
+  public static PrintWriter tdRight(PrintWriter ps, String content) {
+    return ps.printf("<td align='right'>%s</td>", content);
+  }
+
+  public static PrintWriter td(PrintWriter ps, String content) {
+    return ps.printf("<td>%s</td>", content);
+  }
+
 }
