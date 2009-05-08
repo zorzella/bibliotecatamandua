@@ -1,7 +1,12 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.zorzella.tamandua;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 public class Html {
 
@@ -9,6 +14,23 @@ public class Html {
     ps.println("<html>");
     ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
     ps.println("<body>");
+    a(ps, "/list", "Acervo");
+    
+    
+	UserService userService = UserServiceFactory.getUserService();
+	User user = userService.getCurrentUser();
+
+	if ((user != null) && (Constants.admins.contains(user.getNickname()))) {
+		a(ps, "/modifyitems", "Items");
+        a(ps, "/modifymembers", "Members");
+        a(ps, "/member", "Borrow");
+	}
+	
+	ps.println("<hr>");
+}
+
+  private static void a(PrintWriter ps, String url, String text) {
+	  ps.println("<a href='" + url + "'>" + text + "</a>");
   }
 
   public static PrintWriter tdRight(PrintWriter ps, String content) {

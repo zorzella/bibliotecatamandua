@@ -173,6 +173,7 @@ public class Book implements Comparable<Book> {
       maybeAdd(result, "titulo", titulo);
       maybeAdd(result, "autor", autor);
       maybeAdd(result, "tamanho", tamanho);
+      maybeAdd(result, "desde", Dates.dateToString(desde));
       result.append("tags:" + getTags());
       return result.toString();
     }

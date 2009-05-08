@@ -1,11 +1,8 @@
 package com.zorzella.tamandua;
 
-import com.google.appengine.repackaged.com.google.common.base.Join;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeField;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.Instant;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -27,6 +24,7 @@ public class ModifyMembersServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
+	  AdminOrDie.adminOrDie(req, resp);
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
     PrintWriter ps = new PrintWriter(
@@ -105,7 +103,7 @@ public class ModifyMembersServlet extends HttpServlet {
         choose(ps, false, codigo, member, true, member.getCodigo(), "codigo");
         choose(ps, false, nome, member, true, member.getNome(), "nome");
         choose(ps, false, sobrenome, member, true, member.getSobrenome(), "sobrenome");
-        choose(ps, false, nascimento, member, true, dateToString(member.getNascimento()), "nascimento");
+        choose(ps, false, nascimento, member, true, Dates.dateToString(member.getNascimento()), "nascimento");
         choose(ps, true, email, member, true, member.getEmail(), "email");
         choose(ps, true, pai, member, true, member.getPai(), "pai");
         choose(ps, true, mae, member, true, member.getMae(), "mae");
@@ -113,7 +111,7 @@ public class ModifyMembersServlet extends HttpServlet {
         choose(ps, false, livros, member, true, member.getLivrosDoados() + "", "livros");
         choose(ps, true, fone, member, true, member.getFone(), "fone");
         choose(ps, false, fone2, member, true, member.getFone2(), "fone2");
-        choose(ps, true, desde, member, true, dateToString(member.getDesde()), "desde");
+        choose(ps, true, desde, member, true, Dates.dateToString(member.getDesde()), "desde");
         choose(ps, false, confirmado, member, true, member.isConfirmado() + "", "confirmado");
         choose(ps, true, endereco, member, true, member.getEndereco() + "", "endereco");
         choose(ps, true, cidade, member, true, member.getCidade() + "", "cidade");
@@ -140,17 +138,6 @@ public class ModifyMembersServlet extends HttpServlet {
     } finally {
       pm.close();
     }
-  }
-
-  private String dateToString(Date date) {
-    if (date == null) {
-      return "";
-    }
-    Instant temp = new Instant(date.getTime());
-    return Join.join("-",
-      temp.get(DateTimeFieldType.year()),
-      temp.get(DateTimeFieldType.monthOfYear()),
-      temp.get(DateTimeFieldType.dayOfMonth()));
   }
 
   private void choose(
@@ -234,7 +221,9 @@ public class ModifyMembersServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-    @SuppressWarnings("unchecked")
+	  AdminOrDie.adminOrDie(req, resp);
+
+	@SuppressWarnings("unchecked")
     Map<String,String[]> map = req.getParameterMap();
     PersistenceManager pm = PMF.get().getPersistenceManager();
     Collection<Member> items = Queries.getSortedMembers(pm);

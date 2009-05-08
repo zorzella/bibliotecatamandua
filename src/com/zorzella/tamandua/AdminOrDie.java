@@ -12,7 +12,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 
 public class AdminOrDie {
 
-	public static void adminOrDie(HttpServletRequest req, HttpServletResponse resp) {
+	public static String adminOrDie(HttpServletRequest req, HttpServletResponse resp) {
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
 
@@ -30,5 +30,6 @@ public class AdminOrDie {
 						"User %s not an admin", user.getNickname()));
 			}
 		}
+		return user.getNickname();
 	}
 }

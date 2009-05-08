@@ -5,22 +5,6 @@
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
   <servlet>
-    <servlet-name>sign</servlet-name>
-    <servlet-class>com.zorzella.tamandua.SignGuestbookServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>sign</servlet-name>
-    <url-pattern>/sign</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>guestbook</servlet-name>
-    <servlet-class>com.zorzella.tamandua.GuestbookServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>guestbook</servlet-name>
-    <url-pattern>/guestbook</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <servlet-name>upload</servlet-name>
     <servlet-class>com.zorzella.tamandua.UploadServlet</servlet-class>
   </servlet>
@@ -89,6 +73,6 @@
 		<url-pattern>/bibliotecatamandua</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
+		<welcome-file>list</welcome-file>
 	</welcome-file-list>
 </web-app>

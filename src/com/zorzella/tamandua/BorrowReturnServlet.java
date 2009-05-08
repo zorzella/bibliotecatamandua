@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -20,19 +20,19 @@ public class BorrowReturnServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-    AdminOrDie.adminOrDie(req, resp);
+    String admin = AdminOrDie.adminOrDie(req, resp);
     PersistenceManager pm = PMF.get().getPersistenceManager();
     try {
-      go(req, resp, pm);
+      go(req, resp, pm, admin);
     } catch (RuntimeException e) {
-      pm.currentTransaction().rollback();
+//      pm.currentTransaction().rollback();
       e.printStackTrace();
     } finally {
       pm.close();
     }
   }
 
-  private void go(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm)
+  private void go(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String admin)
       throws UnsupportedEncodingException, IOException {
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
@@ -60,10 +60,7 @@ public class BorrowReturnServlet extends HttpServlet {
         }
         memberCode = temp[0];
       } else {
-        @SuppressWarnings("unchecked")
-        Book book = ((Collection<Book>)pm.
-            newQuery(Book.class, "id == " + key.substring(2)).execute())
-            .iterator().next();
+        Book book = Queries.getById(Book.class, pm, "id", key.substring(2));
 
         if (key.startsWith("r-")) {
           if (!book.getParadeiro().equals(memberCode)) {
@@ -72,11 +69,21 @@ public class BorrowReturnServlet extends HttpServlet {
                 book.getTitulo(), 
                 memberCode));
           } else {
+            
+            Loan loan = Queries.getSingleByQuery(Loan.class, pm, 
+                "memberCode == \"" + memberCode + "\" && bookId == \"" + book.getId() + "\" && returnDate == null");
+//                "memberCode == ? && bookId == ? && returnDate == NULL", memberCode, book.getId());
+               loan.setReturnDate(new Date());
+            pm.makePersistent(loan);
+
             book.setParadeiro("");
             pm.makePersistent(book);
             ps.println("<br> Returned: " + book.getTitulo());
           }
         } else if (key.startsWith("b-")) {
+          Loan loan = new Loan(admin, memberCode, book.getId());
+          pm.makePersistent(loan);
+
           book.setParadeiro(memberCode);
           pm.makePersistent(book);
           ps.println("<br> Borrowed: " + book.getTitulo());

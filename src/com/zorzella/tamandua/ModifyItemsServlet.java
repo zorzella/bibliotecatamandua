@@ -29,6 +29,7 @@ public class ModifyItemsServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
+    AdminOrDie.adminOrDie(req, resp);
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
     PrintWriter ps = new PrintWriter(
@@ -213,6 +214,7 @@ public class ModifyItemsServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
+    AdminOrDie.adminOrDie(req, resp);
 //    resp.setContentType("text/html");
 //    resp.setCharacterEncoding(Constants.encoding);
 //    PrintWriter ps = new PrintWriter(

@@ -28,10 +28,16 @@ public class DumpServlet extends HttpServlet {
     PersistenceManager pm = PMF.get().getPersistenceManager();
     try {
 
-      Collection<Book> sortedBooks = Queries.getUnSortedItems(pm);
+      Collection<Book> items = Queries.getUnSortedItems(pm);
 
-      for (Book book : sortedBooks) {
-        ps.println(book.toDebugString());  
+      for (Book item : items) {
+        ps.println(item.toDebugString());  
+      }
+
+      Collection<Loan> loans = Queries.getAll(Loan.class, pm);
+
+      for (Loan loan : loans) {
+        ps.println(loan.toString());  
       }
 
       ps.flush();
