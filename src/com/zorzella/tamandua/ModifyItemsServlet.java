@@ -69,6 +69,7 @@ public class ModifyItemsServlet extends HttpServlet {
       
       ps.println("<form action='modifyitems' method='post'>");
       
+      ps.println("<input type='text' value='0' name='add'>");
       ps.println("<input type='submit' value='Change'>");
       ps.println("<table>");
       
@@ -163,6 +164,7 @@ public class ModifyItemsServlet extends HttpServlet {
 
     } catch (RuntimeException e) {
       e.printStackTrace();
+      throw e;
     } finally {
       pm.close();
     }
@@ -220,9 +222,16 @@ public class ModifyItemsServlet extends HttpServlet {
 //    PrintWriter ps = new PrintWriter(
 //        new OutputStreamWriter(resp.getOutputStream(), Constants.encoding));
 
+    
     @SuppressWarnings("unchecked")
     Map<String,String[]> map = req.getParameterMap();
     PersistenceManager pm = PMF.get().getPersistenceManager();
+
+    int toAdd = Integer.parseInt(req.getParameter("add"));
+    for (int i=0; i<toAdd; i++) {
+      pm.makePersistent(new Book());
+    }
+
     Collection<Book> items = Queries.getUnSortedItems(pm);
     for (Book item : items) {
       Long id = item.getId();

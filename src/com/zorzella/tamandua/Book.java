@@ -56,6 +56,18 @@ public class Book implements Comparable<Book> {
     @Persistent
     private List<String> tags;
     
+    public Book() {
+      this.desde = new Date();
+      this.titulo = "";
+      this.autor = "";
+      this.paradeiro = "";
+      this.toca = "";
+      this.isbn = "";
+      this.tamanho = "";
+      this.tags = Lists.newArrayList();
+      this.especial = false;
+    }
+    
     public Book(
         String paradeiro, 
         String toca, 
@@ -74,6 +86,7 @@ public class Book implements Comparable<Book> {
       this.especial = especial;
       this.tamanho = tamanho;
       this.tags = Lists.newArrayList();
+      this.desde = new Date();
     }
 
     public Long getId() {
@@ -198,10 +211,20 @@ public class Book implements Comparable<Book> {
     public int compareTo(Book that) {
       String tituloOne = strip(titulo);
       String tituloOther = strip(that.titulo);
-      return collator.compare(tituloOne, tituloOther);
+      int col = collator.compare(tituloOne, tituloOther);
+      if (col != 0) {
+        return col;
+      }
+      if (this.getId() > that.getId()) {
+        return 1;
+      }
+      return -1;
     }
 
     private String strip(String toStrip) {
+      if (toStrip == null) {
+        return "";
+      }
       if (
           (toStrip.toLowerCase().startsWith("a ")) ||
           (toStrip.toLowerCase().startsWith("o "))) {

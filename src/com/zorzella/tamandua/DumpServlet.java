@@ -45,6 +45,7 @@ public class DumpServlet extends HttpServlet {
 
     } catch (RuntimeException e) {
       e.printStackTrace();
+      throw e;
     } finally {
       pm.close();
     }
