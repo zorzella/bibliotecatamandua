@@ -170,6 +170,7 @@ public class UploadServlet extends HttpServlet {
           fone2, 
           getInt(parsed.get(13)),
           getInt(parsed.get(14)),
+          null,
           getBoolean(parsed.get(15)),
           getDate(parsed.get(16)));
       pm.makePersistent(member);

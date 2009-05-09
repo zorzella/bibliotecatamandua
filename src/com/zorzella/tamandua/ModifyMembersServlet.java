@@ -49,17 +49,19 @@ public class ModifyMembersServlet extends HttpServlet {
       boolean livros = map.containsKey("livros");
       boolean fone = map.containsKey("fone");
       boolean fone2 = map.containsKey("fone2");
-      boolean desde = map.containsKey("desde");
+      boolean lastContacted = map.containsKey("lastContacted");
       boolean confirmado = map.containsKey("confirmado");
+      boolean desde = map.containsKey("desde");
       boolean endereco = map.containsKey("endereco");
       boolean cidade = map.containsKey("cidade");
       boolean estado = map.containsKey("estado");
       boolean zip = map.containsKey("zip");
       
-      if (!codigo && !nome && !sobrenome && !nascimento && !email && !pai && !mae && 
-          !dolares && !livros && !fone && !fone2 && !desde && !confirmado && 
-          !endereco && !cidade && !estado && !zip
-          ) {
+//      if (!codigo && !nome && !sobrenome && !nascimento && !email && !pai && !mae && 
+//          !dolares && !livros && !fone && !fone2 && !desde && !confirmado && 
+//          !endereco && !cidade && !estado && !zip
+//          ) {
+      if (!map.containsKey("custom")) {
         nome = true;
         sobrenome = true;
         email = true;
@@ -83,8 +85,9 @@ public class ModifyMembersServlet extends HttpServlet {
       ps.println("<th>Livros</th>");
       ps.println("<th>Fone</th>");
       ps.println("<th>Fone2</th>");
-      ps.println("<th>Desde</th>");
+      ps.println("<th>Last Contacted</th>");
       ps.println("<th>Conf</th>");
+      ps.println("<th>Desde</th>");
       ps.println("<th>Endereco</th>");
       ps.println("<th>Cidade</th>");
       ps.println("<th>Estado</th>");
@@ -111,8 +114,9 @@ public class ModifyMembersServlet extends HttpServlet {
         choose(ps, false, livros, member, true, member.getLivrosDoados() + "", "livros");
         choose(ps, true, fone, member, true, member.getFone(), "fone");
         choose(ps, false, fone2, member, true, member.getFone2(), "fone2");
-        choose(ps, true, desde, member, true, Dates.dateToString(member.getDesde()), "desde");
+        choose(ps, true, lastContacted, member, true, Dates.dateToString(member.getLastContacted()), "lastContacted");
         choose(ps, false, confirmado, member, true, member.isConfirmado() + "", "confirmado");
+        choose(ps, true, desde, member, true, Dates.dateToString(member.getDesde()), "desde");
         choose(ps, true, endereco, member, true, member.getEndereco() + "", "endereco");
         choose(ps, true, cidade, member, true, member.getCidade() + "", "cidade");
         choose(ps, false, estado, member, true, member.getEstado() + "", "estado");
@@ -126,7 +130,7 @@ public class ModifyMembersServlet extends HttpServlet {
       ps.println("<form action='modifymembers'>");
 
       printCheckboxesAndDropdown(ps, nome, sobrenome, nascimento, 
-          email, pai, mae, dolares, livros, fone, fone2, desde, confirmado, 
+          email, pai, mae, dolares, livros, fone, fone2, lastContacted, confirmado, desde, 
           endereco, cidade, estado, zip);
 
       ps.println("</body></html>");
@@ -135,6 +139,7 @@ public class ModifyMembersServlet extends HttpServlet {
 
     } catch (RuntimeException e) {
       e.printStackTrace();
+      throw e;
     } finally {
       pm.close();
     }
@@ -184,8 +189,9 @@ public class ModifyMembersServlet extends HttpServlet {
       boolean livros, 
       boolean fone, 
       boolean fone2, 
-      boolean desde, 
+      boolean lastContacted, 
       boolean confirmado, 
+      boolean desde, 
       boolean endereco, 
       boolean cidade, 
       boolean estado, 
@@ -203,13 +209,15 @@ public class ModifyMembersServlet extends HttpServlet {
         checkbox(livros, "livros", "livros") + 
         checkbox(fone, "fone", "fone") + 
         checkbox(fone2, "fone2", "fone2") + 
-        checkbox(desde, "desde", "desde") + 
+        checkbox(desde, "lastContacted", "lastContacted") + 
         checkbox(confirmado, "confirmado", "confirmado") + 
+        checkbox(desde, "desde", "desde") + 
         checkbox(endereco, "endereco", "endereco") + 
         checkbox(cidade, "cidade", "cidade") + 
         checkbox(estado, "estado", "estado") + 
         checkbox(zip, "zip", "zip") +
           "");
+    ps.println("<input type='hidden' name='custom' value='true'>");
     ps.println("<input type='submit' value='Membros'>");
 
   }

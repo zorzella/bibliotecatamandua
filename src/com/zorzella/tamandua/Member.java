@@ -36,6 +36,8 @@ public class Member implements Comparable<Member> {
   @Persistent
   private boolean confirmado;
   @Persistent
+  private Date lastContacted;
+  @Persistent
   private Date desde;
   @Persistent
   private String endereco;
@@ -62,6 +64,7 @@ public class Member implements Comparable<Member> {
       String fone2, 
       int dolares, 
       int livrosDoados, 
+      Date lastContacted,
       boolean confirmado, 
       Date desde) {
     this.codigo = codigo;
@@ -174,6 +177,11 @@ public class Member implements Comparable<Member> {
   public void setLivrosDoados(int livrosDoados) {
     this.livrosDoados = livrosDoados;
   }
+  
+  public Date getLastContacted() {
+    return lastContacted;
+  }
+  
   
   public boolean isConfirmado() {
     return confirmado;
