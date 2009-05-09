@@ -106,7 +106,7 @@ public class Queries {
   @SuppressWarnings("unchecked")
   public static <T> Collection<T> getByQuery(Class<T> clazz,
       PersistenceManager pm, String query, Object... args) {
-  return ((Collection<T>)pm.newQuery(clazz, query).execute(args));
+  return ((Collection<T>)pm.newQuery(clazz, query).execute());//args));
   }
 
   @SuppressWarnings("unchecked")

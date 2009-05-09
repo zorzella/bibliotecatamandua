@@ -29,6 +29,14 @@
     <url-pattern>/modifyitems</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>modifyloans</servlet-name>
+    <servlet-class>com.zorzella.tamandua.ModifyLoansServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>modifyloans</servlet-name>
+    <url-pattern>/modifyloans</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>modifymembers</servlet-name>
     <servlet-class>com.zorzella.tamandua.ModifyMembersServlet</servlet-class>
   </servlet>

@@ -1,16 +1,5 @@
 package com.zorzella.tamandua;
 
-import com.google.appengine.repackaged.com.google.common.base.Join;
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
-
-import com.ibm.icu.impl.duration.DateFormatter;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -24,6 +13,12 @@ import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+
+import com.google.appengine.repackaged.com.google.common.collect.Lists;
 
 public class UploadServlet extends HttpServlet {
 
@@ -41,19 +36,21 @@ public class UploadServlet extends HttpServlet {
 
     PersistenceManager pm = PMF.get().getPersistenceManager();
 
-//    @SuppressWarnings("unchecked")
-    Collection<Book> books = Queries.getUnSortedItems(pm);//(Collection<Book>)pm.newQuery(Book.class).execute();
+    Collection<Book> books = Queries.getUnSortedItems(pm);
     pm.deletePersistentAll(books);
     Collection<Member> members = Queries.getSortedMembers(pm);
     pm.deletePersistentAll(members);
+    Collection<Loan> loans = Queries.getAll(Loan.class, pm);
+    pm.deletePersistentAll(loans);
 
     try {
-      ps.println("***** Books *****");
-      persistBooks(req, ps, pm);
       ps.println("***** Members *****");
       persistMembers(req, ps, pm);
+      ps.println("***** Books *****");
+      persistBooks(req, ps, pm);
     } catch (RuntimeException e) {
       e.printStackTrace();
+      throw e;
     } finally {
       ps.flush();
       resp.getOutputStream().close();
@@ -75,14 +72,19 @@ public class UploadServlet extends HttpServlet {
       boolean rima = getBoolean(parsed.get(7));
       boolean especial = getBoolean(parsed.get(8));
       String titulo = dismangle(parsed.get(2));
+      String autor = parsed.get(4);
+      String tamanho = parsed.get(6);
+      String paradeiro = parsed.get(0);
+      String toca = parsed.get(1);
+      String isbn = parsed.get(3);
       Book book = new Book(
-          parsed.get(0), 
-          parsed.get(1), 
-          parsed.get(3), 
+          paradeiro, 
+          toca, 
+          isbn, 
           titulo,
-          parsed.get(4),
+          autor,
           especial,
-          parsed.get(6));
+          tamanho);
       
       if (pagGrossa) {
         book.addTag("pagina-grossa");
@@ -93,6 +95,12 @@ public class UploadServlet extends HttpServlet {
       }
       
       pm.makePersistent(book);
+      
+      if (paradeiro.length() > 0) {
+        Loan loan = new Loan("zorzella", paradeiro, book.getId());
+        pm.makePersistent(loan);
+      }
+      
       ps.println(book);  
     }
   }

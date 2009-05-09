@@ -70,6 +70,10 @@ public class Loan {
   return bookId;
   }
   
+  public void setBookId(Long bookId) {
+  this.bookId = bookId;
+  }
+  
   public Date getLoanDate() {
   return loanDate;
   }

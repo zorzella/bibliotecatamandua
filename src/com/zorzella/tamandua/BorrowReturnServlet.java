@@ -71,7 +71,10 @@ public class BorrowReturnServlet extends HttpServlet {
           } else {
             
             Loan loan = Queries.getSingleByQuery(Loan.class, pm, 
-                "memberCode == \"" + memberCode + "\" && bookId == \"" + book.getId() + "\" && returnDate == null");
+                "memberCode == \"" + memberCode + "\"" +
+                		" && bookId == " + book.getId() + "" +
+            //  && returnDate == null" +
+            "");
 //                "memberCode == ? && bookId == ? && returnDate == NULL", memberCode, book.getId());
                loan.setReturnDate(new Date());
             pm.makePersistent(loan);
