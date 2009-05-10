@@ -18,7 +18,9 @@ public class DumpServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-    AdminOrDie.adminOrDie(req, resp);
+    if (AdminOrDie.adminOrLogin(req, resp) == null) {
+      return;
+    }
     
     resp.setContentType("text/plain");
     resp.setCharacterEncoding(Constants.encoding);

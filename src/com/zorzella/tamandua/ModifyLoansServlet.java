@@ -24,7 +24,9 @@ public class ModifyLoansServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-	  AdminOrDie.adminOrDie(req, resp);
+    if (AdminOrDie.adminOrLogin(req, resp) == null) {
+      return;
+    }
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
     PrintWriter ps = new PrintWriter(
@@ -155,7 +157,9 @@ public class ModifyLoansServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-	  AdminOrDie.adminOrDie(req, resp);
+	if (AdminOrDie.adminOrLogin(req, resp) == null) {
+	  return;
+	}
 
 	@SuppressWarnings("unchecked")
     Map<String,String[]> map = req.getParameterMap();

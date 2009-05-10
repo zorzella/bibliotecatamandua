@@ -27,7 +27,9 @@ public class UploadServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-    AdminOrDie.adminOrDie(req, resp);
+    if (AdminOrDie.adminOrLogin(req, resp) == null) {
+      return;
+    }
 
     resp.setCharacterEncoding(Constants.encoding);
     resp.setContentType("text/plain");
@@ -67,7 +69,7 @@ public class UploadServlet extends HttpServlet {
         continue;
       }
       List<String> parsed = parseLine(line, 9);
-      
+
       boolean pagGrossa = getBoolean(parsed.get(5));
       boolean rima = getBoolean(parsed.get(7));
       boolean especial = getBoolean(parsed.get(8));
@@ -85,7 +87,7 @@ public class UploadServlet extends HttpServlet {
           autor,
           especial,
           tamanho);
-      
+
       if (pagGrossa) {
         book.addTag("pagina-grossa");
       }
@@ -93,14 +95,14 @@ public class UploadServlet extends HttpServlet {
       if (rima) {
         book.addTag("rima");
       }
-      
+
       pm.makePersistent(book);
-      
+
       if (paradeiro.length() > 0) {
         Loan loan = new Loan("zorzella", paradeiro, book.getId());
         pm.makePersistent(loan);
       }
-      
+
       ps.println(book);  
     }
   }
@@ -190,11 +192,11 @@ public class UploadServlet extends HttpServlet {
   }
 
   private Date getDate(String string) {
-    
+
     if (string.trim().length() == 0) {
       return null;
     }
-    
+
     String[] split = string.split("/");
     if (split.length == 2) {
       string = split[0] + "/01/" + split[1];

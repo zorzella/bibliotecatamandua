@@ -20,7 +20,11 @@ public class BorrowReturnServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-    String admin = AdminOrDie.adminOrDie(req, resp);
+    String admin = AdminOrDie.adminOrLogin(req, resp);
+    if (admin == null) {
+      return;
+    }
+    
     PersistenceManager pm = PMF.get().getPersistenceManager();
     try {
       go(req, resp, pm, admin);
