@@ -59,7 +59,7 @@ public class ModifyItemsServlet extends HttpServlet {
       boolean tamanho = map.containsKey("tamanho");
       boolean tags = map.containsKey("tags");
       
-      if (!toca && !titulo && !autor && !tamanho && !tags) {
+      if (!map.containsKey("custom")) {
         paradeiro = false;
         toca = false;
         titulo = true;
@@ -172,14 +172,14 @@ public class ModifyItemsServlet extends HttpServlet {
     }
   }
 
-  private PrintWriter shortInput(PrintWriter ps, Item book, String key, String value) {
+  private PrintWriter shortInput(PrintWriter ps, Item item, String key, String value) {
     return ps.printf("<td><input type='text' name='%s' value='%s' class='x-short'></td>", 
-        key + "-" + book.getId(), value);
+        key + "-" + item.getId(), value);
   }
 
-  private PrintWriter input(PrintWriter ps, Item book, String key, String value) {
+  private PrintWriter input(PrintWriter ps, Item item, String key, String value) {
     return ps.printf("<td><input type='text' name='%s' value='%s' class='long'></td>", 
-        key + "-" + book.getId(), value);
+        key + "-" + item.getId(), value);
   }
 
   private void printCheckboxesAndDropdown(PrintWriter ps, Sort sortKey, 
@@ -203,7 +203,8 @@ public class ModifyItemsServlet extends HttpServlet {
         checkbox(tamanho, "tamanho", "Tamanho") +
         checkbox(tags, "tags", "Tags") +
           "");
-    ps.println("<input type='submit' value='Livros'>");
+   ps.println("<input type='hidden' name='custom' value='true'>");
+   ps.println("<input type='submit' value='Itens'>");
 
   }
 

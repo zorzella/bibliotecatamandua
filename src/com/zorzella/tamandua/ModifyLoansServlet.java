@@ -45,9 +45,9 @@ public class ModifyLoansServlet extends HttpServlet {
       boolean bookId = map.containsKey("bookId");
       boolean loanDate = map.containsKey("loanDate");
       boolean returnDate = map.containsKey("returnDate");
+      boolean comment = map.containsKey("comment");
       
-      if (!adminCode && !memberCode && !bookId && !loanDate && !returnDate 
-          ) {
+      if (!map.containsKey("custom")) {
         memberCode = true;
         bookId = true;
         returnDate = true;
@@ -60,9 +60,11 @@ public class ModifyLoansServlet extends HttpServlet {
       
       ps.println("<th>Admin</th>");
       ps.println("<th>Member</th>");
+      ps.println("<th>BookId</th>");
       ps.println("<th>Book</th>");
       ps.println("<th>Loaned</th>");
       ps.println("<th>Returned</th>");
+      ps.println("<th>Comment</th>");
 
       Collection<Loan> loans = Queries.getAll(Loan.class, pm);
       
@@ -77,8 +79,11 @@ public class ModifyLoansServlet extends HttpServlet {
         choose(ps, false, adminCode, loan, true, loan.getAdminCode(), "adminCode");
         choose(ps, false, memberCode, loan, true, loan.getMemberCode(), "memberCode");
         choose(ps, false, bookId, loan, true, loan.getBookId() + "", "bookId");
+        Item book = Queries.getById(Item.class, pm, "id", loan.getBookId() + "");
+        choose(ps, false, false, loan, false, book.getTitulo(), "titulo");
         choose(ps, false, loanDate, loan, true, Dates.dateToString(loan.getLoanDate()), "loanDate");
         choose(ps, false, returnDate, loan, true, Dates.dateToString(loan.getReturnDate()), "returnDate");
+        choose(ps, false, comment, loan, true, loan.getComment(), "comment");
         ps.print("\n"); 
       }
 
@@ -146,7 +151,8 @@ public class ModifyLoansServlet extends HttpServlet {
         checkbox(loanDate, "loanDate", "Loaned") + 
         checkbox(returnDate, "returnDate", "Returned") + 
           "");
-    ps.println("<input type='submit' value='Membros'>");
+    ps.println("<input type='hidden' name='custom' value='true'>");
+    ps.println("<input type='submit' value='Loans'>");
 
   }
 

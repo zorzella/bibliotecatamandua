@@ -34,6 +34,9 @@ public class Loan {
   @Persistent
   private Date returnDate;
 
+  @Persistent
+  private String comment;
+
   public Loan(
       String adminCode,
       String memberCode,
@@ -92,6 +95,14 @@ public class Loan {
 
   public void setId(Long id) {
   this.id = id;
+  }
+
+  public String getComment() {
+	return comment;
+}
+  
+  public void setComment(String comment) {
+	this.comment = comment;
   }
   
  @Override
