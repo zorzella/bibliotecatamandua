@@ -22,14 +22,14 @@ public class AdminOrDie {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-			//    	throw new RuntimeException("No user logged in");
+			    	throw new RuntimeException("No user logged in");
 		} else {
 
 			if (!Constants.admins.contains(user.getNickname())) {
 				throw new RuntimeException(String.format(
 						"User %s not an admin", user.getNickname()));
 			}
+			return user.getNickname();
 		}
-		return user.getNickname();
 	}
 }
