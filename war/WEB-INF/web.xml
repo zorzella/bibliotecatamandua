@@ -81,6 +81,6 @@
 		<url-pattern>/bibliotecatamandua</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
-		<welcome-file>list</welcome-file>
+		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 </web-app>

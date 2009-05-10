@@ -83,7 +83,7 @@ public class ModifyItemsServlet extends HttpServlet {
       ps.println("<th>Tamanho</th>");
       ps.println("<th>Tags</th>");
 
-      Collection<Book> sortedItems;
+      Collection<Item> sortedItems;
       
       switch (sortKey) {
         case TITULO: 
@@ -103,7 +103,7 @@ public class ModifyItemsServlet extends HttpServlet {
       }
 
       boolean even = false;
-      for (Book item : sortedItems) {
+      for (Item item : sortedItems) {
         even = !even;
         if (even) {
           ps.printf("<tr class='a'>");
@@ -172,12 +172,12 @@ public class ModifyItemsServlet extends HttpServlet {
     }
   }
 
-  private PrintWriter shortInput(PrintWriter ps, Book book, String key, String value) {
+  private PrintWriter shortInput(PrintWriter ps, Item book, String key, String value) {
     return ps.printf("<td><input type='text' name='%s' value='%s' class='x-short'></td>", 
         key + "-" + book.getId(), value);
   }
 
-  private PrintWriter input(PrintWriter ps, Book book, String key, String value) {
+  private PrintWriter input(PrintWriter ps, Item book, String key, String value) {
     return ps.printf("<td><input type='text' name='%s' value='%s' class='long'></td>", 
         key + "-" + book.getId(), value);
   }
@@ -233,11 +233,11 @@ public class ModifyItemsServlet extends HttpServlet {
 
     int toAdd = Integer.parseInt(req.getParameter("add"));
     for (int i=0; i<toAdd; i++) {
-      pm.makePersistent(new Book());
+      pm.makePersistent(new Item());
     }
 
-    Collection<Book> items = Queries.getUnSortedItems(pm);
-    for (Book item : items) {
+    Collection<Item> items = Queries.getUnSortedItems(pm);
+    for (Item item : items) {
       Long id = item.getId();
       String key = "paradeiro-" + id;
       if (map.containsKey(key)) {

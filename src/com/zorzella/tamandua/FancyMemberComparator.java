@@ -3,10 +3,10 @@ package com.zorzella.tamandua;
 
 import java.util.Comparator;
 
-public class FancyMemberComparator implements Comparator<Book> {
+public class FancyMemberComparator implements Comparator<Item> {
 
   @Override
-  public int compare(Book one, Book other) {
+  public int compare(Item one, Item other) {
     
 //	  // No paradeiro, alphabetical order
 //    if ((one.getParadeiro().length() == 0) && (other.getParadeiro().length() == 0)) {

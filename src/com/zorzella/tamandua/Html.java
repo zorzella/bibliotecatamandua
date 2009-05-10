@@ -8,8 +8,8 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
-public class Html {
 
+public class Html {
   public static void htmlHeadBody(PrintWriter ps) {
     ps.println("<html>");
     ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
@@ -23,6 +23,7 @@ public class Html {
 	if ((user != null) && (Constants.admins.contains(user.getNickname()))) {
 		a(ps, "/modifyitems", "Items");
         a(ps, "/modifymembers", "Members");
+        a(ps, "/modifyloans", "Loans");
         a(ps, "/member", "Borrow");
 	}
 	

@@ -30,9 +30,9 @@ public class DumpServlet extends HttpServlet {
     PersistenceManager pm = PMF.get().getPersistenceManager();
     try {
 
-      Collection<Book> items = Queries.getUnSortedItems(pm);
+      Collection<Item> items = Queries.getUnSortedItems(pm);
 
-      for (Book item : items) {
+      for (Item item : items) {
         ps.println(item.toDebugString());  
       }
 

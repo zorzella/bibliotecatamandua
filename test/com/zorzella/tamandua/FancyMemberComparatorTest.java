@@ -30,16 +30,16 @@ public class FancyMemberComparatorTest extends TestCase {
 	private void assertLesser(
 			String tituloOne, String paradeiroOne, 
 			String tituloOther, String paradeiroOther) {
-		Book one = book(tituloOne, paradeiroOne);
-		Book other = book (tituloOther, paradeiroOther);
+		Item one = book(tituloOne, paradeiroOne);
+		Item other = book (tituloOther, paradeiroOther);
 		assertTrue (new FancyMemberComparator().compare(
 				one, other) < 0);
 		assertTrue (new FancyMemberComparator().compare(
 				other, one) > 0);
 	}
 
-	private Book book(String titulo, String paradeiro) {
-		return new Book(paradeiro, "", "", titulo, "", false, "");
+	private Item book(String titulo, String paradeiro) {
+		return new Item(paradeiro, "", "", titulo, "", false, "");
 	}
 	
 }

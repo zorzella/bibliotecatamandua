@@ -38,7 +38,7 @@ public class UploadServlet extends HttpServlet {
 
     PersistenceManager pm = PMF.get().getPersistenceManager();
 
-    Collection<Book> books = Queries.getUnSortedItems(pm);
+    Collection<Item> books = Queries.getUnSortedItems(pm);
     pm.deletePersistentAll(books);
     Collection<Member> members = Queries.getSortedMembers(pm);
     pm.deletePersistentAll(members);
@@ -79,7 +79,7 @@ public class UploadServlet extends HttpServlet {
       String paradeiro = parsed.get(0);
       String toca = parsed.get(1);
       String isbn = parsed.get(3);
-      Book book = new Book(
+      Item book = new Item(
           paradeiro, 
           toca, 
           isbn, 

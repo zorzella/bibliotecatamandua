@@ -60,9 +60,9 @@ public class MemberChooserServlet extends HttpServlet {
     ps.println("</select>");
     ps.println("<input type='submit' value='Empresta e Devolve'><br>");
 
-    Collection<Book> books = Queries.getFancySortedBooks(pm);
+    Collection<Item> books = Queries.getFancySortedBooks(pm);
 
-    for (Book book : books) {
+    for (Item book : books) {
       ps.printf("<input type='checkbox' name='%s-%s'> [%s] %s <br>\n",
           book.getParadeiro().length() > 0 ? "r" : "b", 
               book.getId(), book.getParadeiro(), book.getTitulo());

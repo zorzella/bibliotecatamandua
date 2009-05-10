@@ -85,7 +85,7 @@ public class ListServlet extends HttpServlet {
         ps.println("<th>Tags</th>");
       }
 
-      Collection<Book> sortedBooks;
+      Collection<Item> sortedBooks;
       
       switch (sortKey) {
         case TITULO: 
@@ -105,7 +105,7 @@ public class ListServlet extends HttpServlet {
       }
 
       boolean even = false;
-      for (Book book : sortedBooks) {
+      for (Item book : sortedBooks) {
         even = !even;
         if (even) {
           ps.printf("<tr class='a'>");

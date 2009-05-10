@@ -64,7 +64,7 @@ public class BorrowReturnServlet extends HttpServlet {
         }
         memberCode = temp[0];
       } else {
-        Book book = Queries.getById(Book.class, pm, "id", key.substring(2));
+        Item book = Queries.getById(Item.class, pm, "id", key.substring(2));
 
         if (key.startsWith("r-")) {
           if (!book.getParadeiro().equals(memberCode)) {

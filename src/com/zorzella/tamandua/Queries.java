@@ -9,10 +9,10 @@ import javax.jdo.PersistenceManager;
 
 public class Queries {
   
-  public static final class AutorComparator implements Comparator<Book> {
+  public static final class AutorComparator implements Comparator<Item> {
 
     @Override
-    public int compare(Book one, Book other) {
+    public int compare(Item one, Item other) {
       String oneAutor = one.getAutor();
       String otherAutor = other.getAutor();
       if (oneAutor.equals(otherAutor)) {
@@ -22,10 +22,10 @@ public class Queries {
     }
   }
 
-  public static final class ParadeiroComparator implements Comparator<Book> {
+  public static final class ParadeiroComparator implements Comparator<Item> {
 
     @Override
-    public int compare(Book one, Book other) {
+    public int compare(Item one, Item other) {
       String oneParadeiro = one.getParadeiro();
       String otherParadeiro = other.getParadeiro();
       if (oneParadeiro.equals(otherParadeiro)) {
@@ -35,10 +35,10 @@ public class Queries {
     }
   }
 
-  public static final class TocaComparator implements Comparator<Book> {
+  public static final class TocaComparator implements Comparator<Item> {
 
     @Override
-    public int compare(Book one, Book other) {
+    public int compare(Item one, Item other) {
       String oneToca = one.getToca();
       String otherToca = other.getToca();
       if (oneToca.equals(otherToca)) {
@@ -48,41 +48,41 @@ public class Queries {
     }
   }
 
-  public static Collection<Book> getSortedItems(PersistenceManager pm) {
-    return new TreeSet<Book>(allBooks(pm));
+  public static Collection<Item> getSortedItems(PersistenceManager pm) {
+    return new TreeSet<Item>(allBooks(pm));
   }
   
-  public static Collection<Book> getParadeiroSortedItems(PersistenceManager pm) {
-    Collection<Book> result = new TreeSet<Book>(new ParadeiroComparator());
+  public static Collection<Item> getParadeiroSortedItems(PersistenceManager pm) {
+    Collection<Item> result = new TreeSet<Item>(new ParadeiroComparator());
     result.addAll(allBooks(pm));
     return result;
   }
 
-  public static Collection<Book> getTocaSortedItems(PersistenceManager pm) {
-    Collection<Book> result = new TreeSet<Book>(new TocaComparator());
+  public static Collection<Item> getTocaSortedItems(PersistenceManager pm) {
+    Collection<Item> result = new TreeSet<Item>(new TocaComparator());
     result.addAll(allBooks(pm));
     return result;
   }
   
-  public static Collection<Book> getAutorSortedItems(PersistenceManager pm) {
-    Collection<Book> result = new TreeSet<Book>(new AutorComparator());
+  public static Collection<Item> getAutorSortedItems(PersistenceManager pm) {
+    Collection<Item> result = new TreeSet<Item>(new AutorComparator());
     result.addAll(allBooks(pm));
     return result;
   }
 
-  public static Collection<Book> getUnSortedItems(PersistenceManager pm) {
+  public static Collection<Item> getUnSortedItems(PersistenceManager pm) {
     return allBooks(pm);
   }
 
-  public static Collection<Book> getFancySortedBooks(PersistenceManager pm) {
-    Collection<Book> result = new TreeSet<Book>(new FancyMemberComparator());
+  public static Collection<Item> getFancySortedBooks(PersistenceManager pm) {
+    Collection<Item> result = new TreeSet<Item>(new FancyMemberComparator());
     result.addAll(allBooks(pm));
     return result;
   }
 
   @SuppressWarnings("unchecked")
-  private static Collection<Book> allBooks(PersistenceManager pm) {
-    return (Collection<Book>)pm.newQuery(Book.class).execute();
+  private static Collection<Item> allBooks(PersistenceManager pm) {
+    return (Collection<Item>)pm.newQuery(Item.class).execute();
   }
   
   public static Collection<Member> getSortedMembers(PersistenceManager pm) {

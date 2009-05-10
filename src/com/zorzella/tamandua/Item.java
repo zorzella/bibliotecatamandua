@@ -16,7 +16,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Book implements Comparable<Book> {
+public class Item implements Comparable<Item> {
   
   public enum Type {
     BOOK,
@@ -56,7 +56,7 @@ public class Book implements Comparable<Book> {
     @Persistent
     private List<String> tags;
     
-    public Book() {
+    public Item() {
       this.desde = new Date();
       this.titulo = "";
       this.autor = "";
@@ -68,7 +68,7 @@ public class Book implements Comparable<Book> {
       this.especial = false;
     }
     
-    public Book(
+    public Item(
         String paradeiro, 
         String toca, 
         String isbn, 
@@ -124,6 +124,10 @@ public class Book implements Comparable<Book> {
       return isbn;
     }
 
+    public Type getType() {
+		return type;
+	}
+    
     public String getTitulo() {
       return titulo;
     }
@@ -208,7 +212,7 @@ public class Book implements Comparable<Book> {
     private static final Collator collator = Collator.getInstance(Locale.US);
     
     @Override
-    public int compareTo(Book that) {
+    public int compareTo(Item that) {
       String tituloOne = strip(titulo);
       String tituloOther = strip(that.titulo);
       int col = collator.compare(tituloOne, tituloOther);
