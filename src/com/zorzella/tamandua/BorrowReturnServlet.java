@@ -64,36 +64,36 @@ public class BorrowReturnServlet extends HttpServlet {
         }
         memberCode = temp[0];
       } else {
-        Item book = Queries.getById(Item.class, pm, "id", key.substring(2));
+        Item item = Queries.getById(Item.class, pm, "id", key.substring(2));
 
         if (key.startsWith("r-")) {
-          if (!book.getParadeiro().equals(memberCode)) {
+          if (!item.getParadeiro().equals(memberCode)) {
             ps.println(String.format(
                 "<br> Ignoring '%s' which is not on loan to '%s'", 
-                book.getTitulo(), 
+                item.getTitulo(), 
                 memberCode));
           } else {
             
             Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
                 "memberCode == \"" + memberCode + "\"" +
-                		" && bookId == " + book.getId() + "" +
+                		" && itemId == " + item.getId() + "" +
             //  && returnDate == null" +
             "", memberCode);
-//                "memberCode == ? && bookId == ? && returnDate == NULL", memberCode, book.getId());
+//                "memberCode == ? && itemId == ? && returnDate == NULL", memberCode, item.getId());
                loan.setReturnDate(new Date());
             pm.makePersistent(loan);
 
-            book.setParadeiro("");
-            pm.makePersistent(book);
-            ps.println("<br> Returned: " + book.getTitulo());
+            item.setParadeiro("");
+            pm.makePersistent(item);
+            ps.println("<br> Returned: " + item.getTitulo());
           }
         } else if (key.startsWith("b-")) {
-          Loan loan = new Loan(admin, memberCode, book.getId());
+          Loan loan = new Loan(admin, memberCode, item.getId());
           pm.makePersistent(loan);
 
-          book.setParadeiro(memberCode);
-          pm.makePersistent(book);
-          ps.println("<br> Borrowed: " + book.getTitulo());
+          item.setParadeiro(memberCode);
+          pm.makePersistent(item);
+          ps.println("<br> Borrowed: " + item.getTitulo());
         } else {
           throw new IllegalArgumentException();
         }
