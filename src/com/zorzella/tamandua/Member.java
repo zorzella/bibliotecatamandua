@@ -2,6 +2,7 @@ package com.zorzella.tamandua;
 
 import java.util.Date;
 
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -11,7 +12,9 @@ import javax.jdo.annotations.PrimaryKey;
 public class Member implements Comparable<Member> {
 
   @PrimaryKey
-  //    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Long id;
+  @Persistent
   private String codigo;
   @Persistent
   private String nome;
@@ -48,6 +51,10 @@ public class Member implements Comparable<Member> {
   @Persistent
   private String zip;
 
+  public Member(String codigo) {
+    this(codigo, "", "", null, "", "", "", "", "", "", "", "", "", 0, 0, null, false, new Date());
+  }
+  
   public Member(
       String codigo, 
       String nome, 
@@ -84,9 +91,17 @@ public class Member implements Comparable<Member> {
     this.estado = estado;
     this.cidade = cidade;
     this.zip = zip;
+
   }
 
+  public Long getId() {
+  return id;
+  }
+  
   public String getCodigo() {
+  if (codigo == null) {
+    return "";
+  }
     return codigo;
   }
 
@@ -249,6 +264,10 @@ public class Member implements Comparable<Member> {
 
   @Override
   public int compareTo(Member o) {
-    return codigo.compareTo(o.codigo);
+    int result = getCodigo().compareTo(o.getCodigo());
+    if (result == 0) {
+      return id.compareTo(o.id);
+    }
+    return result;
   }
 }

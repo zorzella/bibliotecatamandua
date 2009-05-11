@@ -59,10 +59,6 @@ public class ModifyMembersServlet extends HttpServlet {
       boolean estado = map.containsKey("estado");
       boolean zip = map.containsKey("zip");
       
-//      if (!codigo && !nome && !sobrenome && !nascimento && !email && !pai && !mae && 
-//          !dolares && !livros && !fone && !fone2 && !desde && !confirmado && 
-//          !endereco && !cidade && !estado && !zip
-//          ) {
       if (!map.containsKey("custom")) {
         nome = true;
         sobrenome = true;
@@ -71,8 +67,14 @@ public class ModifyMembersServlet extends HttpServlet {
         mae = true;
       }
       
+      if (map.containsKey("added")) {
+        codigo = true;
+        nascimento = true;
+      }
+      
       ps.println("<form action='modifymembers' method='post'>");
       
+      ps.println("<input type='text' value='0' name='add'>");
       ps.println("<input type='submit' value='Change'>");
       ps.println("<table>");
       
@@ -131,7 +133,7 @@ public class ModifyMembersServlet extends HttpServlet {
       ps.println("</form>");
       ps.println("<form action='modifymembers'>");
 
-      printCheckboxesAndDropdown(ps, nome, sobrenome, nascimento, 
+      printCheckboxesAndDropdown(ps, codigo, nome, sobrenome, nascimento, 
           email, pai, mae, dolares, livros, fone, fone2, lastContacted, confirmado, desde, 
           endereco, cidade, estado, zip);
 
@@ -172,15 +174,16 @@ public class ModifyMembersServlet extends HttpServlet {
 
   private PrintWriter shortInput(PrintWriter ps, Member member, String key, String value) {
     return ps.printf("<td><input type='text' name='%s' value='%s' class='short'></td>", 
-        key + "-" + member.getCodigo(), value);
+        key + "-" + member.getId() , value);
   }
 
   private PrintWriter input(PrintWriter ps, Member member, String key, String value) {
     return ps.printf("<td><input type='text' name='%s' value='%s' class='medium'></td>", 
-        key + "-" + member.getCodigo(), value);
+        key + "-" + member.getId(), value);
   }
 
   private void printCheckboxesAndDropdown(PrintWriter ps, 
+      boolean codigo,
       boolean nome, 
       boolean sobrenome, 
       boolean nascimento, 
@@ -200,7 +203,8 @@ public class ModifyMembersServlet extends HttpServlet {
       boolean zip
       ) {
     ps.println("<hr>");
-    ps.println("Mostre: " +
+    ps.println("Modifique: " +
+        checkbox(codigo, "codigo", "Codigo") +
         checkbox(nome, "nome", "Nome") +
         checkbox(sobrenome, "sobrenome", "Sobrenome") +
         checkbox(nascimento, "nascimento", "nascimento") + 
@@ -238,77 +242,83 @@ public class ModifyMembersServlet extends HttpServlet {
 	@SuppressWarnings("unchecked")
     Map<String,String[]> map = req.getParameterMap();
     PersistenceManager pm = PMF.get().getPersistenceManager();
+
+    int toAdd = Integer.parseInt(req.getParameter("add"));
+    for (int i=0; i<toAdd; i++) {
+      pm.makePersistent(new Member(""));
+    }
+
     Collection<Member> items = Queries.getSortedMembers(pm);
     for (Member item : items) {
-      String codigo = item.getCodigo();
-      String key = "nome-" + codigo;
+      String id = item.getId() + "";
+      String key = "nome-" + id;
       if (map.containsKey(key)) {
         item.setNome(toString(map, key));
       }
-      key = "sobrenome-" + codigo;
+      key = "sobrenome-" + id;
       if (map.containsKey(key)) {
         item.setSobrenome(toString(map, key));
       }
-      key = "nascimento-" + codigo;
+      key = "nascimento-" + id;
       if (map.containsKey(key)) {
         item.setNascimento(toDate(map, key));
       } 
-      key = "email-" + codigo;
+      key = "email-" + id;
       if (map.containsKey(key)) {
         item.setEmail(toString(map, key));
       } 
-      key = "pai-" + codigo;
+      key = "pai-" + id;
       if (map.containsKey(key)) {
         item.setPai(toString(map, key));
       } 
-      key = "mae-" + codigo;
+      key = "mae-" + id;
       if (map.containsKey(key)) {
         item.setMae(toString(map, key));
       } 
-      key = "dolares-" + codigo;
+      key = "dolares-" + id;
       if (map.containsKey(key)) {
         item.setDolares(toInt(map, key));
       } 
-      key = "livros-" + codigo;
+      key = "livros-" + id;
       if (map.containsKey(key)) {
         item.setLivrosDoados(toInt(map, key));
       } 
-      key = "fone-" + codigo;
+      key = "fone-" + id;
       if (map.containsKey(key)) {
         item.setFone(toString(map, key));
       } 
-      key = "fone2-" + codigo;
+      key = "fone2-" + id;
       if (map.containsKey(key)) {
         item.setFone2(toString(map, key));
       } 
-      key = "desde-" + codigo;
+      key = "desde-" + id;
       if (map.containsKey(key)) {
         item.setDesde(toDate(map, key));
       } 
-      key = "confirmado-" + codigo;
+      key = "confirmado-" + id;
       if (map.containsKey(key)) {
         item.setConfirmado(toBoolean(map, key));
       } 
-      key = "endereco-" + codigo;
+      key = "endereco-" + id;
       if (map.containsKey(key)) {
         item.setEndereco(toString(map, key));
       } 
-      key = "cidade-" + codigo;
+      key = "cidade-" + id;
       if (map.containsKey(key)) {
         item.setCidade(toString(map, key));
       } 
-      key = "estado-" + codigo;
+      key = "estado-" + id;
       if (map.containsKey(key)) {
         item.setEstado(toString(map, key));
       } 
-      key = "zip-" + codigo;
+      key = "zip-" + id;
       if (map.containsKey(key)) {
         item.setZip(toString(map, key));
       }
       pm.makePersistent(item);
     }
     pm.close();
-    resp.sendRedirect("/modifymembers");
+    resp.sendRedirect("/modifymembers" + (toAdd > 0 ? "?added=true" : ""));
   }
 
   private boolean toBoolean(Map<String, String[]> map, String key) {

@@ -60,13 +60,14 @@ public class ModifyItemsServlet extends HttpServlet {
       boolean tags = map.containsKey("tags");
       
       if (!map.containsKey("custom")) {
-        paradeiro = false;
-        toca = false;
         titulo = true;
         tamanho = true;
         autor = true;
-        isbn = false;
         tags = true;
+      }
+      
+      if (map.containsKey("added")) {
+        toca = true;
       }
       
       ps.println("<form action='modifyitems' method='post'>");
@@ -272,7 +273,7 @@ public class ModifyItemsServlet extends HttpServlet {
       pm.makePersistent(item);
     }
     pm.close();
-    resp.sendRedirect("/modifyitems");
+    resp.sendRedirect("/modifyitems" + (toAdd > 0 ? "?added=true" : ""));
   }
 
   private String toString(Map<String, String[]> map, String key) {
