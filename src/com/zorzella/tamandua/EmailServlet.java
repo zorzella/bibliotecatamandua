@@ -5,6 +5,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -16,6 +17,7 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +37,7 @@ public class EmailServlet extends HttpServlet {
     PersistenceManager pm = PMF.get().getPersistenceManager();
     try {
       go(req, resp, pm, admin);
-      foo();
+      foo("... Message ...", "zorzella@gmail.com", "zorzella@gmail.com", "Your Example.com account has been activated");
     } catch (RuntimeException e) {
       e.printStackTrace();
       throw e;
@@ -44,19 +46,17 @@ public class EmailServlet extends HttpServlet {
     }
   }
 
-  private void foo() {
+  private void foo(String body, String from, String to, String subject) {
 	  Properties props = new Properties();
       Session session = Session.getDefaultInstance(props, null);
 
-      String msgBody = "... Message ...";
-
       try {
           Message msg = new MimeMessage(session);
-          msg.setFrom(new InternetAddress("zorzella@gmail.com"));
+          msg.setFrom(new InternetAddress(from));
           msg.addRecipient(Message.RecipientType.TO,
-                           new InternetAddress("zorzella@gmail.com"));
-          msg.setSubject("Your Example.com account has been activated");
-          msg.setText(msgBody);
+                           new InternetAddress(to));
+          msg.setSubject(subject);
+          msg.setText(body);
           Transport.send(msg);
 
       } catch (AddressException e) {
@@ -105,7 +105,7 @@ public class EmailServlet extends HttpServlet {
     		"\n" +
     		"Z (o Tamanduá)";
     	
-    	ps.printf("<input type='checkbox' name='m-%s'>\n", codigo);
+    	ps.printf("<input type='checkbox' name='sendto-%s'>\n", codigo);
     	ps.printf("To: %s &lt;%s&gt; (último email data '%s')\n", 
     			nome(member), member.getEmail(), Dates.dateToString(member.getLastContacted()));
     	ps.println("<br>Subject: Biblioteca Tamanduá -- ítens sob sua custódia");
@@ -113,11 +113,52 @@ public class EmailServlet extends HttpServlet {
     	ps.println("<hr>");
     }
 
+    ps.println("<input type='submit' value='Manda'>");
     ps.println("</form>");
     ps.println("</html></body>");
 
     ps.flush();
     resp.getOutputStream().close();
+  }
+  
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+  
+  
+  String admin = AdminOrDie.adminOrLogin(req, resp);
+  if (admin == null) {
+    return;
+  }
+  
+  PersistenceManager pm = PMF.get().getPersistenceManager();
+  try {
+     email(req, resp, pm, admin);
+//    foo();
+  } catch (RuntimeException e) {
+    e.printStackTrace();
+    throw e;
+  } finally {
+    pm.close();
+  }
+
+  
+  }
+
+private void email(HttpServletRequest req, HttpServletResponse resp,
+      PersistenceManager pm, String admin) {
+
+@SuppressWarnings("unchecked")
+Map<String,String[]> map = req.getParameterMap();
+for (String key : map.keySet()) {
+  if (key.startsWith("sendto-")) {
+    String codigo = key.substring("sendto".length());
+    String message = map.get("message=" + codigo)[0];
+    
+  }
+}
+
+
   }
 
 private String nome(Member member) {
