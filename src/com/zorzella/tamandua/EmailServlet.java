@@ -92,7 +92,7 @@ public class EmailServlet extends HttpServlet {
     	for (Loan loan : loans) {
     		Long itemId = loan.getItemId();
     		Item item = Queries.getById(Item.class, pm, "id", itemId + "");
-			itemsOnLoan += "* "+ item.getTitulo() + " emprestado em " + Dates.dateToString(loan.getLoanDate()) + "\n";
+			itemsOnLoan += "* "+ item.getTitulo() + " [emprestado em " + Dates.dateToString(loan.getLoanDate()) + "]\n";
     	}
 		String message = 
     		"Somente um lembrete, os seguintes ítens estão sob sua custódia:\n" +
