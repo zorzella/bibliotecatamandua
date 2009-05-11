@@ -29,8 +29,8 @@ public class BorrowReturnServlet extends HttpServlet {
     try {
       go(req, resp, pm, admin);
     } catch (RuntimeException e) {
-//      pm.currentTransaction().rollback();
       e.printStackTrace();
+      throw e;
     } finally {
       pm.close();
     }
@@ -74,11 +74,11 @@ public class BorrowReturnServlet extends HttpServlet {
                 memberCode));
           } else {
             
-            Loan loan = Queries.getSingleByQuery(Loan.class, pm, 
+            Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
                 "memberCode == \"" + memberCode + "\"" +
                 		" && bookId == " + book.getId() + "" +
             //  && returnDate == null" +
-            "");
+            "", memberCode);
 //                "memberCode == ? && bookId == ? && returnDate == NULL", memberCode, book.getId());
                loan.setReturnDate(new Date());
             pm.makePersistent(loan);
@@ -103,7 +103,6 @@ public class BorrowReturnServlet extends HttpServlet {
     ps.println("<br>");
 
     ps.println("<a href='member'>back</a>");
-//    MemberChooserServlet.printForm(pm, ps);
 
     ps.println("</html></body>");
 

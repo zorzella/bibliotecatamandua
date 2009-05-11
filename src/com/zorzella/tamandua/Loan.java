@@ -26,7 +26,7 @@ public class Loan {
   private String memberCode;
 
   @Persistent
-  private Long bookId;
+  private Long itemId;
 
   @Persistent
   private Date loanDate;
@@ -40,13 +40,14 @@ public class Loan {
   public Loan(
       String adminCode,
       String memberCode,
-      Long bookId
+      Long itemId
       ) {
     super();
     loanDate = new Date();    
     this.adminCode = adminCode;
     this.memberCode = memberCode;
-    this.bookId = bookId;
+    this.itemId = itemId;
+    this.comment = "";
   }
 
   public Long getId() {
@@ -69,12 +70,12 @@ public class Loan {
   this.memberCode = memberCode;
   }
 
-  public Long getBookId() {
-  return bookId;
+  public Long getItemId() {
+  return itemId;
   }
   
-  public void setBookId(Long bookId) {
-  this.bookId = bookId;
+  public void setItemId(Long itemId) {
+  this.itemId = itemId;
   }
   
   public Date getLoanDate() {
@@ -110,7 +111,7 @@ public String toString() {
  return String.format("%s,%s,%s,%s,%s",
  this.adminCode,
  memberCode,
- bookId,
+ itemId,
  Dates.dateToString(loanDate),
  Dates.dateToString(returnDate)
  );

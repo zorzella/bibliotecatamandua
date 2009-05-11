@@ -25,6 +25,7 @@ public class Html {
         a(ps, "/modifymembers", "Members");
         a(ps, "/modifyloans", "Loans");
         a(ps, "/member", "Borrow");
+        a(ps, "/email", "Email");
 	}
 	
 	ps.println("<hr>");

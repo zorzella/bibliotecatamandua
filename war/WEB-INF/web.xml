@@ -21,6 +21,14 @@
     <url-pattern>/list</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>email</servlet-name>
+    <servlet-class>com.zorzella.tamandua.EmailServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>email</servlet-name>
+    <url-pattern>/email</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>modifyitems</servlet-name>
     <servlet-class>com.zorzella.tamandua.ModifyItemsServlet</servlet-class>
   </servlet>

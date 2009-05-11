@@ -53,7 +53,7 @@ public class ModifyLoansServlet extends HttpServlet {
         returnDate = true;
       }
       
-      ps.println("<form action='modifyloans' method='post'>");
+      ps.println("<form action='/modifyloans' method='post'>");
       
       ps.println("<input type='submit' value='Change'>");
       ps.println("<table>");
@@ -78,9 +78,9 @@ public class ModifyLoansServlet extends HttpServlet {
         }
         choose(ps, false, adminCode, loan, true, loan.getAdminCode(), "adminCode");
         choose(ps, false, memberCode, loan, true, loan.getMemberCode(), "memberCode");
-        choose(ps, false, bookId, loan, true, loan.getBookId() + "", "bookId");
-        Item book = Queries.getById(Item.class, pm, "id", loan.getBookId() + "");
-        choose(ps, false, false, loan, false, book.getTitulo(), "titulo");
+        choose(ps, false, bookId, loan, true, loan.getItemId() + "", "bookId");
+        Item item = Queries.getById(Item.class, pm, "id", loan.getItemId() + "");
+        choose(ps, false, false, loan, false, item.getTitulo(), "titulo");
         choose(ps, false, loanDate, loan, true, Dates.dateToString(loan.getLoanDate()), "loanDate");
         choose(ps, false, returnDate, loan, true, Dates.dateToString(loan.getReturnDate()), "returnDate");
         choose(ps, false, comment, loan, true, loan.getComment(), "comment");
@@ -183,7 +183,7 @@ public class ModifyLoansServlet extends HttpServlet {
       }
       key = "bookId-" + codigo;
       if (map.containsKey(key)) {
-        item.setBookId(toLong(map, key));
+        item.setItemId(toLong(map, key));
       } 
       key = "loanDate-" + codigo;
       if (map.containsKey(key)) {
