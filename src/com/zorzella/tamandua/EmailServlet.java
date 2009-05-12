@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -92,23 +93,26 @@ public class EmailServlet extends HttpServlet {
     	for (Loan loan : loans) {
     		Long itemId = loan.getItemId();
     		Item item = Queries.getById(Item.class, pm, "id", itemId + "");
-			itemsOnLoan += "* "+ item.getTitulo() + " [emprestado em " + Dates.dateToString(loan.getLoanDate()) + "]\n";
+			itemsOnLoan += "* "+ item.getTitulo() +
+			 " [emprestado em " + Dates.dateToString(loan.getLoanDate()) + "]" +
+			"\n";
     	}
 		String message = 
-    		"Somente um lembrete, os seguintes ítens estão sob sua custódia:\n" +
+    		"Lembrete -- os seguintes &iacute;tens est&atilde;o sob sua cust&oacute;dia:\n" +
     		"\n" +
     		itemsOnLoan +
     		"\n" +
-    		"Nossa constituição e acervo podem ser encontrados em:\n" +
+    		"Nossa constitui&ccedil;&atilde;o e acervo podem ser encontrados em:\n" +
     		"\n" +
     		"http://mensageirosdacultura.com/MDC_Biblioteca.html\n" +
     		"\n" +
-    		"Z (o Tamanduá)";
+    		"Z (o Tamandu&aacute;)";
     	
+		String subject = "Biblioteca Tamandu&aacute; -- &iacute;tens sob sua cust&oacute;dia";
     	ps.printf("<input type='checkbox' name='sendto-%s'>\n", codigo);
-    	ps.printf("To: %s &lt;%s&gt; (último email data '%s')\n", 
-    			nome(member), member.getEmail(), Dates.dateToString(member.getLastContacted()));
-    	ps.println("<br>Subject: Biblioteca Tamanduá -- ítens sob sua custódia");
+    	ps.printf("To: [%s] %s &lt;%s&gt; (&uacute;ltimo email data '%s')\n", 
+    			tudo(nome(member), member.getEmail(), subject, message), nome(member), member.getEmail(), Dates.dateToString(member.getLastContacted()));
+      ps.printf("<br>Subject: %s\n", subject);
     	ps.printf("<br>Body: <textarea name='message-%s' rows='10' cols='100'>%s</textarea>\n", codigo, message);
     	ps.println("<hr>");
     }
@@ -121,6 +125,13 @@ public class EmailServlet extends HttpServlet {
     resp.getOutputStream().close();
   }
   
+  private String tudo(String nome, String email, String subject, String message) {
+  return String.format("<a href='mailto:%s<%s>?subject=%s&body=%s'>send</a>", nome, email, subject, 
+//      URLEncoder.encode(message)
+  message    
+  );
+  }
+
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
