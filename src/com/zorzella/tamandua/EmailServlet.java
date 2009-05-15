@@ -46,7 +46,7 @@ public class EmailServlet extends HttpServlet {
     }
   }
 
-  private static final String subject = "Biblioteca Tamandu&aacute; -- &iacute;tens sob sua cust&oacute;dia";
+  private static final String subject = "Biblioteca Tamandua -- itens sob sua custodia";
 
   private void foo(String body, String from, String to, String subject) {
     Properties props = new Properties();
@@ -98,7 +98,7 @@ public class EmailServlet extends HttpServlet {
         Long itemId = loan.getItemId();
         Item item = Queries.getById(Item.class, pm, "id", itemId + "");
         itemsOnLoan += "* "+ item.getTitulo() +
-        " [emprestado em " + Dates.dateToString(loan.getLoanDate()) + "]" +
+//        " [emprestado em " + Dates.dateToString(loan.getLoanDate()) + "]" +
         "\n";
       }
       String message = 
@@ -165,8 +165,8 @@ public class EmailServlet extends HttpServlet {
       if (key.startsWith("sendto-")) {
         String id = key.substring("sendto".length() + 1);
         String message = map.get("message-" + id)[0];
-        Queries.getById(Member.class, pm, "id", id);
-        foo(message, "zorzella@gmail.com", "zorzella@gmail.com", subject);
+        Member member = Queries.getById(Member.class, pm, "id", id);
+        foo(message, "zorzella@gmail.com", member.getEmail(), subject);
       }
     }
   }
