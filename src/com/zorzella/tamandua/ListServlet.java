@@ -113,12 +113,7 @@ public class ListServlet extends HttpServlet {
           ps.printf("<tr class='b'>");
         }
         if (onde) {
-          Long paradeiro = book.getParadeiro();
-          String memberCodigo = "";
-          if (paradeiro != null) {
-            memberCodigo = Queries.getById(Member.class, pm, "id", paradeiro + "").getCodigo();
-          }
-          ps.printf("<td align='right'>%s</td>", memberCodigo + " " + book.getToca());
+          ps.printf("<td align='right'>%s</td>", book.getParadeiro() + " " + book.getToca());
         }
         if (titulo) {
           ps.printf("<td>%s</td>", book.getTitulo());
