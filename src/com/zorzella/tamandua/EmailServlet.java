@@ -84,9 +84,12 @@ public class EmailServlet extends HttpServlet {
     Collection<Member> members = Queries.getAll(Member.class, pm);
 
     for (Member member : members) {
+      if (member.getCodigo().equals("?")) {
+        continue;
+      }
       Long id = member.getId();
       Collection<Loan> loans = Queries.getByQuery(Loan.class, pm, 
-          "memberId == \"" + id + "\" && returnDate == null");
+          "memberId == " + id + " && returnDate == null");
       if (loans.size() == 0) {
         continue;
       }
