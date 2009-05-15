@@ -55,66 +55,65 @@ public class Loan {
   }
 
   public String getAdminCode() {
-  return adminCode;
+    return adminCode;
   }
 
   public void setAdminCode(String adminCode) {
-  this.adminCode = adminCode;
+    this.adminCode = adminCode;
   }
 
   public String getMemberCode() {
-  return memberCode;
+    return memberCode;
   }
 
   public void setMemberCode(String memberCode) {
-  this.memberCode = memberCode;
+    this.memberCode = memberCode;
   }
 
   public Long getItemId() {
-  return itemId;
+    return itemId;
   }
-  
+
   public void setItemId(Long itemId) {
-  this.itemId = itemId;
+    this.itemId = itemId;
   }
-  
+
   public Date getLoanDate() {
-  return loanDate;
+    return loanDate;
   }
 
   public void setLoanDate(Date loanDate) {
-  this.loanDate = loanDate;
+    this.loanDate = loanDate;
   }
 
   public Date getReturnDate() {
-  return returnDate;
+    return returnDate;
   }
 
   public void setReturnDate(Date returnDate) {
-  this.returnDate = returnDate;
+    this.returnDate = returnDate;
   }
 
   public void setId(Long id) {
-  this.id = id;
+    this.id = id;
   }
 
   public String getComment() {
-	return comment;
-}
-  
-  public void setComment(String comment) {
-	this.comment = comment;
+    return comment;
   }
-  
- @Override
-public String toString() {
- return String.format("%s,%s,%s,%s,%s",
- this.adminCode,
- memberCode,
- itemId,
- Dates.dateToString(loanDate),
- Dates.dateToString(returnDate)
- );
-} 
 
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%s,%s,%s,%s,%s",
+        this.adminCode,
+        memberCode,
+        itemId,
+        Dates.dateToString(loanDate),
+        Dates.dateToString(returnDate)
+    );
+  } 
 }

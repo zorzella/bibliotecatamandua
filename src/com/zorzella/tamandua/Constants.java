@@ -9,6 +9,4 @@ public class Constants {
 
   public static final List<String> admins = Lists.newArrayList("zorzella");
   public static final String encoding = "UTF-8";
-  
-
 }

@@ -25,7 +25,7 @@ public class ModifyItemsServlet extends HttpServlet {
     TITULO,
     AUTOR,
   }
-  
+
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -50,7 +50,7 @@ public class ModifyItemsServlet extends HttpServlet {
       if ((temp != null) && (temp.length == 1)) {
         sortKey = Sort.valueOf(temp[0]);
       }
-      
+
       boolean paradeiro = map.containsKey("paradeiro");
       boolean toca = map.containsKey("toca");
       boolean titulo = map.containsKey("titulo");
@@ -58,24 +58,24 @@ public class ModifyItemsServlet extends HttpServlet {
       boolean isbn = map.containsKey("isbn");
       boolean tamanho = map.containsKey("tamanho");
       boolean tags = map.containsKey("tags");
-      
+
       if (!map.containsKey("custom")) {
         titulo = true;
         tamanho = true;
         autor = true;
         tags = true;
       }
-      
+
       if (map.containsKey("added")) {
         toca = true;
       }
-      
+
       ps.println("<form action='modifyitems' method='post'>");
-      
+
       ps.println("<input type='text' value='0' name='add'>");
       ps.println("<input type='submit' value='Change'>");
       ps.println("<table>");
-      
+
       ps.println("<th>Parad</th>");
       ps.println("<th>Toca</th>");
       ps.println("<th>Titulo</th>");
@@ -85,7 +85,7 @@ public class ModifyItemsServlet extends HttpServlet {
       ps.println("<th>Tags</th>");
 
       Collection<Item> sortedItems;
-      
+
       switch (sortKey) {
         case TITULO: 
           sortedItems = Queries.getSortedItems(pm);
@@ -126,19 +126,19 @@ public class ModifyItemsServlet extends HttpServlet {
         } else {
           Html.td(ps, item.getTitulo());
         }
-        
+
         if (autor) {
           input(ps, item, "autor", item.getAutor());
         } else {
           Html.td(ps, item.getAutor());
         }
-        
+
         if (isbn) {
           input(ps, item, "isbn", item.getIsbn());
         } else {
           Html.td(ps, item.getIsbn());
         }
-        
+
         if (tamanho) {
           shortInput(ps, item, "tamanho", item.getTamanho());
         } else {
@@ -194,7 +194,7 @@ public class ModifyItemsServlet extends HttpServlet {
         dropdown(sortKey, "TITULO", "Titulo") +
         dropdown(sortKey, "AUTOR", "Autor") +
         "</select>" +
-          "");
+    "");
     ps.println("Mostre: " +
         checkbox(paradeiro, "paradeiro", "Paradeiro") +
         checkbox(toca, "toca", "Toca") +
@@ -203,9 +203,9 @@ public class ModifyItemsServlet extends HttpServlet {
         checkbox(isbn, "isbn", "ISBN") +
         checkbox(tamanho, "tamanho", "Tamanho") +
         checkbox(tags, "tags", "Tags") +
-          "");
-   ps.println("<input type='hidden' name='custom' value='true'>");
-   ps.println("<input type='submit' value='Itens'>");
+    "");
+    ps.println("<input type='hidden' name='custom' value='true'>");
+    ps.println("<input type='submit' value='Itens'>");
 
   }
 
@@ -216,19 +216,14 @@ public class ModifyItemsServlet extends HttpServlet {
   private String checkbox(boolean selected, String key, String label) {
     return "<input type='checkbox' name='" + key + "'" + (selected ? " checked" : "" ) + ">" + label + "</input>\n";
   }
-  
+
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
     if (AdminOrDie.adminOrLogin(req, resp) == null) {
       return;
     }
-//    resp.setContentType("text/html");
-//    resp.setCharacterEncoding(Constants.encoding);
-//    PrintWriter ps = new PrintWriter(
-//        new OutputStreamWriter(resp.getOutputStream(), Constants.encoding));
 
-    
     @SuppressWarnings("unchecked")
     Map<String,String[]> map = req.getParameterMap();
     PersistenceManager pm = PMF.get().getPersistenceManager();

@@ -21,7 +21,7 @@ public class DumpServlet extends HttpServlet {
     if (AdminOrDie.adminOrLogin(req, resp) == null) {
       return;
     }
-    
+
     resp.setContentType("text/plain");
     resp.setCharacterEncoding(Constants.encoding);
     PrintWriter ps = new PrintWriter(

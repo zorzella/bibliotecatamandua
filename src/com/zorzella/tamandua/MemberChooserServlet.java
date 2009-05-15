@@ -32,8 +32,7 @@ public class MemberChooserServlet extends HttpServlet {
     }
   }
 
-  private void go(HttpServletResponse resp, PersistenceManager pm)
-      throws IOException {
+  private void go(HttpServletResponse resp, PersistenceManager pm) throws IOException {
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
     PrintWriter ps = new PrintWriter(

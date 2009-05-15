@@ -20,5 +20,4 @@ public class Dates {
       temp.get(DateTimeFieldType.monthOfYear()),
       temp.get(DateTimeFieldType.dayOfMonth()));
   }
-
 }

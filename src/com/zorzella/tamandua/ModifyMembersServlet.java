@@ -1,8 +1,6 @@
 package com.zorzella.tamandua;
 
-
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeField;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -24,9 +22,9 @@ public class ModifyMembersServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-	if (AdminOrDie.adminOrLogin(req, resp) == null) {
-	  return;
-	}
+    if (AdminOrDie.adminOrLogin(req, resp) == null) {
+      return;
+    }
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
     PrintWriter ps = new PrintWriter(
@@ -58,7 +56,7 @@ public class ModifyMembersServlet extends HttpServlet {
       boolean cidade = map.containsKey("cidade");
       boolean estado = map.containsKey("estado");
       boolean zip = map.containsKey("zip");
-      
+
       if (!map.containsKey("custom")) {
         nome = true;
         sobrenome = true;
@@ -66,18 +64,18 @@ public class ModifyMembersServlet extends HttpServlet {
         pai = true;
         mae = true;
       }
-      
+
       if (map.containsKey("added")) {
         codigo = true;
         nascimento = true;
       }
-      
+
       ps.println("<form action='modifymembers' method='post'>");
-      
+
       ps.println("<input type='text' value='0' name='add'>");
       ps.println("<input type='submit' value='Change'>");
       ps.println("<table>");
-      
+
       ps.println("<th>Codigo</th>");
       ps.println("<th>Nome</th>");
       ps.println("<th>Sobrenome</th>");
@@ -98,7 +96,7 @@ public class ModifyMembersServlet extends HttpServlet {
       ps.println("<th>Zip</th>");
 
       Collection<Member> sortedMembers = Queries.getSortedMembers(pm);
-      
+
       boolean even = false;
       for (Member member : sortedMembers) {
         even = !even;
@@ -201,7 +199,7 @@ public class ModifyMembersServlet extends HttpServlet {
       boolean cidade, 
       boolean estado, 
       boolean zip
-      ) {
+  ) {
     ps.println("<hr>");
     ps.println("Modifique: " +
         checkbox(codigo, "codigo", "Codigo") +
@@ -222,7 +220,7 @@ public class ModifyMembersServlet extends HttpServlet {
         checkbox(cidade, "cidade", "cidade") + 
         checkbox(estado, "estado", "estado") + 
         checkbox(zip, "zip", "zip") +
-          "");
+    "");
     ps.println("<input type='hidden' name='custom' value='true'>");
     ps.println("<input type='submit' value='Membros'>");
 
@@ -231,7 +229,7 @@ public class ModifyMembersServlet extends HttpServlet {
   private String checkbox(boolean selected, String key, String label) {
     return "<input type='checkbox' name='" + key + "'" + (selected ? " checked" : "" ) + ">" + label + "</input>\n";
   }
-  
+
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -239,7 +237,7 @@ public class ModifyMembersServlet extends HttpServlet {
       return;
     }
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     Map<String,String[]> map = req.getParameterMap();
     PersistenceManager pm = PMF.get().getPersistenceManager();
 
@@ -328,7 +326,7 @@ public class ModifyMembersServlet extends HttpServlet {
   private String toString(Map<String, String[]> map, String key) {
     return map.get(key)[0];
   }
-  
+
   private Date toDate(Map<String, String[]> map, String key) {
     String string = map.get(key)[0];
     if (string.trim().length() == 0) {

@@ -24,7 +24,7 @@ public class ListServlet extends HttpServlet {
     TITULO,
     AUTOR,
   }
-  
+
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -46,13 +46,13 @@ public class ListServlet extends HttpServlet {
       if ((temp != null) && (temp.length == 1)) {
         sortKey = Sort.valueOf(temp[0]);
       }
-      
+
       boolean onde = map.containsKey("onde");
       boolean titulo = map.containsKey("titulo");
       boolean autor = map.containsKey("autor");
       boolean tamanho = map.containsKey("tamanho");
       boolean tags = map.containsKey("tags");
-      
+
       if (!onde && !titulo && !autor && !tamanho && !tags) {
         onde = false;
         titulo = true;
@@ -60,33 +60,33 @@ public class ListServlet extends HttpServlet {
         autor = true;
         tags = true;
       }
-      
+
       ps.println("<form action='list'>");
-      
+
       ps.println("<table>");
-      
+
       if (onde) {
         ps.println("<th>Onde</th>");
       }
-      
+
       if (titulo) {
         ps.println("<th>Titulo</th>");
       }
-      
+
       if (autor) {
         ps.println("<th>Autor</th>");
       }
-      
+
       if (tamanho) {
         ps.println("<th>Tamanho</th>");
       }
-      
+
       if (tags) {
         ps.println("<th>Tags</th>");
       }
 
       Collection<Item> sortedBooks;
-      
+
       switch (sortKey) {
         case TITULO: 
           sortedBooks = Queries.getSortedItems(pm);
@@ -118,11 +118,11 @@ public class ListServlet extends HttpServlet {
         if (titulo) {
           ps.printf("<td>%s</td>", book.getTitulo());
         }
-        
+
         if (autor) {
           ps.printf("<td>%s</td>", book.getAutor());
         }
-        
+
         if (tamanho) {
           ps.printf("<td>%s</td>", book.getTamanho());
         }
@@ -134,7 +134,7 @@ public class ListServlet extends HttpServlet {
       }
 
       ps.println("</table>");
-      
+
       printCheckboxesAndDropdown(ps, sortKey, onde, titulo, autor, tamanho, tags);
 
       ps.println("</body></html>");
@@ -158,14 +158,14 @@ public class ListServlet extends HttpServlet {
         dropdown(sortKey, "TITULO", "Titulo") +
         dropdown(sortKey, "AUTOR", "Autor") +
         "</select>" +
-          "");
+    "");
     ps.println("Mostre: " +
         checkbox(onde, "onde", "Onde (Paradeiro e Toca)") +
         checkbox(titulo, "titulo", "Titulo") +
         checkbox(autor, "autor", "Autor") +
         checkbox(tamanho, "tamanho", "Tamanho") +
         checkbox(tags, "tags", "Tags") +
-          "");
+    "");
     ps.println("<input type='submit' value='Livros'>");
 
   }

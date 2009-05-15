@@ -1,4 +1,3 @@
-// Copyright 2008 Google Inc.  All Rights Reserved.
 package com.zorzella.tamandua;
 
 import java.util.Collection;

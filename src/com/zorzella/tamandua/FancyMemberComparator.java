@@ -1,4 +1,3 @@
-// Copyright 2008 Google Inc.  All Rights Reserved.
 package com.zorzella.tamandua;
 
 import java.util.Comparator;
@@ -8,11 +7,6 @@ public class FancyMemberComparator implements Comparator<Item> {
   @Override
   public int compare(Item one, Item other) {
     
-//	  // No paradeiro, alphabetical order
-//    if ((one.getParadeiro().length() == 0) && (other.getParadeiro().length() == 0)) {
-//      return one.compareTo(other);
-//    }
-
     // Unknown paradeiro books group at the end
     if ((one.getParadeiro().equals("?")) && (!other.getParadeiro().equals("?"))) {
     	return 1;
@@ -37,6 +31,5 @@ public class FancyMemberComparator implements Comparator<Item> {
     
     // All things being equal, alphabetical order
     return one.compareTo(other);
-    
   }
 }

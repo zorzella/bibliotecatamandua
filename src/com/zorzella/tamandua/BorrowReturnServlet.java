@@ -24,7 +24,7 @@ public class BorrowReturnServlet extends HttpServlet {
     if (admin == null) {
       return;
     }
-    
+
     PersistenceManager pm = PMF.get().getPersistenceManager();
     try {
       go(req, resp, pm, admin);
@@ -73,14 +73,14 @@ public class BorrowReturnServlet extends HttpServlet {
                 item.getTitulo(), 
                 memberCode));
           } else {
-            
+
             Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
                 "memberCode == \"" + memberCode + "\"" +
-                		" && itemId == " + item.getId() + "" +
-            //  && returnDate == null" +
-            "", memberCode);
-//                "memberCode == ? && itemId == ? && returnDate == NULL", memberCode, item.getId());
-               loan.setReturnDate(new Date());
+                " && itemId == " + item.getId() + "" +
+                //  && returnDate == null" +
+                "", memberCode);
+            //                "memberCode == ? && itemId == ? && returnDate == NULL", memberCode, item.getId());
+            loan.setReturnDate(new Date());
             pm.makePersistent(loan);
 
             item.setParadeiro("");

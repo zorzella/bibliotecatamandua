@@ -1,8 +1,6 @@
 package com.zorzella.tamandua;
 
-
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeField;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -95,7 +93,7 @@ public class ModifyLoansServlet extends HttpServlet {
       printCheckboxesAndDropdown(ps,
           adminCode, memberCode, bookId, loanDate, 
           returnDate
-   );
+      );
 
       ps.println("</body></html>");
       ps.flush();
@@ -221,10 +219,10 @@ public class ModifyLoansServlet extends HttpServlet {
   }
 
   private int toInt(Map<String, String[]> map, String key) {
-  return Integer.parseInt(map.get(key)[0]);
-}
+    return Integer.parseInt(map.get(key)[0]);
+  }
 
   private long toLong(Map<String, String[]> map, String key) {
-  return Long.parseLong(map.get(key)[0]);
-}
+    return Long.parseLong(map.get(key)[0]);
+  }
 }
