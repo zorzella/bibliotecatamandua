@@ -31,7 +31,7 @@ to include your name with greetings you post.</p>
     <form action="/upload" method="post">
       <div><textarea name="books" rows="25" cols="100"></textarea></div>
       <div><textarea name="members" rows="25" cols="100"></textarea></div>
-      <div><input type="submit" value="Reinicializa" /></div>
+      <div><input type="submit" value="Reinicialize" /></div>
     </form>
 
   </body>

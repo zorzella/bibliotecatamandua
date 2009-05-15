@@ -75,7 +75,7 @@ public class ModifyLoansServlet extends HttpServlet {
           ps.printf("<tr class='b'>");
         }
         choose(ps, false, adminCode, loan, true, loan.getAdminCode(), "adminCode");
-        choose(ps, false, memberCode, loan, true, loan.getMemberCode(), "memberCode");
+        choose(ps, false, memberCode, loan, true, loan.getMemberId() + "", "memberId");
         choose(ps, false, bookId, loan, true, loan.getItemId() + "", "bookId");
         Item item = Queries.getById(Item.class, pm, "id", loan.getItemId() + "");
         choose(ps, false, false, loan, false, item.getTitulo(), "titulo");
@@ -177,7 +177,7 @@ public class ModifyLoansServlet extends HttpServlet {
       }
       key = "memberCode-" + codigo;
       if (map.containsKey(key)) {
-        item.setMemberCode(toString(map, key));
+        item.setMemberId(toLong(map, key));
       }
       key = "bookId-" + codigo;
       if (map.containsKey(key)) {

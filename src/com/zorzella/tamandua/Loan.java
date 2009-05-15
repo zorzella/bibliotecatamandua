@@ -23,8 +23,8 @@ public class Loan {
   private String adminCode;
 
   @Persistent
-  private String memberCode;
-
+  private Long memberId;
+  
   @Persistent
   private Long itemId;
 
@@ -39,13 +39,13 @@ public class Loan {
 
   public Loan(
       String adminCode,
-      String memberCode,
+      Long memberId, 
       Long itemId
       ) {
     super();
     loanDate = new Date();    
     this.adminCode = adminCode;
-    this.memberCode = memberCode;
+    this.memberId = memberId;
     this.itemId = itemId;
     this.comment = "";
   }
@@ -62,14 +62,14 @@ public class Loan {
     this.adminCode = adminCode;
   }
 
-  public String getMemberCode() {
-    return memberCode;
+  public Long getMemberId() {
+    return memberId;
   }
-
-  public void setMemberCode(String memberCode) {
-    this.memberCode = memberCode;
+  
+  public void setMemberId(Long memberId) {
+    this.memberId = memberId;
   }
-
+  
   public Long getItemId() {
     return itemId;
   }
@@ -110,7 +110,7 @@ public class Loan {
   public String toString() {
     return String.format("%s,%s,%s,%s,%s",
         this.adminCode,
-        memberCode,
+        memberId,
         itemId,
         Dates.dateToString(loanDate),
         Dates.dateToString(returnDate)

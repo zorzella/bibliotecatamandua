@@ -18,7 +18,7 @@ public class Html {
     User user = userService.getCurrentUser();
 
     if ((user != null) && (Constants.admins.contains(user.getNickname()))) {
-      a(ps, "/modifyitems", "Items");
+      a(ps, "/modifyitems", "Itens");
       a(ps, "/modifymembers", "Members");
       a(ps, "/modifyloans", "Loans");
       a(ps, "/member", "Borrow");

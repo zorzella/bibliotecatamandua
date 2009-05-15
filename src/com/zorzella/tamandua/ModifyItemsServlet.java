@@ -104,6 +104,7 @@ public class ModifyItemsServlet extends HttpServlet {
       }
 
       boolean even = false;
+      Collection<Member> sortedMembers = Queries.getSortedMembers(pm);
       for (Item item : sortedItems) {
         even = !even;
         if (even) {
@@ -112,9 +113,13 @@ public class ModifyItemsServlet extends HttpServlet {
           ps.printf("<tr class='b'>");
         }
         if (paradeiro) {
-          shortInput(ps, item, "paradeiro", item.getParadeiro());         
+          paradeiroDropdown(ps, item, item.getParadeiro(), sortedMembers);         
         } else {
-          Html.tdRight(ps, item.getParadeiro());
+          String paradeiroString = "";
+          if (item.getParadeiro() != null) {
+            paradeiroString = Queries.getById(Member.class, pm, "id", item.getParadeiro() + "").getCodigo();
+          }
+          Html.tdRight(ps, paradeiroString);
         }
         if (toca) {
           shortInput(ps, item, "toca", item.getToca());         
@@ -173,6 +178,21 @@ public class ModifyItemsServlet extends HttpServlet {
     }
   }
 
+  private void paradeiroDropdown(PrintWriter ps, Item item, Long value, Collection<Member> members) {
+    ps.printf("<td><select name='paradeiro-%s'><option value=''></option>",
+        item.getId());
+
+    for (Member member : members) {
+      String selected = "";
+      if (member.getId().equals(value)) {
+        selected = "selected='true'";
+      }
+      ps.printf("<option value='%s' %s>%s</option>", member.getId(), selected, member.getCodigo());
+    }
+    
+    ps.println("</select></td>");
+  }
+
   private PrintWriter shortInput(PrintWriter ps, Item item, String key, String value) {
     return ps.printf("<td><input type='text' name='%s' value='%s' class='x-short'></td>", 
         key + "-" + item.getId(), value);
@@ -195,7 +215,7 @@ public class ModifyItemsServlet extends HttpServlet {
         dropdown(sortKey, "AUTOR", "Autor") +
         "</select>" +
     "");
-    ps.println("Mostre: " +
+    ps.println("Modificaveis: " +
         checkbox(paradeiro, "paradeiro", "Paradeiro") +
         checkbox(toca, "toca", "Toca") +
         checkbox(titulo, "titulo", "Titulo") +
@@ -238,7 +258,7 @@ public class ModifyItemsServlet extends HttpServlet {
       Long id = item.getId();
       String key = "paradeiro-" + id;
       if (map.containsKey(key)) {
-        item.setParadeiro(toString(map, key));
+        item.setParadeiro(toLong(map, key));
       }
       key = "toca-" + id;
       if (map.containsKey(key)) {
@@ -269,6 +289,14 @@ public class ModifyItemsServlet extends HttpServlet {
     }
     pm.close();
     resp.sendRedirect("/modifyitems" + (toAdd > 0 ? "?added=true" : ""));
+  }
+
+  private Long toLong(Map<String, String[]> map, String key) {
+    String value = map.get(key)[0];
+    if (value.length() == 0) {
+      return null;
+    }
+    return Long.parseLong(value);
   }
 
   private String toString(Map<String, String[]> map, String key) {

@@ -62,9 +62,14 @@ public class MemberChooserServlet extends HttpServlet {
     Collection<Item> books = Queries.getFancySortedBooks(pm);
 
     for (Item book : books) {
+      Long paradeiro = book.getParadeiro();
+      String memberCodigo = "";
+      if (paradeiro != null) {
+        memberCodigo = Queries.getById(Member.class, pm, "id", paradeiro + "").getCodigo();
+      }
       ps.printf("<input type='checkbox' name='%s-%s'> [%s] %s <br>\n",
-          book.getParadeiro().length() > 0 ? "r" : "b", 
-              book.getId(), book.getParadeiro(), book.getTitulo());
+          paradeiro != null ? "r" : "b", 
+              book.getId(), memberCodigo, book.getTitulo());
     }
 
     ps.println("<br><input type='submit' value='Empresta e Devolve'>");

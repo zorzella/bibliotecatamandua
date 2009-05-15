@@ -25,12 +25,23 @@ public class Queries {
 
     @Override
     public int compare(Item one, Item other) {
-      String oneParadeiro = one.getParadeiro();
-      String otherParadeiro = other.getParadeiro();
-      if (oneParadeiro.equals(otherParadeiro)) {
-        return one.compareTo(other);
-      }
-      return oneParadeiro.compareTo(otherParadeiro);
+//      String oneParadeiro = one.getParadeiro();
+//      String otherParadeiro = other.getParadeiro();
+//      if (oneParadeiro.equals(otherParadeiro)) {
+//        return one.compareTo(other);
+//      }
+//      return oneParadeiro.compareTo(otherParadeiro);
+      
+    Long oneParadeiro = one.getParadeiro();
+    Long otherParadeiro = other.getParadeiro();
+    if ((oneParadeiro != null) && (oneParadeiro.equals(otherParadeiro))) {
+      return one.compareTo(other);
+    }
+    if ((oneParadeiro == null) && (otherParadeiro == null)) {
+      return one.compareTo(other);
+    }
+    return oneParadeiro.compareTo(otherParadeiro);
+      
     }
   }
 

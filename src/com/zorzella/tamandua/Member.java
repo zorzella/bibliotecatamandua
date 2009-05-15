@@ -244,7 +244,8 @@ public class Member implements Comparable<Member> {
   @Override
   public String toString() {
     return String.format(
-        "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+        "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+        id,
         codigo, 
         nome, 
         sobrenome, 

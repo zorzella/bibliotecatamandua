@@ -30,7 +30,7 @@ public class Item implements Comparable<Item> {
   private Type type;
 
   @Persistent
-  private String paradeiro;
+  private Long paradeiroLong;
 
   @Persistent
   private String toca;
@@ -60,7 +60,7 @@ public class Item implements Comparable<Item> {
     this.desde = new Date();
     this.titulo = "";
     this.autor = "";
-    this.paradeiro = "";
+    this.paradeiroLong = null;
     this.toca = "";
     this.isbn = "";
     this.tamanho = "";
@@ -69,7 +69,7 @@ public class Item implements Comparable<Item> {
   }
 
   public Item(
-      String paradeiro, 
+      Long paradeiro, 
       String toca, 
       String isbn, 
       String titulo,
@@ -78,7 +78,7 @@ public class Item implements Comparable<Item> {
       String tamanho) {
     super();
     this.type = Type.BOOK;
-    this.paradeiro = paradeiro;
+    this.paradeiroLong = paradeiro;
     this.toca = toca;
     this.titulo = titulo;
     this.isbn = isbn;
@@ -93,8 +93,8 @@ public class Item implements Comparable<Item> {
     return id;
   }
 
-  public String getParadeiro() {
-    return paradeiro;
+  public Long getParadeiro() {
+    return paradeiroLong;
   }
 
   public void addTag(String tag) {
@@ -111,8 +111,8 @@ public class Item implements Comparable<Item> {
     tags.remove(tag);
   }
 
-  public void setParadeiro(String paradeiro) {
-    this.paradeiro = paradeiro;
+  public void setParadeiro(Long paradeiro) {
+    this.paradeiroLong = paradeiro;
   }
 
   public String getToca() {
@@ -176,7 +176,7 @@ public class Item implements Comparable<Item> {
     return String.format(
         "%s,%s,%s,%s,%s,%s,%s,%s,%s",
         id, 
-        paradeiro, 
+        paradeiroLong, 
         toca, 
         isbn,
         quote(titulo), 
@@ -192,7 +192,7 @@ public class Item implements Comparable<Item> {
     if (especial) {
       result.append("<especial> ");
     }
-    maybeAdd(result, "paradeiro", paradeiro);
+    maybeAdd(result, "paradeiro", paradeiroLong + "");
     maybeAdd(result, "toca", toca);
     maybeAdd(result, "isbn", isbn);
     maybeAdd(result, "titulo", titulo);

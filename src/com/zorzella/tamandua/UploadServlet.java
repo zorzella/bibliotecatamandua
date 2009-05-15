@@ -38,8 +38,8 @@ public class UploadServlet extends HttpServlet {
 
     PersistenceManager pm = PMF.get().getPersistenceManager();
 
-    Collection<Item> books = Queries.getUnSortedItems(pm);
-    pm.deletePersistentAll(books);
+    Collection<Item> item = Queries.getUnSortedItems(pm);
+    pm.deletePersistentAll(item);
     Collection<Member> members = Queries.getSortedMembers(pm);
     pm.deletePersistentAll(members);
     Collection<Loan> loans = Queries.getAll(Loan.class, pm);
@@ -77,10 +77,16 @@ public class UploadServlet extends HttpServlet {
       String autor = parsed.get(4);
       String tamanho = parsed.get(6);
       String paradeiro = parsed.get(0);
+      
+      Long memberId = null;
+      if (paradeiro.length() > 0) {
+        memberId = Queries.getFirstByQuery(Member.class, pm, "codigo == \"" + paradeiro + "\"").getId();
+      }
+      
       String toca = parsed.get(1);
       String isbn = parsed.get(3);
       Item book = new Item(
-          paradeiro, 
+          memberId, 
           toca, 
           isbn, 
           titulo,
@@ -99,12 +105,19 @@ public class UploadServlet extends HttpServlet {
       pm.makePersistent(book);
 
       if (paradeiro.length() > 0) {
-        Loan loan = new Loan("zorzella", paradeiro, book.getId());
+        Loan loan = new Loan("zorzella", memberId, book.getId());
         pm.makePersistent(loan);
       }
 
       ps.println(book);  
     }
+  }
+
+  private Long getLong(String parsed) {
+    if (parsed.trim().length() == 0) {
+      return null;
+    }
+    return Long.parseLong(parsed);
   }
 
   private String dismangle(String string) {

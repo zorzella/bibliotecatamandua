@@ -51,47 +51,47 @@ public class BorrowReturnServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
     Map<String,String[]> parameters = req.getParameterMap();
 
-    String memberCode = null;
+    Long memberId = null;
 
     for (String key : parameters.keySet()) {
       if (key.equals("member")) {
-        if (memberCode != null) {
+        if (memberId != null) {
           throw new IllegalArgumentException();
         }
         String[] temp = parameters.get(key);
         if (temp.length != 1) {
           throw new IllegalArgumentException();
         }
-        memberCode = temp[0];
+        memberId = Long.parseLong(temp[0]);
       } else {
         Item item = Queries.getById(Item.class, pm, "id", key.substring(2));
 
         if (key.startsWith("r-")) {
-          if (!item.getParadeiro().equals(memberCode)) {
+          if (!item.getParadeiro().equals(memberId)) {
             ps.println(String.format(
                 "<br> Ignoring '%s' which is not on loan to '%s'", 
                 item.getTitulo(), 
-                memberCode));
+                memberId));
           } else {
 
             Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
-                "memberCode == \"" + memberCode + "\"" +
+                "memberId == \"" + memberId + "\"" +
                 " && itemId == " + item.getId() + "" +
                 //  && returnDate == null" +
-                "", memberCode);
+                "", memberId);
             //                "memberCode == ? && itemId == ? && returnDate == NULL", memberCode, item.getId());
             loan.setReturnDate(new Date());
             pm.makePersistent(loan);
 
-            item.setParadeiro("");
+            item.setParadeiro(null);
             pm.makePersistent(item);
             ps.println("<br> Returned: " + item.getTitulo());
           }
         } else if (key.startsWith("b-")) {
-          Loan loan = new Loan(admin, memberCode, item.getId());
+          Loan loan = new Loan(admin, memberId, item.getId());
           pm.makePersistent(loan);
 
-          item.setParadeiro(memberCode);
+          item.setParadeiro(memberId);
           pm.makePersistent(item);
           ps.println("<br> Borrowed: " + item.getTitulo());
         } else {

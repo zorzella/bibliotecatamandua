@@ -37,7 +37,7 @@ public class EmailServlet extends HttpServlet {
     PersistenceManager pm = PMF.get().getPersistenceManager();
     try {
       go(req, resp, pm, admin);
-      foo("... Message ...", "zorzella@gmail.com", "zorzella@gmail.com", "Your Example.com account has been activated");
+//      foo("... Message ...", "zorzella@gmail.com", "zorzella@gmail.com", "Your Example.com account has been activated");
     } catch (RuntimeException e) {
       e.printStackTrace();
       throw e;
@@ -45,6 +45,8 @@ public class EmailServlet extends HttpServlet {
       pm.close();
     }
   }
+
+  private static final String subject = "Biblioteca Tamandu&aacute; -- &iacute;tens sob sua cust&oacute;dia";
 
   private void foo(String body, String from, String to, String subject) {
     Properties props = new Properties();
@@ -82,9 +84,9 @@ public class EmailServlet extends HttpServlet {
     Collection<Member> members = Queries.getAll(Member.class, pm);
 
     for (Member member : members) {
-      String codigo = member.getCodigo();
+      Long id = member.getId();
       Collection<Loan> loans = Queries.getByQuery(Loan.class, pm, 
-          "memberCode == \"" + codigo + "\" && returnDate == null");
+          "memberId == \"" + id + "\" && returnDate == null");
       if (loans.size() == 0) {
         continue;
       }
@@ -107,12 +109,11 @@ public class EmailServlet extends HttpServlet {
         "\n" +
         "Z (o Tamandu&aacute;)";
 
-      String subject = "Biblioteca Tamandu&aacute; -- &iacute;tens sob sua cust&oacute;dia";
-      ps.printf("<input type='checkbox' name='sendto-%s'>\n", codigo);
+      ps.printf("<input type='checkbox' name='sendto-%s'>\n", id);
       ps.printf("To: [%s] %s &lt;%s&gt; (&uacute;ltimo email data '%s')\n", 
           tudo(nome(member), member.getEmail(), subject, message), nome(member), member.getEmail(), Dates.dateToString(member.getLastContacted()));
       ps.printf("<br>Subject: %s\n", subject);
-      ps.printf("<br>Body: <textarea name='message-%s' rows='10' cols='100'>%s</textarea>\n", codigo, message);
+      ps.printf("<br>Body: <textarea name='message-%s' rows='10' cols='100'>%s</textarea>\n", id, message);
       ps.println("<hr>");
     }
 
@@ -159,8 +160,10 @@ public class EmailServlet extends HttpServlet {
     Map<String,String[]> map = req.getParameterMap();
     for (String key : map.keySet()) {
       if (key.startsWith("sendto-")) {
-        String codigo = key.substring("sendto".length());
-        String message = map.get("message=" + codigo)[0];
+        String id = key.substring("sendto".length() + 1);
+        String message = map.get("message-" + id)[0];
+        Queries.getById(Member.class, pm, "id", id);
+        foo(message, "zorzella@gmail.com", "zorzella@gmail.com", subject);
       }
     }
   }
