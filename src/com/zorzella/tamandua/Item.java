@@ -98,6 +98,9 @@ public class Item implements Comparable<Item> {
     }
 
     public void addTag(String tag) {
+      if (tag == null) {
+        throw new NullPointerException();
+      }
       if (tags == null) {
         tags = Lists.newArrayList();
       }
@@ -157,7 +160,12 @@ public class Item implements Comparable<Item> {
     }
 
     @SuppressWarnings("unchecked") List<String> getTags() {
+      // Bug in local DB impl causes tags to be null when they should be empty
       if (tags == null) {
+        return Collections.EMPTY_LIST;
+      }
+      // Bug in prod DB impl causes tags to be have a null when they should be empty
+      if ((tags.size() == 1) && (tags.iterator().next() == null)) {
         return Collections.EMPTY_LIST;
       }
       return tags;
