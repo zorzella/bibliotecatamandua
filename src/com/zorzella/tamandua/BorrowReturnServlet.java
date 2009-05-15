@@ -75,7 +75,7 @@ public class BorrowReturnServlet extends HttpServlet {
           } else {
 
             Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
-                "memberId == \"" + memberId + "\"" +
+                "memberId == " + memberId + 
                 " && itemId == " + item.getId() + "" +
                 //  && returnDate == null" +
                 "", memberId);
