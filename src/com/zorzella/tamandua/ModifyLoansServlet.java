@@ -58,13 +58,18 @@ public class ModifyLoansServlet extends HttpServlet {
       
       ps.println("<th>Admin</th>");
       ps.println("<th>Member</th>");
-//      ps.println("<th>BookId</th>");
       ps.println("<th>Book</th>");
       ps.println("<th>Loaned</th>");
       ps.println("<th>Returned</th>");
       ps.println("<th>Comment</th>");
 
-      Collection<Loan> loans = Queries.getAll(Loan.class, pm);
+      Collection<Loan> loans = //Queries.getByQuery(Loan.class, pm, "ORDER BY loanDate");
+        (Collection<Loan>) pm.newQuery(
+            "SELECT FROM com.zorzella.tamandua.Loan " +
+          "WHERE adminCode == :ac " +
+          "PARAMETERS String ac " +
+            "ORDER BY returnDate, loanDate" +
+          "").execute("zorzella");
       Collection<Member> members = Queries.getAll(Member.class, pm);
       Collection<Item> items = Queries.getAll(Item.class, pm);
       
