@@ -1,10 +1,13 @@
 package com.zorzella.tamandua;
 
+import com.google.appengine.repackaged.com.google.common.collect.Lists;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -51,18 +54,22 @@ public class BorrowReturnServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
     Map<String,String[]> parameters = req.getParameterMap();
 
-    Long memberId = null;
 
+    String[] temp = parameters.get("member");
+    if (temp.length != 1) {
+      throw new IllegalArgumentException();
+    }
+    
+    Long memberId = Long.parseLong(temp[0]);
+    Member member = Queries.getById(Member.class, pm, "id", memberId + "");
+    ps.println("Member: " + member);
+    
+    List<Item> returnedItems = Lists.newArrayList();
+    List<Item> borrowedItems = Lists.newArrayList();
+    
     for (String key : parameters.keySet()) {
       if (key.equals("member")) {
-        if (memberId != null) {
-          throw new IllegalArgumentException();
-        }
-        String[] temp = parameters.get(key);
-        if (temp.length != 1) {
-          throw new IllegalArgumentException();
-        }
-        memberId = Long.parseLong(temp[0]);
+        continue;
       } else {
         Item item = Queries.getById(Item.class, pm, "id", key.substring(2));
 
@@ -86,6 +93,7 @@ public class BorrowReturnServlet extends HttpServlet {
             item.setParadeiro(null);
             pm.makePersistent(item);
             ps.println("<br> Returned: " + item.getTitulo());
+            returnedItems.add(item);
           }
         } else if (key.startsWith("b-")) {
           Loan loan = new Loan(admin, memberId, item.getId());
@@ -94,11 +102,14 @@ public class BorrowReturnServlet extends HttpServlet {
           item.setParadeiro(memberId);
           pm.makePersistent(item);
           ps.println("<br> Borrowed: " + item.getTitulo());
+          borrowedItems.add(item);
         } else {
           throw new IllegalArgumentException();
         }
       }
     }
+    
+    sendEmail(borrowedItems, returnedItems);
 
     ps.println("<br>");
 
@@ -108,5 +119,15 @@ public class BorrowReturnServlet extends HttpServlet {
 
     ps.flush();
     resp.getOutputStream().close();
+  }
+
+  private void sendEmail(List<Item> borrowedItems, List<Item> returnedItems) {
+    StringBuilder body = new StringBuilder();
+    
+    for (Item borrowed : borrowedItems) {
+      body.append(String.format("* %s", borrowed));
+    }
+    
+    Emails.sendEmail(body, Emails.FROM, Emails.FROM, "Livros emprestados e devolvidos");
   }
 }

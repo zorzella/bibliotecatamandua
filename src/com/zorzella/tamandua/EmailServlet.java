@@ -6,17 +6,9 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -47,26 +39,6 @@ public class EmailServlet extends HttpServlet {
   }
 
   private static final String subject = "Biblioteca Tamandua -- itens sob sua custodia";
-
-  private void foo(String body, String from, String to, String subject) {
-    Properties props = new Properties();
-    Session session = Session.getDefaultInstance(props, null);
-
-    try {
-      Message msg = new MimeMessage(session);
-      msg.setFrom(new InternetAddress(from));
-      msg.addRecipient(Message.RecipientType.TO,
-          new InternetAddress(to));
-      msg.setSubject(subject);
-      msg.setText(body);
-      Transport.send(msg);
-
-    } catch (AddressException e) {
-      throw new RuntimeException(e);
-    } catch (MessagingException e) {
-      throw new RuntimeException(e);
-    }
-  }
 
   private void go(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String admin)
   throws UnsupportedEncodingException, IOException {
@@ -166,7 +138,7 @@ public class EmailServlet extends HttpServlet {
         String id = key.substring("sendto".length() + 1);
         String message = map.get("message-" + id)[0];
         Member member = Queries.getById(Member.class, pm, "id", id);
-        foo(message, "zorzella@gmail.com", member.getEmail(), subject);
+        Emails.sendEmail(message, Emails.FROM, member.getEmail(), subject);
       }
     }
   }
