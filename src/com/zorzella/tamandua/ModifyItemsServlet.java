@@ -113,7 +113,7 @@ public class ModifyItemsServlet extends HttpServlet {
           ps.printf("<tr class='b'>");
         }
         if (paradeiro) {
-          paradeiroDropdown(ps, item, item.getParadeiro(), sortedMembers);         
+          memberDropdown(ps, item.getId(), item.getParadeiro(), sortedMembers);         
         } else {
           String paradeiroString = "";
           if (item.getParadeiro() != null) {
@@ -178,9 +178,9 @@ public class ModifyItemsServlet extends HttpServlet {
     }
   }
 
-  private void paradeiroDropdown(PrintWriter ps, Item item, Long value, Collection<Member> members) {
-    ps.printf("<td><select name='paradeiro-%s'><option value=''></option>",
-        item.getId());
+  private static void memberDropdown(PrintWriter ps, Long id, Long value, Collection<Member> members) {
+    ps.printf("<td><select name='member-%s'><option value=''></option>",
+        id);
 
     for (Member member : members) {
       String selected = "";
@@ -256,7 +256,7 @@ public class ModifyItemsServlet extends HttpServlet {
     Collection<Item> items = Queries.getUnSortedItems(pm);
     for (Item item : items) {
       Long id = item.getId();
-      String key = "paradeiro-" + id;
+      String key = "member-" + id;
       if (map.containsKey(key)) {
         item.setParadeiro(toLong(map, key));
       }

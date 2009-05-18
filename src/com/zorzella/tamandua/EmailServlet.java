@@ -19,6 +19,7 @@ public class EmailServlet extends HttpServlet {
   private static final Logger log = Logger.getLogger(EmailServlet.class.getName());
 
   @Override
+  
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
     String admin = AdminOrDie.adminOrLogin(req, resp);
@@ -38,7 +39,7 @@ public class EmailServlet extends HttpServlet {
     }
   }
 
-  private static final String subject = "Biblioteca Tamandua -- itens sob sua custodia";
+  private static final String subject = "Biblioteca Tamandua -- \u00EDtens sob sua cust\u00F3dia";
 
   private void go(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String admin)
   throws UnsupportedEncodingException, IOException {
@@ -47,9 +48,11 @@ public class EmailServlet extends HttpServlet {
     PrintWriter ps = new PrintWriter(
         new OutputStreamWriter(resp.getOutputStream(), Constants.encoding));
 
-    ps.println("<html>");
-    ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
-    ps.println("<body>");
+    Html.htmlHeadBody(ps);
+   
+//    ps.println("<html>");
+//    ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
+//    ps.println("<body>");
 
     ps.println("<form action='/email' method='POST'>");
 
@@ -74,18 +77,18 @@ public class EmailServlet extends HttpServlet {
         "\n";
       }
       String message = 
-        "Lembrete -- os seguintes &iacute;tens est&atilde;o sob sua cust&oacute;dia:\n" +
+        "Lembrete -- os seguintes \u00EDtens est\u00E3o sob sua cust\u00F3dia:\n" +
         "\n" +
         itemsOnLoan +
         "\n" +
-        "Nossa constitui&ccedil;&atilde;o e acervo podem ser encontrados em:\n" +
+        "Nossa constitui\u00E7\u00E3o e acervo podem ser encontrados em:\n" +
         "\n" +
         "http://mensageirosdacultura.com/MDC_Biblioteca.html\n" +
         "\n" +
-        "Z (o Tamandu&aacute;)";
+        "Z (o Tamandu\u00E1)";
 
       ps.printf("<input type='checkbox' name='sendto-%s'>\n", id);
-      ps.printf("To: [%s] %s &lt;%s&gt; (&uacute;ltimo email data '%s')\n", 
+      ps.printf("To: [%s] %s &lt;%s&gt; (\u00FAltimo email data '%s')\n", 
           tudo(nome(member), member.getEmail(), subject, message), nome(member), member.getEmail(), Dates.dateToString(member.getLastContacted()));
       ps.printf("<br>Subject: %s\n", subject);
       ps.printf("<br>Body: <textarea name='message-%s' rows='10' cols='100'>%s</textarea>\n", id, message);
@@ -152,8 +155,7 @@ public class EmailServlet extends HttpServlet {
 
     if ((!empty(member.getPai())) && (!empty(member.getMae()))) {
       result += member.getPai() + "/" + member.getMae();
-    }
-    if (!empty(member.getPai())) {
+    } else if (!empty(member.getPai())) {
       result += member.getPai();
     } else if (!empty(member.getMae())) {
       result += member.getMae();

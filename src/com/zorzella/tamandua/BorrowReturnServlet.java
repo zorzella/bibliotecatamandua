@@ -122,12 +122,34 @@ public class BorrowReturnServlet extends HttpServlet {
   }
 
   private void sendEmail(List<Item> borrowedItems, List<Item> returnedItems) {
-    StringBuilder body = new StringBuilder();
-    
-    for (Item borrowed : borrowedItems) {
-      body.append(String.format("* %s", borrowed));
+    if ((borrowedItems.size() == 0) && (returnedItems.size() == 0)) {
+      return;
     }
-    
-    Emails.sendEmail(body, Emails.FROM, Emails.FROM, "Livros emprestados e devolvidos");
+  
+    String subject = "Livros emprestados e devolvidos";
+
+    StringBuilder body = new StringBuilder();
+
+    if (returnedItems.size() > 0) {
+      body.append("Os seguintes \u00EDtens foram emprestados:\n\n");
+      for (Item borrowed : borrowedItems) {
+        body.append(String.format("* %s\n", borrowed));
+      }
+      body.append("\n\n");
+    }
+
+    if (returnedItems.size() > 0) {
+      body.append("Os seguintes \u00EDtens foram devolvidos:\n\n");
+      for (Item returned : returnedItems) {
+        body.append(String.format("* %s\n", returned));
+      }
+      body.append("\n\n");
+    }
+    body.append("\nO acervo e constitui\u00E7\u00E3o podem ser encontrados em: \n" +
+    		"\n" +
+        "http://mensageirosdacultura.com/MDC_Biblioteca.html\n" +
+        "\n" +
+        "Z (o Tamandu\u00E1)\n");
+    Emails.sendEmail(body, Emails.FROM, Emails.FROM, subject);
   }
 }

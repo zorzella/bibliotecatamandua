@@ -38,17 +38,17 @@ public class ModifyLoansServlet extends HttpServlet {
       @SuppressWarnings("unchecked")
       Map<String,String[]> map = req.getParameterMap();
 
-      boolean adminCode = map.containsKey("adminCode");
-      boolean memberCode = map.containsKey("memberCode");
-      boolean bookId = map.containsKey("bookId");
-      boolean loanDate = map.containsKey("loanDate");
-      boolean returnDate = map.containsKey("returnDate");
-      boolean comment = map.containsKey("comment");
+      boolean editableAdminCode = map.containsKey("adminCode");
+      boolean editableMemberCode = map.containsKey("memberCode");
+      boolean editableBookId = map.containsKey("bookId");
+      boolean editableLoanDate = map.containsKey("loanDate");
+      boolean editableReturnDate = map.containsKey("returnDate");
+      boolean editableComment = map.containsKey("comment");
       
       if (!map.containsKey("custom")) {
-        memberCode = true;
-        bookId = true;
-        returnDate = true;
+//        memberCode = true;
+//        bookId = true;
+        editableReturnDate = true;
       }
       
       ps.println("<form action='/modifyloans' method='post'>");
@@ -58,13 +58,15 @@ public class ModifyLoansServlet extends HttpServlet {
       
       ps.println("<th>Admin</th>");
       ps.println("<th>Member</th>");
-      ps.println("<th>BookId</th>");
+//      ps.println("<th>BookId</th>");
       ps.println("<th>Book</th>");
       ps.println("<th>Loaned</th>");
       ps.println("<th>Returned</th>");
       ps.println("<th>Comment</th>");
 
       Collection<Loan> loans = Queries.getAll(Loan.class, pm);
+      Collection<Member> members = Queries.getAll(Member.class, pm);
+      Collection<Item> items = Queries.getAll(Item.class, pm);
       
       boolean even = false;
       for (Loan loan : loans) {
@@ -74,14 +76,26 @@ public class ModifyLoansServlet extends HttpServlet {
         } else {
           ps.printf("<tr class='b'>");
         }
-        choose(ps, false, adminCode, loan, true, loan.getAdminCode(), "adminCode");
-        choose(ps, false, memberCode, loan, true, loan.getMemberId() + "", "memberId");
-        choose(ps, false, bookId, loan, true, loan.getItemId() + "", "bookId");
-        Item item = Queries.getById(Item.class, pm, "id", loan.getItemId() + "");
-        choose(ps, false, false, loan, false, item.getTitulo(), "titulo");
-        choose(ps, false, loanDate, loan, true, Dates.dateToString(loan.getLoanDate()), "loanDate");
-        choose(ps, false, returnDate, loan, true, Dates.dateToString(loan.getReturnDate()), "returnDate");
-        choose(ps, false, comment, loan, true, loan.getComment(), "comment");
+        choose(ps, false, editableAdminCode, loan, true, loan.getAdminCode(), "adminCode");
+        Long memberId = loan.getMemberId();
+        if (editableMemberCode) {
+//          shortInput(ps, loan, "memberId", content);
+          memberDropdown(ps, loan.getId(), loan.getMemberId(), members);
+        } else {
+          Html.tdRight(ps, memberCodeFor(members, memberId));
+        }
+        Long itemId = loan.getItemId();
+        if (editableBookId) {
+//          shortInput(ps, loan, "bookId", itemId);
+          itemDropdown(ps, loan.getId(), loan.getItemId(), items);
+        } else {
+          Html.td(ps, itemTitleFor(items, itemId));
+        }
+//        Item item = Queries.getById(Item.class, pm, "id", loan.getItemId() + "");
+//        choose(ps, false, false, loan, false, item.getTitulo(), "titulo");
+        choose(ps, false, editableLoanDate, loan, true, Dates.dateToString(loan.getLoanDate()), "loanDate");
+        choose(ps, false, editableReturnDate, loan, true, Dates.dateToString(loan.getReturnDate()), "returnDate");
+        choose(ps, false, editableComment, loan, true, loan.getComment(), "comment");
         ps.print("\n"); 
       }
 
@@ -91,8 +105,12 @@ public class ModifyLoansServlet extends HttpServlet {
       ps.println("<form action='/modifyloans'>");
 
       printCheckboxesAndDropdown(ps,
-          adminCode, memberCode, bookId, loanDate, 
-          returnDate
+          editableAdminCode, 
+          editableMemberCode, 
+          editableBookId, 
+          editableLoanDate, 
+          editableReturnDate,
+          editableComment
       );
 
       ps.println("</body></html>");
@@ -105,16 +123,64 @@ public class ModifyLoansServlet extends HttpServlet {
       pm.close();
     }
   }
+  
+  private String memberCodeFor(Collection<Member> members, Long memberId) {
+    for (Member member : members) {
+      if (member.getId().equals(memberId)) {
+        return member.getCodigo();
+      }
+    }
+    throw new IllegalStateException();
+  }
+
+  private String itemTitleFor(Collection<Item> items, Long itemId) {
+    for (Item member : items) {
+      if (member.getId().equals(itemId)) {
+        return member.getTitulo();
+      }
+    }
+    throw new IllegalStateException();
+  }
+
+  private static void memberDropdown(PrintWriter ps, Long loanId, Long currentMemberId, Collection<Member> members) {
+    ps.printf("<td><select name='member-%s'><option value=''></option>",
+        loanId);
+  
+    for (Member member : members) {
+      String selected = "";
+      if (member.getId().equals(currentMemberId)) {
+        selected = "selected='true'";
+      }
+      ps.printf("<option value='%s' %s>%s</option>", member.getId(), selected, member.getCodigo());
+    }
+    
+    ps.println("</select></td>");
+  }
+
+  private static void itemDropdown(PrintWriter ps, Long loanId, Long currentItemId, Collection<Item> items) {
+    ps.printf("<td><select name='item-%s'><option value=''></option>",
+        loanId);
+  
+    for (Item item : items) {
+      String selected = "";
+      if (item.getId().equals(currentItemId)) {
+        selected = "selected='true'";
+      }
+      ps.printf("<option value='%s' %s>%s</option>", item.getId(), selected, item.getTitulo());
+    }
+  
+    ps.println("</select></td>");
+  }
 
   private void choose(
       PrintWriter ps, 
       boolean shortInput, 
-      boolean nome, 
+      boolean editable, 
       Loan loan, 
       boolean alignRight, 
       String content, 
       String key) {
-    if (nome) {
+    if (editable) {
       if (shortInput) {
         input(ps, loan, key, content);
       } else {
@@ -130,7 +196,7 @@ public class ModifyLoansServlet extends HttpServlet {
   }
 
   private PrintWriter shortInput(PrintWriter ps, Loan member, String key, String value) {
-    return ps.printf("<td><input type='text' name='%s' value='%s' class='short'></td>", 
+    return ps.printf("<td><input type='text' name='%s' value='%s' class='medium'></td>", 
         key + "-" + member.getId(), value);
   }
 
@@ -139,15 +205,23 @@ public class ModifyLoansServlet extends HttpServlet {
         key + "-" + member.getId(), value);
   }
 
-  private void printCheckboxesAndDropdown(PrintWriter ps, boolean adminCode, boolean memberCode, boolean bookId, boolean loanDate, boolean returnDate
+  private void printCheckboxesAndDropdown(
+      PrintWriter ps, 
+      boolean editableAdminCode, 
+      boolean editableMemberCode, 
+      boolean editableBookId, 
+      boolean editableLoanDate, 
+      boolean editableReturnDate,
+      boolean editableComment
       ) {
     ps.println("<hr>");
     ps.println("Mostre: " +
-        checkbox(adminCode, "adminCode", "Admin") +
-        checkbox(memberCode, "memberCode", "Member") +
-        checkbox(bookId, "bookId", "Book") + 
-        checkbox(loanDate, "loanDate", "Loaned") + 
-        checkbox(returnDate, "returnDate", "Returned") + 
+        checkbox(editableAdminCode, "adminCode", "Admin") +
+        checkbox(editableMemberCode, "memberCode", "Member") +
+        checkbox(editableBookId, "bookId", "Book") + 
+        checkbox(editableLoanDate, "loanDate", "Loaned") + 
+        checkbox(editableReturnDate, "returnDate", "Returned") + 
+        checkbox(editableComment, "comment", "Comment") + 
           "");
     ps.println("<input type='hidden' name='custom' value='true'>");
     ps.println("<input type='submit' value='Loans'>");
