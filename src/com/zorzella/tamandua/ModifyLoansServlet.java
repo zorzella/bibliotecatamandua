@@ -48,7 +48,7 @@ public class ModifyLoansServlet extends HttpServlet {
       if (!map.containsKey("custom")) {
 //        memberCode = true;
 //        bookId = true;
-        editableReturnDate = true;
+//        editableReturnDate = true;
       }
       
       ps.println("<form action='/modifyloans' method='post'>");
