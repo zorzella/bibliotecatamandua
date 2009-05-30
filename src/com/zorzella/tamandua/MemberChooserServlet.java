@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.appengine.repackaged.com.google.common.collect.Maps;
 
 public class MemberChooserServlet extends HttpServlet {
 
@@ -59,7 +62,8 @@ public class MemberChooserServlet extends HttpServlet {
     ps.println("</select>");
     ps.println("<input type='submit' value='Empresta e Devolve'><br>");
 
-    Collection<Item> books = Queries.getFancySortedBooks(pm);
+    Map<Long, String> map = getMap(members);
+    Collection<Item> books = new Queries(map).getFancySortedBooks(pm);
 
     for (Item book : books) {
       Long paradeiro = book.getParadeiro();
@@ -74,5 +78,13 @@ public class MemberChooserServlet extends HttpServlet {
 
     ps.println("<br><input type='submit' value='Empresta e Devolve'>");
     ps.println("</form>");
+  }
+
+  private static Map<Long, String> getMap(Collection<Member> members) {
+	Map<Long, String> result = Maps.newHashMap();
+	for (Member member : members) {
+		result.put(member.getId(), member.getCodigo());
+	}
+	return result;
   }
 }

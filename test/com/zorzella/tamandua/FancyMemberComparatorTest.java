@@ -1,6 +1,10 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.zorzella.tamandua;
 
+import java.util.Map;
+
+import com.google.appengine.repackaged.com.google.common.collect.Maps;
+
 import junit.framework.TestCase;
 
 public class FancyMemberComparatorTest extends TestCase {
@@ -28,15 +32,16 @@ public class FancyMemberComparatorTest extends TestCase {
         assertLesser("Uma anjo", "", "barco", "");
 	}
 	*/
-
+	private final Map<Long,String> paradeiroToCodeMap = Maps.newHashMap();
+	 
 	private void assertLesser(
 			String tituloOne, Long paradeiroOne, 
 			String tituloOther, Long paradeiroOther) {
 		Item one = book(tituloOne, paradeiroOne);
 		Item other = book (tituloOther, paradeiroOther);
-		assertTrue (new FancyMemberComparator().compare(
+		assertTrue (new FancyMemberComparator(paradeiroToCodeMap).compare(
 				one, other) < 0);
-		assertTrue (new FancyMemberComparator().compare(
+		assertTrue (new FancyMemberComparator(paradeiroToCodeMap).compare(
 				other, one) > 0);
 	}
 

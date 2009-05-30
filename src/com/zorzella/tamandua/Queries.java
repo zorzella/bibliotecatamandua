@@ -2,6 +2,7 @@ package com.zorzella.tamandua;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.TreeSet;
 
 import javax.jdo.PersistenceManager;
@@ -84,8 +85,14 @@ public class Queries {
     return allBooks(pm);
   }
 
-  public static Collection<Item> getFancySortedBooks(PersistenceManager pm) {
-    Collection<Item> result = new TreeSet<Item>(new FancyMemberComparator());
+private final Map<Long, String> paradeiroToCodeMap;
+
+  public Queries(Map<Long,String> paradeiroToCodeMap) {
+	  this.paradeiroToCodeMap = paradeiroToCodeMap;
+  }
+  
+  public Collection<Item> getFancySortedBooks(PersistenceManager pm) {
+    Collection<Item> result = new TreeSet<Item>(new FancyMemberComparator(paradeiroToCodeMap));
     result.addAll(allBooks(pm));
     return result;
   }
