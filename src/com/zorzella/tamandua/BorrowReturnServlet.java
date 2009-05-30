@@ -126,7 +126,7 @@ public class BorrowReturnServlet extends HttpServlet {
       return;
     }
     
-    String subject = "\u00cdtens ";
+    String subject = "Itens ";
     
     if (returnedItems.size() == 0) {
       subject += "emprestados";
