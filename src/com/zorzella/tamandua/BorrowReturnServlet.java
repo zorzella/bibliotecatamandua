@@ -143,7 +143,7 @@ public class BorrowReturnServlet extends HttpServlet {
     StringBuilder body = new StringBuilder();
     body.append(EmailServlet.nome(member) + ":\n\n");
 
-    if (returnedItems.size() > 0) {
+    if (borrowedItems.size() > 0) {
       body.append("Os seguintes \u00EDtens foram emprestados:\n\n");
       for (Item borrowed : borrowedItems) {
         body.append(String.format("* %s\n", borrowed.getTitulo()));
