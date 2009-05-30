@@ -146,7 +146,7 @@ public class EmailServlet extends HttpServlet {
     }
   }
 
-  private String nome(Member member) {
+  public static String nome(Member member) {
     String result = "";
 
     if ((empty(member.getPai())) && (empty(member.getMae()))) {
@@ -163,7 +163,7 @@ public class EmailServlet extends HttpServlet {
     return result += " [" + member.getNome() + " " + member.getSobrenome() + "]";
   }
 
-  private boolean empty(String string) {
+  private static boolean empty(String string) {
     return string == null || string.trim().length() == 0;
   }
 }

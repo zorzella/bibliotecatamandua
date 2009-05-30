@@ -53,8 +53,8 @@ public class MemberChooserServlet extends HttpServlet {
 
     ps.println("<select name='member'>");
     for (Member member : members) {
-      ps.printf("<option value='%s'>%s (%s %s)</option>\n", 
-          member.getId(), member.getCodigo(), member.getNome(), member.getSobrenome());
+      ps.printf("<option value='%s'>%s [%s]</option>\n", 
+          member.getId(), member.getCodigo(), EmailServlet.nome(member));
     }
     ps.println("</select>");
     ps.println("<input type='submit' value='Empresta e Devolve'><br>");

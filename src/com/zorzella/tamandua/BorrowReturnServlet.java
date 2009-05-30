@@ -109,7 +109,7 @@ public class BorrowReturnServlet extends HttpServlet {
       }
     }
     
-    sendEmail(borrowedItems, returnedItems);
+    sendEmail(member, borrowedItems, returnedItems);
 
     ps.println("<br>");
 
@@ -121,19 +121,32 @@ public class BorrowReturnServlet extends HttpServlet {
     resp.getOutputStream().close();
   }
 
-  private void sendEmail(List<Item> borrowedItems, List<Item> returnedItems) {
+  private void sendEmail(Member member, List<Item> borrowedItems, List<Item> returnedItems) {
     if ((borrowedItems.size() == 0) && (returnedItems.size() == 0)) {
       return;
     }
-  
-    String subject = "Livros emprestados e devolvidos";
+    
+    String subject = "\u00cdtens ";
+    
+    if (returnedItems.size() == 0) {
+      subject += "emprestados";
+    } else {
+    	if (borrowedItems.size() == 0) {
+    		subject += "devolvidos";
+    	} else {
+    		subject += "emprestados e devolvidos";
+    	}
+    }
+    // TODO
+//    subject += " no encontro de ";
 
     StringBuilder body = new StringBuilder();
+    body.append(EmailServlet.nome(member) + ":\n\n");
 
     if (returnedItems.size() > 0) {
       body.append("Os seguintes \u00EDtens foram emprestados:\n\n");
       for (Item borrowed : borrowedItems) {
-        body.append(String.format("* %s\n", borrowed));
+        body.append(String.format("* %s\n", borrowed.getTitulo()));
       }
       body.append("\n\n");
     }
@@ -141,7 +154,7 @@ public class BorrowReturnServlet extends HttpServlet {
     if (returnedItems.size() > 0) {
       body.append("Os seguintes \u00EDtens foram devolvidos:\n\n");
       for (Item returned : returnedItems) {
-        body.append(String.format("* %s\n", returned));
+        body.append(String.format("* %s\n", returned.getTitulo()));
       }
       body.append("\n\n");
     }
