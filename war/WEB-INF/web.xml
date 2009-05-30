@@ -80,14 +80,6 @@
 
 
 
-	<servlet>
-		<servlet-name>bibliotecatamandua</servlet-name>
-		<servlet-class>com.zorzella.tamandua.BibliotecaTamanduaServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>bibliotecatamandua</servlet-name>
-		<url-pattern>/bibliotecatamandua</url-pattern>
-	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
