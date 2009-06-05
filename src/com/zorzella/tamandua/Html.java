@@ -11,7 +11,7 @@ public class Html {
   public static void htmlHeadBody(PrintWriter ps) {
     ps.println("<html>");
     ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
-    ps.println("<body onkeydown='if (event.keyCode == 13) { event.keyCode = 9; /*return event.keyCode;*/ return false; }'>");
+    ps.println("<body>");
     a(ps, "/list", "Acervo");
 
     UserService userService = UserServiceFactory.getUserService();
