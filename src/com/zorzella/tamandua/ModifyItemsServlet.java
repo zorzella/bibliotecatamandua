@@ -56,6 +56,7 @@ public class ModifyItemsServlet extends HttpServlet {
       boolean titulo = map.containsKey("titulo");
       boolean autor = map.containsKey("autor");
       boolean isbn = map.containsKey("isbn");
+      boolean barcode = map.containsKey("barcode");
       boolean tamanho = map.containsKey("tamanho");
       boolean tags = map.containsKey("tags");
 
@@ -81,6 +82,7 @@ public class ModifyItemsServlet extends HttpServlet {
       ps.println("<th>Titulo</th>");
       ps.println("<th>Autor</th>");
       ps.println("<th>ISBN</th>");
+      ps.println("<th>Barcode</th>");
       ps.println("<th>Tamanho</th>");
       ps.println("<th>Tags</th>");
 
@@ -144,6 +146,12 @@ public class ModifyItemsServlet extends HttpServlet {
           Html.td(ps, item.getIsbn());
         }
 
+        if (barcode) {
+          input(ps, item, "barcode", item.getBarcode());
+        } else {
+          Html.td(ps, item.getBarcode());
+        }
+
         if (tamanho) {
           shortInput(ps, item, "tamanho", item.getTamanho());
         } else {
@@ -164,7 +172,7 @@ public class ModifyItemsServlet extends HttpServlet {
       ps.println("</form>");
       ps.println("<form action='modifyitems'>");
 
-      printCheckboxesAndDropdown(ps, sortKey, paradeiro, toca, titulo, autor, isbn, tamanho, tags);
+      printCheckboxesAndDropdown(ps, sortKey, paradeiro, toca, titulo, autor, isbn, barcode, tamanho, tags);
 
       ps.println("</body></html>");
       ps.flush();
@@ -205,7 +213,8 @@ public class ModifyItemsServlet extends HttpServlet {
 
   private void printCheckboxesAndDropdown(PrintWriter ps, Sort sortKey, 
       boolean paradeiro, boolean toca,
-      boolean titulo, boolean autor, boolean isbn, boolean tamanho, boolean tags) {
+      boolean titulo, boolean autor, boolean isbn, 
+      boolean barcode, boolean tamanho, boolean tags) {
     ps.println("<hr>");
     ps.println("<br>Ordem: " +
         "<select name='sort'>" +
@@ -221,6 +230,7 @@ public class ModifyItemsServlet extends HttpServlet {
         checkbox(titulo, "titulo", "Titulo") +
         checkbox(autor, "autor", "Autor") +
         checkbox(isbn, "isbn", "ISBN") +
+        checkbox(barcode, "barcode", "Barcode") +
         checkbox(tamanho, "tamanho", "Tamanho") +
         checkbox(tags, "tags", "Tags") +
     "");
@@ -267,6 +277,14 @@ public class ModifyItemsServlet extends HttpServlet {
       key = "titulo-" + id;
       if (map.containsKey(key)) {
         item.setTitulo(toString(map, key));
+      }
+      key = "isbn-" + id;
+      if (map.containsKey(key)) {
+        item.setIsbn(toString(map, key));
+      }
+      key = "barcode-" + id;
+      if (map.containsKey(key)) {
+        item.setBarcode(toString(map, key));
       }
       key = "autor-" + id;
       if (map.containsKey(key)) {

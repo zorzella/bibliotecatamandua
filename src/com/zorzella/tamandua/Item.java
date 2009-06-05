@@ -39,6 +39,9 @@ public class Item implements Comparable<Item> {
   private String titulo;
 
   @Persistent
+  private String barcode;
+  
+  @Persistent
   private String isbn;
 
   @Persistent
@@ -63,6 +66,7 @@ public class Item implements Comparable<Item> {
     this.paradeiroLong = null;
     this.toca = "";
     this.isbn = "";
+    this.barcode = "";
     this.tamanho = "";
     this.tags = Lists.newArrayList();
     this.especial = false;
@@ -125,6 +129,21 @@ public class Item implements Comparable<Item> {
 
   public String getIsbn() {
     return isbn;
+  }
+  
+  public void setIsbn(String isbn) {
+    this.isbn = isbn;
+  }
+  
+  public String getBarcode() {
+    if (barcode == null) {
+      return "";
+    }
+    return barcode;
+  }
+  
+  public void setBarcode(String barcode) {
+    this.barcode = barcode;
   }
 
   public Type getType() {
