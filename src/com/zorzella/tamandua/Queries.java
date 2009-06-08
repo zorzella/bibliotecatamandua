@@ -1,5 +1,7 @@
 package com.zorzella.tamandua;
 
+import com.zorzella.tamandua.Item.Type;
+
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -19,6 +21,19 @@ public class Queries {
         return one.compareTo(other);
       }
       return oneAutor.compareTo(otherAutor);
+    }
+  }
+
+  public static final class TypeComparator implements Comparator<Item> {
+
+    @Override
+    public int compare(Item one, Item other) {
+      Type oneType = one.getType();
+      Type otherType = other.getType();
+      if (oneType.equals(otherType)) {
+        return one.compareTo(other);
+      }
+      return oneType.compareTo(otherType);
     }
   }
 
@@ -71,6 +86,12 @@ public class Queries {
 
   public static Collection<Item> getTocaSortedItems(PersistenceManager pm) {
     Collection<Item> result = new TreeSet<Item>(new TocaComparator());
+    result.addAll(allBooks(pm));
+    return result;
+  }
+  
+  public static Collection<Item> getTypeSortedItems(PersistenceManager pm) {
+    Collection<Item> result = new TreeSet<Item>(new TypeComparator());
     result.addAll(allBooks(pm));
     return result;
   }

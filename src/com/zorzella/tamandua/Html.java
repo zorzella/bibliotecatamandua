@@ -10,7 +10,10 @@ import java.io.PrintWriter;
 public class Html {
   public static void htmlHeadBody(PrintWriter ps) {
     ps.println("<html>");
-    ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
+    ps.println("<head>" +
+    		"<title>Bilioteca Tamandu&aacute; Bandeira</title>" +
+    		"<link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/>" +
+    		"</head>");
     ps.println("<body>");
     a(ps, "/list", "Acervo");
 

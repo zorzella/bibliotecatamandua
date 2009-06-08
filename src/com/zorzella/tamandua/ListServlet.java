@@ -2,6 +2,8 @@ package com.zorzella.tamandua;
 
 import com.google.appengine.repackaged.com.google.common.base.Join;
 
+import com.zorzella.tamandua.Item.Type;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -21,6 +23,7 @@ public class ListServlet extends HttpServlet {
   public enum Sort {
     PARADEIRO,
     TOCA,
+    TYPE,
     TITULO,
     AUTOR,
   }
@@ -48,17 +51,21 @@ public class ListServlet extends HttpServlet {
       }
 
       boolean onde = map.containsKey("onde");
-      boolean titulo = map.containsKey("titulo");
-      boolean autor = map.containsKey("autor");
-      boolean tamanho = map.containsKey("tamanho");
-      boolean tags = map.containsKey("tags");
+      boolean showType = map.containsKey("type");
+      boolean showTitulo = map.containsKey("titulo");
+      boolean showAutor = map.containsKey("autor");
+      boolean showTamanho = map.containsKey("tamanho");
+      boolean showTags = map.containsKey("tags");
+      boolean showBarcode = map.containsKey("barcode");
+      boolean showIsbn = map.containsKey("isbn");
 
-      if (!onde && !titulo && !autor && !tamanho && !tags) {
+      if (!onde && !showType && !showTitulo && !showAutor && !showTamanho && !showTags) {
         onde = false;
-        titulo = true;
-        tamanho = true;
-        autor = true;
-        tags = true;
+        showType = true;
+        showTitulo = true;
+        showTamanho = true;
+        showAutor = true;
+        showTags = true;
       }
 
       ps.println("<form action='list'>");
@@ -69,25 +76,32 @@ public class ListServlet extends HttpServlet {
         ps.println("<th>Onde</th>");
       }
 
-      if (titulo) {
+      if (showType) {
+        ps.println("<th>Tipo</th>");
+      }
+
+      if (showTitulo) {
         ps.println("<th>Titulo</th>");
       }
 
-      if (autor) {
+      if (showAutor) {
         ps.println("<th>Autor</th>");
       }
 
-      if (tamanho) {
+      if (showTamanho) {
         ps.println("<th>Tamanho</th>");
       }
 
-      if (tags) {
+      if (showTags) {
         ps.println("<th>Tags</th>");
       }
 
       Collection<Item> sortedBooks;
 
       switch (sortKey) {
+        case TYPE: 
+          sortedBooks = Queries.getTypeSortedItems(pm);
+          break;
         case TITULO: 
           sortedBooks = Queries.getSortedItems(pm);
           break;
@@ -105,7 +119,7 @@ public class ListServlet extends HttpServlet {
       }
 
       boolean even = false;
-      for (Item book : sortedBooks) {
+      for (Item item : sortedBooks) {
         even = !even;
         if (even) {
           ps.printf("<tr class='a'>");
@@ -113,34 +127,38 @@ public class ListServlet extends HttpServlet {
           ps.printf("<tr class='b'>");
         }
         if (onde) {
-          Long paradeiro = book.getParadeiro();
+          Long paradeiro = item.getParadeiro();
           String memberCodigo = "";
           if (paradeiro != null) {
             memberCodigo = Queries.getById(Member.class, pm, "id", paradeiro + "").getCodigo();
           }
-          ps.printf("<td align='right'>%s</td>", memberCodigo + " " + book.getToca());
+          ps.printf("<td align='right'>%s</td>", memberCodigo + " " + item.getToca());
         }
-        if (titulo) {
-          ps.printf("<td>%s</td>", book.getTitulo());
-        }
-
-        if (autor) {
-          ps.printf("<td>%s</td>", book.getAutor());
-        }
-
-        if (tamanho) {
-          ps.printf("<td>%s</td>", book.getTamanho());
-        }
-
-        if (tags) {
-          ps.printf("<td>%s</td>", Join.join(" ", book.getTags()));
-        }
+        
+        maybeShow(ps, showType, typeImage(item.getType()));
+        maybeShow(ps, showTitulo, item.getTitulo());
+        maybeShow(ps, showAutor, item.getAutor());
+        maybeShow(ps, showTamanho, item.getTamanho());
+        maybeShow(ps, showTags, Join.join(" ", item.getTags()));
+        maybeShow(ps, showBarcode, item.getBarcode());
+        maybeShow(ps, showIsbn, item.getIsbn());
+        
         ps.print("\n"); 
       }
 
       ps.println("</table>");
 
-      printCheckboxesAndDropdown(ps, sortKey, onde, titulo, autor, tamanho, tags);
+      printCheckboxesAndDropdown(
+          ps, 
+          sortKey, 
+          onde, 
+          showType, 
+          showTitulo, 
+          showAutor, 
+          showTamanho, 
+          showTags,
+          showBarcode,
+          showIsbn);
 
       ps.println("</body></html>");
       ps.flush();
@@ -153,23 +171,65 @@ public class ListServlet extends HttpServlet {
     }
   }
 
-  private void printCheckboxesAndDropdown(PrintWriter ps, Sort sortKey, boolean onde,
-      boolean titulo, boolean autor, boolean tamanho, boolean tags) {
+  private void maybeShow(PrintWriter ps, boolean shouldShow, String content) {
+    if (shouldShow) {
+      ps.printf("<td>%s</td>", content);
+    }
+  }
+
+  private String typeImage(Type type) {
+    return String.format(
+        "<img src='%s' alt='%s' title='%s'>", 
+        typeImageName(type), 
+        type.toString(),
+        type.toString()); 
+  }
+  
+  private String typeImageName(Type type) {
+    switch (type) {
+      case BOOK:
+        return "book.png";
+      case COMPUTER_GAME_CD:
+        return "computer_game_cd.png";
+      case MOVIE_DVD:
+        return "movie_dvd.png";
+      case MUSIC_CD:
+        return "music_cd.png";
+      default:
+        throw new UnsupportedOperationException();
+    }
+  }
+
+  private void printCheckboxesAndDropdown(PrintWriter ps, 
+      Sort sortKey, 
+      boolean onde,
+      boolean type,
+      boolean titulo,
+      boolean autor, 
+      boolean tamanho, 
+      boolean tags,
+      boolean showBarcode,
+      boolean showIsbn
+      ) {
     ps.println("<hr>");
     ps.println("<br>Ordem: " +
         "<select name='sort'>" +
         dropdown(sortKey, "PARADEIRO", "Paradeiro") +
         dropdown(sortKey, "TOCA", "Toca") +
+        dropdown(sortKey, "TYPE", "Tipo") +
         dropdown(sortKey, "TITULO", "Titulo") +
         dropdown(sortKey, "AUTOR", "Autor") +
         "</select>" +
     "");
     ps.println("Mostre: " +
         checkbox(onde, "onde", "Onde (Paradeiro e Toca)") +
+        checkbox(type, "type", "Tipo") +
         checkbox(titulo, "titulo", "Titulo") +
         checkbox(autor, "autor", "Autor") +
         checkbox(tamanho, "tamanho", "Tamanho") +
         checkbox(tags, "tags", "Tags") +
+        checkbox(showBarcode, "barcode", "Barcode") +
+        checkbox(showIsbn, "isbn", "ISBN") +
     "");
     ps.println("<input type='submit' value='Livros'>");
 

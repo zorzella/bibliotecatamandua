@@ -20,6 +20,9 @@ public class Item implements Comparable<Item> {
 
   public enum Type {
     BOOK,
+    MUSIC_CD,
+    MOVIE_DVD,
+    COMPUTER_GAME_CD,    
   }
 
   @PrimaryKey
@@ -147,9 +150,16 @@ public class Item implements Comparable<Item> {
   }
 
   public Type getType() {
+    if (type == null) {
+      return Type.BOOK;
+    }
     return type;
   }
 
+  public void setType(Type type) {
+    this.type = type;
+  }
+  
   public String getTitulo() {
     return titulo;
   }
