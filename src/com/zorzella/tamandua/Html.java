@@ -42,4 +42,24 @@ public class Html {
   public static PrintWriter td(PrintWriter ps, String content) {
     return ps.printf("<td>%s</td>", content);
   }
+
+  static String checkbox(boolean selected, String key, String label) {
+    return "<input type='checkbox' name='" + key + "'" + (selected ? " checked" : "" ) + ">" + label + "</input>\n";
+  }
+
+  static String dropdown(Sort sortKey, String key, String label) {
+    return "<option value='" + key + "'" + (sortKey.toString().equals(key) ? " selected" : "") + ">" + label + "</option>\n";
+  }
+
+  static void printOrderDropDown(PrintWriter ps, Sort sortKey) {
+    ps.println("<br>Ordem: " +
+        "<select name='sort'>" +
+        dropdown(sortKey, "PARADEIRO", "Paradeiro") +
+        dropdown(sortKey, "TOCA", "Toca") +
+        dropdown(sortKey, "TYPE", "Tipo") +
+        dropdown(sortKey, "TITULO", "Titulo") +
+        dropdown(sortKey, "AUTOR", "Autor") +
+        "</select>" +
+    "");
+  }
 }

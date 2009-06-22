@@ -20,14 +20,6 @@ public class ListServlet extends HttpServlet {
 
   private static final Logger log = Logger.getLogger(ListServlet.class.getName());
 
-  public enum Sort {
-    PARADEIRO,
-    TOCA,
-    TYPE,
-    TITULO,
-    AUTOR,
-  }
-
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -212,34 +204,17 @@ public class ListServlet extends HttpServlet {
       boolean showIsbn
       ) {
     ps.println("<hr>");
-    ps.println("<br>Ordem: " +
-        "<select name='sort'>" +
-        dropdown(sortKey, "PARADEIRO", "Paradeiro") +
-        dropdown(sortKey, "TOCA", "Toca") +
-        dropdown(sortKey, "TYPE", "Tipo") +
-        dropdown(sortKey, "TITULO", "Titulo") +
-        dropdown(sortKey, "AUTOR", "Autor") +
-        "</select>" +
-    "");
+    Html.printOrderDropDown(ps, sortKey);
     ps.println("Mostre: " +
-        checkbox(onde, "onde", "Onde (Paradeiro e Toca)") +
-        checkbox(type, "type", "Tipo") +
-        checkbox(titulo, "titulo", "Titulo") +
-        checkbox(autor, "autor", "Autor") +
-        checkbox(tamanho, "tamanho", "Tamanho") +
-        checkbox(tags, "tags", "Tags") +
-        checkbox(showBarcode, "barcode", "Barcode") +
-        checkbox(showIsbn, "isbn", "ISBN") +
+        Html.checkbox(onde, "onde", "Onde (Paradeiro e Toca)") +
+        Html.checkbox(type, "type", "Tipo") +
+        Html.checkbox(titulo, "titulo", "Titulo") +
+        Html.checkbox(autor, "autor", "Autor") +
+        Html.checkbox(tamanho, "tamanho", "Tamanho") +
+        Html.checkbox(tags, "tags", "Tags") +
+        Html.checkbox(showBarcode, "barcode", "Barcode") +
+        Html.checkbox(showIsbn, "isbn", "ISBN") +
     "");
     ps.println("<input type='submit' value='Livros'>");
-
-  }
-
-  private String dropdown(Sort sortKey, String key, String label) {
-    return "<option value='" + key + "'" + (sortKey.toString().equals(key) ? " selected" : "") + ">" + label + "</option>\n";
-  }
-
-  private String checkbox(boolean selected, String key, String label) {
-    return "<input type='checkbox' name='" + key + "'" + (selected ? " checked" : "" ) + ">" + label + "</input>\n";
   }
 }

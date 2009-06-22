@@ -2,6 +2,8 @@ package com.zorzella.tamandua;
 
 import com.google.appengine.repackaged.com.google.common.base.Join;
 
+import com.zorzella.tamandua.Item.Type;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -18,13 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 public class ModifyItemsServlet extends HttpServlet {
 
   private static final Logger log = Logger.getLogger(ModifyItemsServlet.class.getName());
-
-  public enum Sort {
-    PARADEIRO,
-    TOCA,
-    TITULO,
-    AUTOR,
-  }
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -51,24 +46,25 @@ public class ModifyItemsServlet extends HttpServlet {
         sortKey = Sort.valueOf(temp[0]);
       }
 
-      boolean paradeiro = map.containsKey("paradeiro");
-      boolean toca = map.containsKey("toca");
-      boolean titulo = map.containsKey("titulo");
-      boolean autor = map.containsKey("autor");
-      boolean isbn = map.containsKey("isbn");
-      boolean barcode = map.containsKey("barcode");
-      boolean tamanho = map.containsKey("tamanho");
-      boolean tags = map.containsKey("tags");
+      boolean modifiableParadeiro = map.containsKey("paradeiro");
+      boolean modifiableToca = map.containsKey("toca");
+      boolean modifiableType = map.containsKey("type");
+      boolean modifiableTitulo = map.containsKey("titulo");
+      boolean modifiableAutor = map.containsKey("autor");
+      boolean modifiableIsbn = map.containsKey("isbn");
+      boolean modifiableBarcode = map.containsKey("barcode");
+      boolean modifiableTamanho = map.containsKey("tamanho");
+      boolean modifiableTags = map.containsKey("tags");
 
       if (!map.containsKey("custom")) {
-        titulo = true;
-        tamanho = true;
-        autor = true;
-        tags = true;
+        modifiableTitulo = true;
+        modifiableTamanho = true;
+        modifiableAutor = true;
+        modifiableTags = true;
       }
 
       if (map.containsKey("added")) {
-        toca = true;
+        modifiableToca = true;
       }
 
       ps.println("<form action='modifyitems' method='post'>");
@@ -79,6 +75,7 @@ public class ModifyItemsServlet extends HttpServlet {
 
       ps.println("<th>Parad</th>");
       ps.println("<th>Toca</th>");
+      ps.println("<th>Tipo</th>");
       ps.println("<th>Titulo</th>");
       ps.println("<th>Autor</th>");
       ps.println("<th>ISBN</th>");
@@ -114,7 +111,7 @@ public class ModifyItemsServlet extends HttpServlet {
         } else {
           ps.printf("<tr class='b'>");
         }
-        if (paradeiro) {
+        if (modifiableParadeiro) {
           memberDropdown(ps, item.getId(), item.getParadeiro(), sortedMembers);         
         } else {
           String paradeiroString = "";
@@ -123,43 +120,51 @@ public class ModifyItemsServlet extends HttpServlet {
           }
           Html.tdRight(ps, paradeiroString);
         }
-        if (toca) {
+        if (modifiableToca) {
           shortInput(ps, item, "toca", item.getToca());         
         } else {
           Html.tdRight(ps, item.getToca());
         }
-        if (titulo) {
+
+        // TODO: dropdown
+        if (modifiableType) {
+          shortInput(ps, item, "type", item.getType().toString());          
+        } else {
+          Html.td(ps, item.getType().toString());
+        }
+
+        if (modifiableTitulo) {
           input(ps, item, "titulo", item.getTitulo());          
         } else {
           Html.td(ps, item.getTitulo());
         }
 
-        if (autor) {
+        if (modifiableAutor) {
           input(ps, item, "autor", item.getAutor());
         } else {
           Html.td(ps, item.getAutor());
         }
 
-        if (isbn) {
+        if (modifiableIsbn) {
           input(ps, item, "isbn", item.getIsbn());
         } else {
           Html.td(ps, item.getIsbn());
         }
 
-        if (barcode) {
+        if (modifiableBarcode) {
           input(ps, item, "barcode", item.getBarcode());
         } else {
           Html.td(ps, item.getBarcode());
         }
 
-        if (tamanho) {
+        if (modifiableTamanho) {
           shortInput(ps, item, "tamanho", item.getTamanho());
         } else {
           Html.td(ps, item.getTamanho());
         }
 
         String tagsString = Join.join(" ", item.getTags());
-        if (tags) {
+        if (modifiableTags) {
           input(ps, item, "tags", tagsString);
         } else {
           Html.td(ps, tagsString);
@@ -172,7 +177,18 @@ public class ModifyItemsServlet extends HttpServlet {
       ps.println("</form>");
       ps.println("<form action='modifyitems'>");
 
-      printCheckboxesAndDropdown(ps, sortKey, paradeiro, toca, titulo, autor, isbn, barcode, tamanho, tags);
+      printCheckboxesAndDropdown(
+          ps, 
+          sortKey, 
+          modifiableParadeiro, 
+          modifiableToca,
+          modifiableType,
+          modifiableTitulo, 
+          modifiableAutor, 
+          modifiableIsbn, 
+          modifiableBarcode, 
+          modifiableTamanho, 
+          modifiableTags);
 
       ps.println("</body></html>");
       ps.flush();
@@ -211,40 +227,34 @@ public class ModifyItemsServlet extends HttpServlet {
         key + "-" + item.getId(), value);
   }
 
-  private void printCheckboxesAndDropdown(PrintWriter ps, Sort sortKey, 
-      boolean paradeiro, boolean toca,
-      boolean titulo, boolean autor, boolean isbn, 
-      boolean barcode, boolean tamanho, boolean tags) {
+  private void printCheckboxesAndDropdown(
+      PrintWriter ps, 
+      Sort sortKey, 
+      boolean modifiableParadeiro, 
+      boolean modifiableToca,
+      boolean modifiableType, 
+      boolean modifiableTitulo, 
+      boolean modifiableAutor, 
+      boolean modifiableIsbn, 
+      boolean modifiableBarcode, 
+      boolean modifiableTamanho, 
+      boolean modifiableTags) {
     ps.println("<hr>");
-    ps.println("<br>Ordem: " +
-        "<select name='sort'>" +
-        dropdown(sortKey, "PARADEIRO", "Paradeiro") +
-        dropdown(sortKey, "TOCA", "Toca") +
-        dropdown(sortKey, "TITULO", "Titulo") +
-        dropdown(sortKey, "AUTOR", "Autor") +
-        "</select>" +
-    "");
+    Html.printOrderDropDown(ps, sortKey);
     ps.println("Modificaveis: " +
-        checkbox(paradeiro, "paradeiro", "Paradeiro") +
-        checkbox(toca, "toca", "Toca") +
-        checkbox(titulo, "titulo", "Titulo") +
-        checkbox(autor, "autor", "Autor") +
-        checkbox(isbn, "isbn", "ISBN") +
-        checkbox(barcode, "barcode", "Barcode") +
-        checkbox(tamanho, "tamanho", "Tamanho") +
-        checkbox(tags, "tags", "Tags") +
+        Html.checkbox(modifiableParadeiro, "paradeiro", "Paradeiro") +
+        Html.checkbox(modifiableToca, "toca", "Toca") +
+        Html.checkbox(modifiableType, "type", "Tipo") +
+        Html.checkbox(modifiableTitulo, "titulo", "Titulo") +
+        Html.checkbox(modifiableAutor, "autor", "Autor") +
+        Html.checkbox(modifiableIsbn, "isbn", "ISBN") +
+        Html.checkbox(modifiableBarcode, "barcode", "Barcode") +
+        Html.checkbox(modifiableTamanho, "tamanho", "Tamanho") +
+        Html.checkbox(modifiableTags, "tags", "Tags") +
     "");
     ps.println("<input type='hidden' name='custom' value='true'>");
     ps.println("<input type='submit' value='Itens'>");
 
-  }
-
-  private String dropdown(Sort sortKey, String key, String label) {
-    return "<option value='" + key + "'" + (sortKey.toString().equals(key) ? " selected" : "") + ">" + label + "</option>\n";
-  }
-
-  private String checkbox(boolean selected, String key, String label) {
-    return "<input type='checkbox' name='" + key + "'" + (selected ? " checked" : "" ) + ">" + label + "</input>\n";
   }
 
   @Override
@@ -273,6 +283,10 @@ public class ModifyItemsServlet extends HttpServlet {
       key = "toca-" + id;
       if (map.containsKey(key)) {
         item.setToca(toString(map, key));
+      }
+      key = "type-" + id;
+      if (map.containsKey(key)) {
+        item.setType(Type.valueOf(toString(map, key)));
       }
       key = "titulo-" + id;
       if (map.containsKey(key)) {

@@ -1,11 +1,13 @@
 package com.zorzella.tamandua;
 
 import com.google.appengine.repackaged.com.google.common.collect.Lists;
+import com.google.appengine.repackaged.com.google.common.collect.Maps;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,76 @@ public class BorrowReturnServlet extends HttpServlet {
   private static final Logger log = Logger.getLogger(BorrowReturnServlet.class.getName());
 
   @Override
+  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+    if (AdminOrDie.adminOrLogin(req, resp) == null){
+      return;
+    }
+
+    PersistenceManager pm = PMF.get().getPersistenceManager();
+    try {
+      goGet(resp, pm);
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+    } finally {
+      pm.close();
+    }
+  }
+
+  private void goGet(HttpServletResponse resp, PersistenceManager pm) throws IOException {
+    resp.setContentType("text/html");
+    resp.setCharacterEncoding(Constants.encoding);
+    PrintWriter ps = new PrintWriter(
+        new OutputStreamWriter(resp.getOutputStream(), Constants.encoding));
+
+    Html.htmlHeadBody(ps);
+    printForm(pm, ps);
+    ps.println("</html></body>");
+
+    ps.flush();
+    resp.getOutputStream().close();
+  }
+
+  static void printForm(PersistenceManager pm, PrintWriter ps) {
+    ps.println("<form action='borrowreturn' method='POST'>");
+
+    Collection<Member> members = Queries.getSortedMembers(pm);
+
+    ps.println("<select name='member'>");
+    for (Member member : members) {
+      ps.printf("<option value='%s'>%s [%s]</option>\n", 
+          member.getId(), member.getCodigo(), EmailServlet.nome(member));
+    }
+    ps.println("</select>");
+    ps.println("<input type='submit' value='Empresta e Devolve'><br>");
+
+    Map<Long, String> map = getMap(members);
+    Collection<Item> books = new Queries(map).getFancySortedBooks(pm);
+
+    for (Item book : books) {
+      Long paradeiro = book.getParadeiro();
+      String memberCodigo = "";
+      if (paradeiro != null) {
+        memberCodigo = Queries.getById(Member.class, pm, "id", paradeiro + "").getCodigo();
+      }
+      ps.printf("<input type='checkbox' name='%s-%s'> [%s] %s <br>\n",
+          paradeiro != null ? "r" : "b", 
+              book.getId(), memberCodigo, book.getTitulo());
+    }
+
+    ps.println("<br><input type='submit' value='Empresta e Devolve'>");
+    ps.println("</form>");
+  }
+
+  private static Map<Long, String> getMap(Collection<Member> members) {
+    Map<Long, String> result = Maps.newHashMap();
+    for (Member member : members) {
+        result.put(member.getId(), member.getCodigo());
+    }
+    return result;
+  }
+
+  @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
     String admin = AdminOrDie.adminOrLogin(req, resp);
@@ -30,7 +102,7 @@ public class BorrowReturnServlet extends HttpServlet {
 
     PersistenceManager pm = PMF.get().getPersistenceManager();
     try {
-      go(req, resp, pm, admin);
+      goPost(req, resp, pm, admin);
     } catch (RuntimeException e) {
       e.printStackTrace();
       throw e;
@@ -39,7 +111,7 @@ public class BorrowReturnServlet extends HttpServlet {
     }
   }
 
-  private void go(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String admin)
+  private void goPost(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String admin)
       throws UnsupportedEncodingException, IOException {
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
