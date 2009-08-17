@@ -112,10 +112,40 @@ private final Map<Long, String> paradeiroToCodeMap;
 	  this.paradeiroToCodeMap = paradeiroToCodeMap;
   }
   
-  public Collection<Item> getFancySortedBooks(PersistenceManager pm) {
-    Collection<Item> result = new TreeSet<Item>(new FancyMemberComparator(paradeiroToCodeMap));
-    result.addAll(allBooks(pm));
-    return result;
+  public Books getFancySortedBooks(PersistenceManager pm) {
+    Collection<Item> borrowed = 
+      new TreeSet<Item>(new FancyMemberComparator(paradeiroToCodeMap));
+    Collection<Item> available = 
+      new TreeSet<Item>(new FancyMemberComparator(paradeiroToCodeMap));
+    for (Item item : allBooks(pm)) {
+      if (item.getParadeiro() == null) {
+        available.add(item);
+      } else {
+        borrowed.add(item);
+      }
+    }
+    return new Books(available, borrowed);
+  }
+  
+  public static final class Books {
+
+    private final Collection<Item> available;
+    private final Collection<Item> borrowed;
+
+    public Books(
+        Collection<Item> available, 
+        Collection<Item> borrowed) {
+      this.available = available;
+      this.borrowed = borrowed;
+    }
+
+    public Collection<Item> getAvailable() {
+      return available;
+    }
+    
+    public Collection<Item> getBorrowed() {
+      return borrowed;
+    }
   }
 
   @SuppressWarnings("unchecked")

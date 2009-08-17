@@ -3,6 +3,8 @@ package com.zorzella.tamandua;
 import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import com.google.appengine.repackaged.com.google.common.collect.Maps;
 
+import com.zorzella.tamandua.Queries.Books;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -54,6 +56,7 @@ public class BorrowReturnServlet extends HttpServlet {
   }
 
   static void printForm(PersistenceManager pm, PrintWriter ps) {
+    ps.println("<br><br><br><br>");
     ps.println("<form action='borrowreturn' method='POST'>");
 
     Collection<Member> members = Queries.getSortedMembers(pm);
@@ -63,19 +66,30 @@ public class BorrowReturnServlet extends HttpServlet {
       ps.printf("<option value='%s'>%s - %s</option>\n", 
           member.getId(), member.getCodigo(), EmailServlet.nome(member));
     }
-    ps.println("</select>");
-    ps.println("<input type='submit' value='Empresta e Devolve'><br>");
+    ps.println("</select><br><br><br><br>");
+//    ps.println("<input type='submit' value='Empresta e Devolve'><br>");
 
     Map<Long, String> map = getMap(members);
-    Collection<Item> books = new Queries(map).getFancySortedBooks(pm);
+    Books books = new Queries(map).getFancySortedBooks(pm);
 
-    boolean iphone = true;
-    if (iphone) {
-      ps.println("<select name='s' multiple size=20>");
-    }
+    ps.println("<select name='r' multiple size=6>");
 
-    String lastTitle = "";
-    for (Item book : books) {
+    printBorrowedSelectOptions(pm, ps, books);
+
+    ps.println("</select><br><br><br><br>\n" +
+    		"<select name='b' multiple size=10>");
+    
+    printAvailableSelectOptions(ps, books);
+
+    ps.println("</select><br><br><br><br>");
+
+    ps.println("<input type='submit' value='Empresta e Devolve'>");
+    ps.println("</form>");
+  }
+
+  private static void printBorrowedSelectOptions(PersistenceManager pm, PrintWriter ps,
+      Books books) {
+    for (Item book : books.getBorrowed()) {
       Long paradeiro = book.getParadeiro();
       String memberCodigo = "";
       if (paradeiro != null) {
@@ -83,35 +97,42 @@ public class BorrowReturnServlet extends HttpServlet {
           Queries.getById(Member.class, pm, "id", paradeiro + "").getCodigo()
           + "] ";
       }
-      if ((paradeiro == null) && (lastTitle.equals(book.getTitulo()))) {
-        // Show only a single copy of each title
-        continue;
-      }
-      String title = getTitleToShow(book, lastTitle);
-      lastTitle = book.getTitulo();
-
-      String htmlKey = (paradeiro != null ? "r-" : "b-") + 
-          book.getId();
-      String htmlValue = memberCodigo + title;
-      if (iphone) {
-        ps.println(String.format(
-            "<option value='%s'> %s", htmlKey, htmlValue));
-      } else {
-        ps.printf("<input type='checkbox' name='s' value='%s'> %s <br>\n",
-            htmlKey, htmlValue);
-      }
+      String htmlValue = memberCodigo + book.getStrippedTitle();
+      ps.println(String.format(
+          "<option value='%s'>%s", book.getId(), htmlValue));
     }
-
-    if (iphone) {
-      ps.println("</select>");
-    }
-
-    ps.println("<br><input type='submit' value='Empresta e Devolve'>");
-    ps.println("</form>");
   }
 
-  private static String getTitleToShow(Item book, String lastTitle) {
-    return book.getTitulo();
+  private static void printAvailableSelectOptions(PrintWriter ps, Books books) {
+    String lastTitle = "";
+    for (Item book : books.getAvailable()) {
+      Long paradeiro = book.getParadeiro();
+      String strippedTitle = book.getStrippedTitle();
+      if (lastTitle.equals(strippedTitle)) {
+        // Show only a single copy of each available title
+        continue;
+      }
+      if (isABreak(lastTitle, book)) {
+        ps.println("</select><br>\n" +
+          "<select name='b' multiple size=10>");
+      }
+      ps.println(String.format(
+          "<option value='%s'> %s", book.getId(), strippedTitle));
+
+      lastTitle = strippedTitle;
+    }
+  }
+
+  private static boolean isABreak(String lastTitle, Item book) {
+    String bookTitle = book.getStrippedTitle().toLowerCase();
+    String lastBookTitle = lastTitle.toLowerCase();
+    boolean dToH = lastBookTitle.matches("^[a-c].*") && 
+        bookTitle.matches("^[d-h].*");
+    boolean iToO = lastBookTitle.matches("^[d-h].*") && 
+        bookTitle.matches("^[i-o].*");
+    boolean pToZ = lastBookTitle.matches("^[i-o].*") && 
+        bookTitle.matches("^[p-z].*");
+    return dToH || iToO || pToZ;
   }
 
   private static Map<Long, String> getMap(Collection<Member> members) {
@@ -163,68 +184,50 @@ public class BorrowReturnServlet extends HttpServlet {
     
     Long memberId = Long.parseLong(temp[0]);
     Member member = Queries.getById(Member.class, pm, "id", memberId + "");
-//    ps.println("Member: " + member);
     
     List<Item> returnedItems = Lists.newArrayList();
     List<Item> borrowedItems = Lists.newArrayList();
     
-    for (String key : parameters.get("s")) {
-      if (key.equals("member")) {
-        // Doen's happen
-        continue;
-      } else {
-        Item item = Queries.getById(Item.class, pm, "id", key.substring(2));
-
-        if (key.startsWith("r-")) {
-          if (!item.getParadeiro().equals(memberId)) {
-            log.warning(String.format(
-              "<br> Ignoring '%s' which is not on loan to '%s'", 
-              item.getTitulo(), 
-              memberId));
-//            ps.println(String.format(
-//                "<br> Ignoring '%s' which is not on loan to '%s'", 
-//                item.getTitulo(), 
-//                memberId));
-          } else {
-
-            Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
-                "memberId == " + memberId + 
-                " && itemId == " + item.getId() + "" +
-                //  && returnDate == null" +
-                "", memberId);
-            //                "memberCode == ? && itemId == ? && returnDate == NULL", memberCode, item.getId());
-            loan.setReturnDate(new Date());
-            pm.makePersistent(loan);
-
-            item.setParadeiro(null);
-            pm.makePersistent(item);
-//            ps.println("<br> Returned: " + item.getTitulo());
-            returnedItems.add(item);
-          }
-        } else if (key.startsWith("b-")) {
-          Loan loan = new Loan(admin, memberId, item.getId());
-          pm.makePersistent(loan);
-
-          item.setParadeiro(memberId);
-          pm.makePersistent(item);
-//          ps.println("<br> Borrowed: " + item.getTitulo());
-          borrowedItems.add(item);
+    String[] returned = parameters.get("r");
+    if (returned != null) {
+      for (String key : returned) {
+        Item item = Queries.getById(Item.class, pm, "id", key);
+  
+        if (!item.getParadeiro().equals(memberId)) {
+          log.warning(String.format(
+            "<br> Ignoring '%s' which is not on loan to '%s'", 
+            item.getTitulo(), 
+            memberId));
         } else {
-          throw new IllegalArgumentException();
+          Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
+              "memberId == " + memberId + 
+              " && itemId == " + item.getId() + "" +
+              //  && returnDate == null" +
+              "", memberId);
+          //                "memberCode == ? && itemId == ? && returnDate == NULL", memberCode, item.getId());
+          loan.setReturnDate(new Date());
+          pm.makePersistent(loan);
+  
+          item.setParadeiro(null);
+          pm.makePersistent(item);
+          returnedItems.add(item);
         }
-      }
+      } 
     }
-    
+    String[] borrowed = parameters.get("b");
+    if (borrowed != null) {
+      for (String key : borrowed) {
+        Item item = Queries.getById(Item.class, pm, "id", key);
+  
+        Loan loan = new Loan(admin, memberId, item.getId());
+        pm.makePersistent(loan);
+  
+        item.setParadeiro(memberId);
+        pm.makePersistent(item);
+        borrowedItems.add(item);
+      }
+    }    
     sendEmail(member, borrowedItems, returnedItems);
-
-//    ps.println("<br>");
-//
-//    ps.println("<a href='member'>back</a>");
-//
-//    ps.println("</html></body>");
-
-//    ps.flush();
-//    resp.getOutputStream().close();
   }
 
   private void sendEmail(

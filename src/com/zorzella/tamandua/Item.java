@@ -246,6 +246,10 @@ public class Item implements Comparable<Item> {
     return '"' + string + '"';
   }
 
+  public String getStrippedTitle() {
+    return strip(getTitulo());
+  }
+  
   private static final Collator collator = Collator.getInstance(Locale.US);
 
   @Override
@@ -266,23 +270,24 @@ public class Item implements Comparable<Item> {
     if (toStrip == null) {
       return "";
     }
+    String lowerCaseToStrip = toStrip.toLowerCase();
     if (
-        (toStrip.toLowerCase().startsWith("a ")) ||
-        (toStrip.toLowerCase().startsWith("o "))) {
+        (lowerCaseToStrip.startsWith("a ")) ||
+        (lowerCaseToStrip.startsWith("o "))) {
       return toStrip.substring(2);
     }
     if (
-        (toStrip.toLowerCase().startsWith("as ")) ||
-        (toStrip.toLowerCase().startsWith("os ")) ||
-        (toStrip.toLowerCase().startsWith("um "))) {
+        (lowerCaseToStrip.startsWith("as ")) ||
+        (lowerCaseToStrip.startsWith("os ")) ||
+        (lowerCaseToStrip.startsWith("um "))) {
       return toStrip.substring(3);
     }
     if (
-        (toStrip.toLowerCase().startsWith("uma ")) ||
-        (toStrip.toLowerCase().startsWith("uns "))) {
+        (lowerCaseToStrip.startsWith("uma ")) ||
+        (lowerCaseToStrip.startsWith("uns "))) {
       return toStrip.substring(4);
     }
-    if (toStrip.toLowerCase().startsWith("umas ")) {
+    if (lowerCaseToStrip.startsWith("umas ")) {
       return toStrip.substring(5);
     }
     return toStrip;

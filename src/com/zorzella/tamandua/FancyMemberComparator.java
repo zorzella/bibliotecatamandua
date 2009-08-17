@@ -3,8 +3,6 @@ package com.zorzella.tamandua;
 import java.util.Comparator;
 import java.util.Map;
 
-import com.google.appengine.repackaged.com.google.common.collect.Maps;
-
 public class FancyMemberComparator implements Comparator<Item> {
 
 	private final Map<Long,String> paradeiroToCodeMap;

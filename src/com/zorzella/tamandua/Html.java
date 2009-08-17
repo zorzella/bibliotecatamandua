@@ -13,6 +13,7 @@ public class Html {
     ps.println("<head>" +
     		"<title>Bilioteca Tamandu&aacute; Bandeira</title>" +
     		"<link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/>" +
+    		"<meta name='viewport' content='width=device-width'/>" +
     		"</head>");
     ps.println("<body>");
     a(ps, "/list", "Acervo");
