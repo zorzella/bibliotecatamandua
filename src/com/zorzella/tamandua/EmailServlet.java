@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class EmailServlet extends HttpServlet {
 
+  @SuppressWarnings("unused")
   private static final Logger log = Logger.getLogger(EmailServlet.class.getName());
 
   @Override
@@ -111,8 +111,7 @@ public class EmailServlet extends HttpServlet {
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
 
     String admin = AdminOrDie.adminOrLogin(req, resp);
     if (admin == null) {
@@ -141,7 +140,13 @@ public class EmailServlet extends HttpServlet {
         String id = key.substring("sendto".length() + 1);
         String message = map.get("message-" + id)[0];
         Member member = Queries.getById(Member.class, pm, "id", id);
-        Emails.sendEmail(message, Emails.FROM, member.getEmail(), subject);
+        
+        Emails.sendEmail(
+            message, 
+            Emails.FROM, 
+            member.getEmail(),
+            Emails.CC, 
+            subject);
       }
     }
   }
@@ -160,7 +165,7 @@ public class EmailServlet extends HttpServlet {
     } else if (!empty(member.getMae())) {
       result += member.getMae();
     }
-    return result += " [" + member.getNome() + " " + member.getSobrenome() + "]";
+    return result += " (" + member.getNome() + " " + member.getSobrenome() + ")";
   }
 
   private static boolean empty(String string) {

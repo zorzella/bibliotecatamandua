@@ -1,5 +1,8 @@
 package com.zorzella.tamandua;
 
+import com.google.appengine.repackaged.com.google.common.collect.Lists;
+
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -12,7 +15,12 @@ import javax.mail.internet.MimeMessage;
 
 public class Emails {
 
-  public static void sendEmail(CharSequence body, String from, String to, String subject) {
+  public static void sendEmail(
+      CharSequence body, 
+      String from, 
+      String to,
+      List<String> ccs,
+      String subject) {
     Properties props = new Properties();
     Session session = Session.getDefaultInstance(props, null);
   
@@ -21,6 +29,10 @@ public class Emails {
       msg.setFrom(new InternetAddress(from));
       msg.addRecipient(Message.RecipientType.TO,
           new InternetAddress(to));
+      for (String cc : ccs) {
+        msg.addRecipient(Message.RecipientType.CC,
+            new InternetAddress(cc));
+      }
       msg.setSubject(subject);
       msg.setText(body.toString());
       Transport.send(msg);
@@ -33,5 +45,7 @@ public class Emails {
   }
 
   static final String FROM = "zorzella@gmail.com";
+  static final List<String> CC = 
+    Lists.newArrayList(Emails.FROM);
 
 }

@@ -6,7 +6,6 @@ import com.google.appengine.repackaged.com.google.common.collect.Maps;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class BorrowReturnServlet extends HttpServlet {
 
+  @SuppressWarnings("unused")
   private static final Logger log = Logger.getLogger(BorrowReturnServlet.class.getName());
 
   @Override
@@ -60,7 +60,7 @@ public class BorrowReturnServlet extends HttpServlet {
 
     ps.println("<select name='member'>");
     for (Member member : members) {
-      ps.printf("<option value='%s'>%s [%s]</option>\n", 
+      ps.printf("<option value='%s'>%s - %s</option>\n", 
           member.getId(), member.getCodigo(), EmailServlet.nome(member));
     }
     ps.println("</select>");
@@ -69,19 +69,49 @@ public class BorrowReturnServlet extends HttpServlet {
     Map<Long, String> map = getMap(members);
     Collection<Item> books = new Queries(map).getFancySortedBooks(pm);
 
+    boolean iphone = true;
+    if (iphone) {
+      ps.println("<select name='s' multiple size=20>");
+    }
+
+    String lastTitle = "";
     for (Item book : books) {
       Long paradeiro = book.getParadeiro();
       String memberCodigo = "";
       if (paradeiro != null) {
-        memberCodigo = Queries.getById(Member.class, pm, "id", paradeiro + "").getCodigo();
+        memberCodigo = "[" + 
+          Queries.getById(Member.class, pm, "id", paradeiro + "").getCodigo()
+          + "] ";
       }
-      ps.printf("<input type='checkbox' name='%s-%s'> [%s] %s <br>\n",
-          paradeiro != null ? "r" : "b", 
-              book.getId(), memberCodigo, book.getTitulo());
+      if ((paradeiro == null) && (lastTitle.equals(book.getTitulo()))) {
+        // Show only a single copy of each title
+        continue;
+      }
+      String title = getTitleToShow(book, lastTitle);
+      lastTitle = book.getTitulo();
+
+      String htmlKey = (paradeiro != null ? "r-" : "b-") + 
+          book.getId();
+      String htmlValue = memberCodigo + title;
+      if (iphone) {
+        ps.println(String.format(
+            "<option value='%s'> %s", htmlKey, htmlValue));
+      } else {
+        ps.printf("<input type='checkbox' name='s' value='%s'> %s <br>\n",
+            htmlKey, htmlValue);
+      }
+    }
+
+    if (iphone) {
+      ps.println("</select>");
     }
 
     ps.println("<br><input type='submit' value='Empresta e Devolve'>");
     ps.println("</form>");
+  }
+
+  private static String getTitleToShow(Item book, String lastTitle) {
+    return book.getTitulo();
   }
 
   private static Map<Long, String> getMap(Collection<Member> members) {
@@ -108,24 +138,23 @@ public class BorrowReturnServlet extends HttpServlet {
       throw e;
     } finally {
       pm.close();
+      resp.sendRedirect("/member");
+
     }
   }
 
-  private void goPost(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String admin)
-      throws UnsupportedEncodingException, IOException {
-    resp.setContentType("text/html");
-    resp.setCharacterEncoding(Constants.encoding);
-    PrintWriter ps = new PrintWriter(
-        new OutputStreamWriter(resp.getOutputStream(), Constants.encoding));
+  private void goPost(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String admin) {
+//    resp.setContentType("text/html");
+//    resp.setCharacterEncoding(Constants.encoding);
+//    PrintWriter ps = new PrintWriter(
+//        new OutputStreamWriter(resp.getOutputStream(), Constants.encoding));
 
-    ps.println("<html>");
-    ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
-    ps.println("<body>");
-
+//    ps.println("<html>");
+//    ps.println("<head><link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/></head>");
+//    ps.println("<body>");
 
     @SuppressWarnings("unchecked")
     Map<String,String[]> parameters = req.getParameterMap();
-
 
     String[] temp = parameters.get("member");
     if (temp.length != 1) {
@@ -134,23 +163,28 @@ public class BorrowReturnServlet extends HttpServlet {
     
     Long memberId = Long.parseLong(temp[0]);
     Member member = Queries.getById(Member.class, pm, "id", memberId + "");
-    ps.println("Member: " + member);
+//    ps.println("Member: " + member);
     
     List<Item> returnedItems = Lists.newArrayList();
     List<Item> borrowedItems = Lists.newArrayList();
     
-    for (String key : parameters.keySet()) {
+    for (String key : parameters.get("s")) {
       if (key.equals("member")) {
+        // Doen's happen
         continue;
       } else {
         Item item = Queries.getById(Item.class, pm, "id", key.substring(2));
 
         if (key.startsWith("r-")) {
           if (!item.getParadeiro().equals(memberId)) {
-            ps.println(String.format(
-                "<br> Ignoring '%s' which is not on loan to '%s'", 
-                item.getTitulo(), 
-                memberId));
+            log.warning(String.format(
+              "<br> Ignoring '%s' which is not on loan to '%s'", 
+              item.getTitulo(), 
+              memberId));
+//            ps.println(String.format(
+//                "<br> Ignoring '%s' which is not on loan to '%s'", 
+//                item.getTitulo(), 
+//                memberId));
           } else {
 
             Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
@@ -164,7 +198,7 @@ public class BorrowReturnServlet extends HttpServlet {
 
             item.setParadeiro(null);
             pm.makePersistent(item);
-            ps.println("<br> Returned: " + item.getTitulo());
+//            ps.println("<br> Returned: " + item.getTitulo());
             returnedItems.add(item);
           }
         } else if (key.startsWith("b-")) {
@@ -173,7 +207,7 @@ public class BorrowReturnServlet extends HttpServlet {
 
           item.setParadeiro(memberId);
           pm.makePersistent(item);
-          ps.println("<br> Borrowed: " + item.getTitulo());
+//          ps.println("<br> Borrowed: " + item.getTitulo());
           borrowedItems.add(item);
         } else {
           throw new IllegalArgumentException();
@@ -183,21 +217,25 @@ public class BorrowReturnServlet extends HttpServlet {
     
     sendEmail(member, borrowedItems, returnedItems);
 
-    ps.println("<br>");
+//    ps.println("<br>");
+//
+//    ps.println("<a href='member'>back</a>");
+//
+//    ps.println("</html></body>");
 
-    ps.println("<a href='member'>back</a>");
-
-    ps.println("</html></body>");
-
-    ps.flush();
-    resp.getOutputStream().close();
+//    ps.flush();
+//    resp.getOutputStream().close();
   }
 
-  private void sendEmail(Member member, List<Item> borrowedItems, List<Item> returnedItems) {
+  private void sendEmail(
+      Member member, 
+      List<Item> borrowedItems, 
+      List<Item> returnedItems) {
     if ((borrowedItems.size() == 0) && (returnedItems.size() == 0)) {
       return;
     }
     
+    String to = Emails.FROM;
     String subject = "Itens ";
     
     if (returnedItems.size() == 0) {
@@ -235,6 +273,11 @@ public class BorrowReturnServlet extends HttpServlet {
         "http://mensageirosdacultura.com/MDC_Biblioteca.html\n" +
         "\n" +
         "Z (o Tamandu\u00E1)\n");
-    Emails.sendEmail(body, Emails.FROM, Emails.FROM, subject);
+    Emails.sendEmail(
+        body, 
+        Emails.FROM, 
+        to, 
+        Emails.CC,
+        subject);
   }
 }

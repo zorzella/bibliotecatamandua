@@ -16,6 +16,9 @@ public class Html {
     		"</head>");
     ps.println("<body>");
     a(ps, "/list", "Acervo");
+    ps.println(
+        "<a href='http://www.mensageirosdacultura.com/MDC_Biblioteca_const.html' target='_new'>" +
+        "  Constitui&ccedil;&atilde;o</a>");
 
     UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();
