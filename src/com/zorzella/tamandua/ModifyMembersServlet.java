@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ModifyMembersServlet extends HttpServlet {
 
+  @SuppressWarnings("unused")
   private static final Logger log = Logger.getLogger(ModifyMembersServlet.class.getName());
 
   @Override
@@ -249,7 +250,12 @@ public class ModifyMembersServlet extends HttpServlet {
     Collection<Member> items = Queries.getSortedMembers(pm);
     for (Member item : items) {
       String id = item.getId() + "";
-      String key = "nome-" + id;
+      String 
+      key = "codigo-" + id;
+      if (map.containsKey(key)) {
+        item.setCodigo(toString(map, key));
+      }
+      key = "nome-" + id;
       if (map.containsKey(key)) {
         item.setNome(toString(map, key));
       }
