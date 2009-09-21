@@ -63,6 +63,9 @@ public class BorrowReturnServlet extends HttpServlet {
 
     ps.println("<select name='member'>");
     for (Member member : members) {
+      if (member.getNome().trim().equals("")) {
+        continue;
+      }
       ps.printf("<option value='%s'>%s - %s</option>\n", 
           member.getId(), member.getCodigo(), EmailServlet.nome(member));
     }
@@ -254,7 +257,7 @@ public class BorrowReturnServlet extends HttpServlet {
 //    subject += " no encontro de ";
 
     StringBuilder body = new StringBuilder();
-    body.append(EmailServlet.nome(member) + ":\n\n");
+    body.append(EmailServlet.nome(member) + " - " + member.getEmail() + ":\n\n");
 
     if (borrowedItems.size() > 0) {
       body.append("Os seguintes \u00EDtens foram emprestados:\n\n");

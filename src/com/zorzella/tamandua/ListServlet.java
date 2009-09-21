@@ -88,30 +88,33 @@ public class ListServlet extends HttpServlet {
         ps.println("<th>Tags</th>");
       }
 
-      Collection<Item> sortedBooks;
+      Collection<Item> sortedItems;
 
       switch (sortKey) {
         case TYPE: 
-          sortedBooks = Queries.getTypeSortedItems(pm);
+          sortedItems = Queries.getTypeSortedItems(pm);
           break;
         case TITULO: 
-          sortedBooks = Queries.getSortedItems(pm);
+          sortedItems = Queries.getSortedItems(pm);
           break;
         case AUTOR:
-          sortedBooks = Queries.getAutorSortedItems(pm);
+          sortedItems = Queries.getAutorSortedItems(pm);
           break;
         case PARADEIRO:
-          sortedBooks = Queries.getParadeiroSortedItems(pm);
+          sortedItems = Queries.getParadeiroSortedItems(pm);
           break;
         case TOCA:
-          sortedBooks = Queries.getTocaSortedItems(pm);
+          sortedItems = Queries.getTocaSortedItems(pm);
           break;
         default:
           throw new UnsupportedOperationException();  
       }
 
       boolean even = false;
-      for (Item item : sortedBooks) {
+      for (Item item : sortedItems) {
+        if (item.getTitulo().trim().equals("")) {
+          continue;
+        }
         even = !even;
         if (even) {
           ps.printf("<tr class='a'>");

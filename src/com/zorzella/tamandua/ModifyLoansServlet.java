@@ -66,10 +66,10 @@ public class ModifyLoansServlet extends HttpServlet {
       Collection<Loan> loans = //Queries.getByQuery(Loan.class, pm, "ORDER BY loanDate");
         (Collection<Loan>) pm.newQuery(
             "SELECT FROM com.zorzella.tamandua.Loan " +
-          "WHERE adminCode == :ac " +
-          "PARAMETERS String ac " +
+//          "WHERE adminCode == :ac " +
+//          "PARAMETERS String ac " +
             "ORDER BY returnDate, loanDate" +
-          "").execute("zorzella");
+          "").execute();//"zorzella");
       Collection<Member> members = Queries.getAll(Member.class, pm);
       Collection<Item> items = Queries.getAll(Item.class, pm);
       

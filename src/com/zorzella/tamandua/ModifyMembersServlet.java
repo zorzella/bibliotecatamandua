@@ -59,6 +59,7 @@ public class ModifyMembersServlet extends HttpServlet {
       boolean zip = map.containsKey("zip");
 
       if (!map.containsKey("custom")) {
+        codigo = true;
         nome = true;
         sobrenome = true;
         email = true;
