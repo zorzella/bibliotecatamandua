@@ -62,6 +62,7 @@ public class ModifyMembersServlet extends HttpServlet {
         codigo = true;
         nome = true;
         sobrenome = true;
+        nascimento = true;
         email = true;
         pai = true;
         mae = true;
@@ -87,15 +88,29 @@ public class ModifyMembersServlet extends HttpServlet {
       ps.println("<th>Mae</th>");
       ps.println("<th>Dolares</th>");
       ps.println("<th>Livros</th>");
-      ps.println("<th>Fone</th>");
-      ps.println("<th>Fone2</th>");
-      ps.println("<th>Last Contacted</th>");
+      if (fone) {
+        ps.println("<th>Fone</th>");
+      }
+      if (fone2) {
+        ps.println("<th>Fone2</th>");
+      }
+      if (lastContacted) { 
+        ps.println("<th>Last Contacted</th>");
+      }
       ps.println("<th>Conf</th>");
       ps.println("<th>Desde</th>");
-      ps.println("<th>Endereco</th>");
-      ps.println("<th>Cidade</th>");
-      ps.println("<th>Estado</th>");
-      ps.println("<th>Zip</th>");
+      if (endereco) {
+        ps.println("<th>Endereco</th>");
+      }
+      if (cidade) {
+        ps.println("<th>Cidade</th>");
+      }
+      if (estado) {
+        ps.println("<th>Estado</th>");
+      }
+      if (zip) {
+        ps.println("<th>Zip</th>");
+      }
 
       Collection<Member> sortedMembers = Queries.getSortedMembers(pm);
 
@@ -116,15 +131,29 @@ public class ModifyMembersServlet extends HttpServlet {
         choose(ps, true, mae, member, true, member.getMae(), "mae");
         choose(ps, false, dolares, member, true, member.getDolares() + "", "dolares");
         choose(ps, false, livros, member, true, member.getLivrosDoados() + "", "livros");
-        choose(ps, true, fone, member, true, member.getFone(), "fone");
-        choose(ps, false, fone2, member, true, member.getFone2(), "fone2");
-        choose(ps, true, lastContacted, member, true, Dates.dateToString(member.getLastContacted()), "lastContacted");
-        choose(ps, false, confirmado, member, true, member.isConfirmado() + "", "confirmado");
+        if (fone) {
+          choose(ps, true, fone, member, true, member.getFone(), "fone");
+        }
+        if (fone2) {
+          choose(ps, false, fone2, member, true, member.getFone2(), "fone2");
+        }
+        if (lastContacted) {
+          choose(ps, true, lastContacted, member, true, Dates.dateToString(member.getLastContacted()), "lastContacted");
+        }
+        confirmado(ps, false, confirmado, member, true, member.isConfirmado(), "confirmado");
         choose(ps, true, desde, member, true, Dates.dateToString(member.getDesde()), "desde");
-        choose(ps, true, endereco, member, true, member.getEndereco() + "", "endereco");
-        choose(ps, true, cidade, member, true, member.getCidade() + "", "cidade");
-        choose(ps, false, estado, member, true, member.getEstado() + "", "estado");
-        choose(ps, false, zip, member, true, member.getZip() + "", "zip");
+        if (endereco) {
+          choose(ps, true, endereco, member, true, member.getEndereco() + "", "endereco");
+        }
+        if (cidade) {
+          choose(ps, true, cidade, member, true, member.getCidade() + "", "cidade");
+        }
+        if (estado) {
+          choose(ps, false, estado, member, true, member.getEstado() + "", "estado");
+        }
+        if (zip) {
+          choose(ps, false, zip, member, true, member.getZip() + "", "zip");
+        }
         ps.print("\n"); 
       }
 
@@ -149,15 +178,44 @@ public class ModifyMembersServlet extends HttpServlet {
     }
   }
 
+  private String confirmadoHtml(Member member) {
+    return member.isConfirmado()  
+        ? ""
+        : "<img src='bang.png'>";
+  }
+
+  private void confirmado(
+      PrintWriter ps, 
+      boolean shortInput, 
+      boolean editable, 
+      Member member, 
+      boolean alignRight, 
+      boolean content, 
+      String key) {
+    if (editable) {
+      if (shortInput) {
+        input(ps, member, key, content + "");
+      } else {
+        shortInput(ps, member, key, content + "");
+      }
+    } else {
+      if (alignRight) {
+        Html.tdRight(ps, confirmadoHtml(member));
+      } else {
+        Html.td(ps, confirmadoHtml(member));
+      }
+    }
+  }
+
   private void choose(
       PrintWriter ps, 
       boolean shortInput, 
-      boolean nome, 
+      boolean editable, 
       Member member, 
       boolean alignRight, 
       String content, 
       String key) {
-    if (nome) {
+    if (editable) {
       if (shortInput) {
         input(ps, member, key, content);
       } else {
