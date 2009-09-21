@@ -1,12 +1,13 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.zorzella.tamandua;
 
-import java.util.Date;
+import com.google.appengine.repackaged.com.google.common.base.Join;
 
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 
-import com.google.appengine.repackaged.com.google.common.base.Join;
+import java.util.Date;
 
 public class Dates {
 
@@ -14,7 +15,8 @@ public class Dates {
     if (date == null) {
       return "";
     }
-    Instant temp = new Instant(date.getTime());
+    DateTimeZone pst = DateTimeZone.forOffsetHours(-8);
+    Instant temp = new Instant(pst.convertUTCToLocal(date.getTime()));
     return Join.join("-",
       temp.get(DateTimeFieldType.year()),
       temp.get(DateTimeFieldType.monthOfYear()),
