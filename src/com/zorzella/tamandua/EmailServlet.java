@@ -89,7 +89,7 @@ public class EmailServlet extends HttpServlet {
 
       ps.printf("<input type='checkbox' name='sendto-%s'>\n", id);
       ps.printf("To: [%s] %s &lt;%s&gt; (\u00FAltimo email data '%s')\n", 
-          tudo(nome(member), member.getEmail(), subject, message), nome(member), member.getEmail(), Dates.dateToString(member.getLastContacted()));
+          tudo(TamanduaUtil.nome(member), member.getEmail(), subject, message), TamanduaUtil.nome(member), member.getEmail(), Dates.dateToString(member.getLastContacted()));
       ps.printf("<br>Subject: %s\n", subject);
       ps.printf("<br>Body: <textarea name='message-%s' rows='10' cols='100'>%s</textarea>\n", id, message);
       ps.println("<hr>");
@@ -149,26 +149,5 @@ public class EmailServlet extends HttpServlet {
             subject);
       }
     }
-  }
-
-  public static String nome(Member member) {
-    String result = "";
-
-    if ((empty(member.getPai())) && (empty(member.getMae()))) {
-      result += member.getNome();
-    }
-
-    if ((!empty(member.getPai())) && (!empty(member.getMae()))) {
-      result += member.getPai() + "/" + member.getMae();
-    } else if (!empty(member.getPai())) {
-      result += member.getPai();
-    } else if (!empty(member.getMae())) {
-      result += member.getMae();
-    }
-    return result += " (" + member.getNome() + " " + member.getSobrenome() + ")";
-  }
-
-  private static boolean empty(String string) {
-    return string == null || string.trim().length() == 0;
   }
 }

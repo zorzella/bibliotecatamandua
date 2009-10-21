@@ -1,5 +1,6 @@
 package com.zorzella.tamandua;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -9,7 +10,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Member implements Comparable<Member> {
+public class Member implements Comparable<Member>, Serializable {
 
   @PrimaryKey
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
@@ -51,6 +52,11 @@ public class Member implements Comparable<Member> {
   @Persistent
   private String zip;
 
+  /**
+   * For GWT
+   */
+  public Member() {}
+  
   public Member(String codigo) {
     this(codigo, "", "", null, "", "", "", "", "", "", "", "", "", 0, 0, null, false, new Date());
   }
@@ -243,7 +249,7 @@ public class Member implements Comparable<Member> {
   
   @Override
   public String toString() {
-    return String.format(
+    return GwtSupport.format(
         "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
         id,
         codigo, 

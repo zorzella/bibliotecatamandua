@@ -17,6 +17,7 @@ public class Html {
     		"</head>");
     ps.println("<body>");
     a(ps, "/list", "Acervo");
+    a(ps, "/Tamandua.html", "GWT");
     ps.println(
         "<a href='http://www.mensageirosdacultura.com/MDC_Biblioteca_const.html' target='_new'>" +
         "  Constitui&ccedil;&atilde;o</a>");

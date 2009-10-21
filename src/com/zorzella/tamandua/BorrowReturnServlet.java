@@ -67,7 +67,7 @@ public class BorrowReturnServlet extends HttpServlet {
         continue;
       }
       ps.printf("<option value='%s'>%s - %s</option>\n", 
-          member.getId(), member.getCodigo(), EmailServlet.nome(member));
+          member.getId(), member.getCodigo(), TamanduaUtil.nome(member));
     }
     ps.println("</select><br><br><br><br>");
 //    ps.println("<input type='submit' value='Empresta e Devolve'><br>");
@@ -257,7 +257,7 @@ public class BorrowReturnServlet extends HttpServlet {
 //    subject += " no encontro de ";
 
     StringBuilder body = new StringBuilder();
-    body.append(EmailServlet.nome(member) + " - " + member.getEmail() + ":\n\n");
+    body.append(TamanduaUtil.nome(member) + " - " + member.getEmail() + ":\n\n");
 
     if (borrowedItems.size() > 0) {
       body.append("Os seguintes \u00EDtens foram emprestados:\n\n");

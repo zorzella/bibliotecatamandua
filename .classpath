@@ -7,15 +7,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/icu4j.jar"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
-	<classpathentry kind="lib" path="/usr/local/google/users/zorzella/eclipse35/testing/plugins/com.google.gwt.eclipse.sdkbundle.linux_1.7.1.v200910151300/gwt-linux-1.7.1/gwt-user.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/usr/local/google/users/zorzella/eclipse35/testing/plugins/com.google.gwt.eclipse.sdkbundle.linux_1.7.1.v200910151300/gwt-linux-1.7.1/doc/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/usr/local/google/users/zorzella/eclipse35/testing/plugins/com.google.gwt.eclipse.sdkbundle.linux_1.7.1.v200910151300/gwt-linux-1.7.1/gwt-dev-linux.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/usr/local/google/users/zorzella/eclipse35/testing/plugins/com.google.gwt.eclipse.sdkbundle.linux_1.7.1.v200910151300/gwt-linux-1.7.1/doc/javadoc/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
