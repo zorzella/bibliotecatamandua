@@ -13,7 +13,7 @@ public class Queries {
   
   public static final class AutorComparator implements Comparator<Item> {
 
-    @Override
+//    @Override
     public int compare(Item one, Item other) {
       String oneAutor = one.getAutor();
       String otherAutor = other.getAutor();
@@ -26,7 +26,7 @@ public class Queries {
 
   public static final class TypeComparator implements Comparator<Item> {
 
-    @Override
+//    @Override
     public int compare(Item one, Item other) {
       Type oneType = one.getType();
       Type otherType = other.getType();
@@ -39,7 +39,7 @@ public class Queries {
 
   public static final class ParadeiroComparator implements Comparator<Item> {
 
-    @Override
+//    @Override
     public int compare(Item one, Item other) {
 //      String oneParadeiro = one.getParadeiro();
 //      String otherParadeiro = other.getParadeiro();
@@ -63,7 +63,7 @@ public class Queries {
 
   public static final class TocaComparator implements Comparator<Item> {
 
-    @Override
+//    @Override
     public int compare(Item one, Item other) {
       String oneToca = one.getToca();
       String otherToca = other.getToca();

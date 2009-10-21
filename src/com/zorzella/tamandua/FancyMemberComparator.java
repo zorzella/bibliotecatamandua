@@ -11,7 +11,7 @@ public class FancyMemberComparator implements Comparator<Item> {
 		this.paradeiroToCodeMap = paradeiroToCodeMap;
 	}
 	
-  @Override
+//  @Override
   public int compare(Item one, Item other) {
     
     // Unknown paradeiro books group at the end

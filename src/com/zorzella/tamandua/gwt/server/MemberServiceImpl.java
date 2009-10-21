@@ -13,7 +13,7 @@ import javax.jdo.PersistenceManager;
 
 public class MemberServiceImpl extends RemoteServiceServlet implements MemberService {
 
-  @Override
+//  @Override
   public Collection<Member> getSortedMembers() {
     PersistenceManager pm = PMF.get().getPersistenceManager();
 

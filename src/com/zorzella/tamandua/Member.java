@@ -267,7 +267,7 @@ public class Member implements Comparable<Member>, Serializable {
     );
   }
 
-  @Override
+//  @Override
   public int compareTo(Member o) {
     int result = getCodigo().compareTo(o.getCodigo());
     if (result == 0) {

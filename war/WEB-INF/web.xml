@@ -94,7 +94,9 @@
 
   <servlet-mapping>
     <servlet-name>memberService</servlet-name>
-    <url-pattern>/tamandua/member</url-pattern>
+    <!-- TODO >url-pattern>/tamandua/member</url-pattern -->
+    <url-pattern>/com.zorzella.tamandua.gwt.tamandua/member</url-pattern>
+    
   </servlet-mapping>
 <!-- End GWT -->
 

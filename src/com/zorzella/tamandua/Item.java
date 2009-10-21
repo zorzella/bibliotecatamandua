@@ -252,7 +252,7 @@ public class Item implements Comparable<Item> {
   
   private static final Collator collator = Collator.getInstance(Locale.US);
 
-  @Override
+//  @Override
   public int compareTo(Item that) {
     String tituloOne = strip(titulo);
     String tituloOther = strip(that.titulo);
