@@ -1,13 +1,10 @@
 package com.zorzella.tamandua;
 
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
-
-import com.ibm.icu.text.Collator;
-
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -16,7 +13,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Item implements Comparable<Item> {
+public class Item implements Serializable {
 
   public enum Type {
     BOOK,
@@ -71,7 +68,7 @@ public class Item implements Comparable<Item> {
     this.isbn = "";
     this.barcode = "";
     this.tamanho = "";
-    this.tags = Lists.newArrayList();
+    this.tags = new ArrayList<String>();
     this.especial = false;
   }
 
@@ -92,7 +89,7 @@ public class Item implements Comparable<Item> {
     this.autor = autor;
     this.especial = especial;
     this.tamanho = tamanho;
-    this.tags = Lists.newArrayList();
+    this.tags = new ArrayList<String>();
     this.desde = new Date();
   }
 
@@ -104,12 +101,16 @@ public class Item implements Comparable<Item> {
     return paradeiroLong;
   }
 
+  public Date getDesde() {
+    return desde;
+  }
+  
   public void addTag(String tag) {
     if (tag == null) {
       throw new NullPointerException();
     }
     if (tags == null) {
-      tags = Lists.newArrayList();
+      tags = new ArrayList<String>();
     }
     tags.add(tag);
   }
@@ -202,7 +203,7 @@ public class Item implements Comparable<Item> {
 
   @Override
   public String toString() {
-    return String.format(
+    return GwtSupport.format(
         "%s,%s,%s,%s,%s,%s,%s,%s,%s",
         id, 
         paradeiroLong, 
@@ -215,28 +216,7 @@ public class Item implements Comparable<Item> {
         getTags());
   }
 
-  public String toDebugString() {
-    StringBuilder result = new StringBuilder("id:" + id + " ");
-
-    if (especial) {
-      result.append("<especial> ");
-    }
-    maybeAdd(result, "paradeiro", paradeiroLong + "");
-    maybeAdd(result, "toca", toca);
-    maybeAdd(result, "isbn", isbn);
-    maybeAdd(result, "titulo", titulo);
-    maybeAdd(result, "autor", autor);
-    maybeAdd(result, "tamanho", tamanho);
-    maybeAdd(result, "desde", Dates.dateToString(desde));
-    result.append("tags:" + getTags());
-    return result.toString();
-  }
-
-  private void maybeAdd(StringBuilder result, String key, String value) {
-    if (value.trim().length() > 0) {
-      result.append(key + ":[" + value + "] ");
-    }
-  }
+  
 
   private static String quote(String string) {
     int commaAt = string.indexOf(',');
@@ -246,50 +226,20 @@ public class Item implements Comparable<Item> {
     return '"' + string + '"';
   }
 
-  public String getStrippedTitle() {
-    return strip(getTitulo());
-  }
   
-  private static final Collator collator = Collator.getInstance(Locale.US);
+//  private static final Collator collator = Collator.getInstance(Locale.US);
 
 //  @Override
-  public int compareTo(Item that) {
-    String tituloOne = strip(titulo);
-    String tituloOther = strip(that.titulo);
-    int col = collator.compare(tituloOne, tituloOther);
-    if (col != 0) {
-      return col;
-    }
-    if (this.getId() > that.getId()) {
-      return 1;
-    }
-    return -1;
-  }
-
-  private String strip(String toStrip) {
-    if (toStrip == null) {
-      return "";
-    }
-    String lowerCaseToStrip = toStrip.toLowerCase();
-    if (
-        (lowerCaseToStrip.startsWith("a ")) ||
-        (lowerCaseToStrip.startsWith("o "))) {
-      return toStrip.substring(2);
-    }
-    if (
-        (lowerCaseToStrip.startsWith("as ")) ||
-        (lowerCaseToStrip.startsWith("os ")) ||
-        (lowerCaseToStrip.startsWith("um "))) {
-      return toStrip.substring(3);
-    }
-    if (
-        (lowerCaseToStrip.startsWith("uma ")) ||
-        (lowerCaseToStrip.startsWith("uns "))) {
-      return toStrip.substring(4);
-    }
-    if (lowerCaseToStrip.startsWith("umas ")) {
-      return toStrip.substring(5);
-    }
-    return toStrip;
-  }
+//  public int compareTo(Item that) {
+//    String tituloOne = Items.strip(titulo);
+//    String tituloOther = Items.strip(that.titulo);
+//    int col = collator.compare(tituloOne, tituloOther);
+//    if (col != 0) {
+//      return col;
+//    }
+//    if (this.getId() > that.getId()) {
+//      return 1;
+//    }
+//    return -1;
+//  }
 }

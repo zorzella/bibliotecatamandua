@@ -7,7 +7,7 @@ import com.google.appengine.repackaged.com.google.common.collect.Maps;
 
 import junit.framework.TestCase;
 
-public class FancyMemberComparatorTest extends TestCase {
+public class FancyItemComparatorTest extends TestCase {
 
   /*
 	public void testComparator() throws Exception {
@@ -39,9 +39,9 @@ public class FancyMemberComparatorTest extends TestCase {
 			String tituloOther, Long paradeiroOther) {
 		Item one = book(tituloOne, paradeiroOne);
 		Item other = book (tituloOther, paradeiroOther);
-		assertTrue (new FancyMemberComparator(paradeiroToCodeMap).compare(
+		assertTrue (new FancyItemComparator(paradeiroToCodeMap).compare(
 				one, other) < 0);
-		assertTrue (new FancyMemberComparator(paradeiroToCodeMap).compare(
+		assertTrue (new FancyItemComparator(paradeiroToCodeMap).compare(
 				other, one) > 0);
 	}
 

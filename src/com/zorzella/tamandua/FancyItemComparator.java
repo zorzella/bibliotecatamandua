@@ -3,11 +3,11 @@ package com.zorzella.tamandua;
 import java.util.Comparator;
 import java.util.Map;
 
-public class FancyMemberComparator implements Comparator<Item> {
+public class FancyItemComparator implements Comparator<Item> {
 
 	private final Map<Long,String> paradeiroToCodeMap;
 	
-	public FancyMemberComparator(Map<Long,String> paradeiroToCodeMap) {
+	public FancyItemComparator(Map<Long,String> paradeiroToCodeMap) {
 		this.paradeiroToCodeMap = paradeiroToCodeMap;
 	}
 	
@@ -38,7 +38,7 @@ public class FancyMemberComparator implements Comparator<Item> {
 //    }
     
     if ((paradeiro(one) == null) && (paradeiro(other) == null)) {
-      return one.compareTo(other);
+      return Items.ITEM_COMPARATOR.compare(one, other);
     }
     // Group the books with same paradeiro
     int result = paradeiro(one).compareTo(paradeiro(other));
@@ -47,7 +47,7 @@ public class FancyMemberComparator implements Comparator<Item> {
     }
     
     // All things being equal, alphabetical order
-    return one.compareTo(other);
+    return Items.ITEM_COMPARATOR.compare(one, other);
   }
 
   private String paradeiro(Item item) {

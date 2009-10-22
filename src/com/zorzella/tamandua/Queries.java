@@ -1,5 +1,7 @@
 package com.zorzella.tamandua;
 
+import com.google.appengine.repackaged.com.google.common.collect.Sets;
+
 import com.zorzella.tamandua.Item.Type;
 
 import java.util.Collection;
@@ -18,7 +20,7 @@ public class Queries {
       String oneAutor = one.getAutor();
       String otherAutor = other.getAutor();
       if (oneAutor.equals(otherAutor)) {
-        return one.compareTo(other);
+        return Items.ITEM_COMPARATOR.compare(one, other);
       }
       return oneAutor.compareTo(otherAutor);
     }
@@ -31,7 +33,7 @@ public class Queries {
       Type oneType = one.getType();
       Type otherType = other.getType();
       if (oneType.equals(otherType)) {
-        return one.compareTo(other);
+        return Items.ITEM_COMPARATOR.compare(one, other);
       }
       return oneType.compareTo(otherType);
     }
@@ -51,10 +53,10 @@ public class Queries {
     Long oneParadeiro = one.getParadeiro();
     Long otherParadeiro = other.getParadeiro();
     if ((oneParadeiro != null) && (oneParadeiro.equals(otherParadeiro))) {
-      return one.compareTo(other);
+      return Items.ITEM_COMPARATOR.compare(one, other);
     }
     if ((oneParadeiro == null) && (otherParadeiro == null)) {
-      return one.compareTo(other);
+      return Items.ITEM_COMPARATOR.compare(one, other);
     }
     return oneParadeiro.compareTo(otherParadeiro);
       
@@ -68,14 +70,14 @@ public class Queries {
       String oneToca = one.getToca();
       String otherToca = other.getToca();
       if (oneToca.equals(otherToca)) {
-        return one.compareTo(other);
+        return Items.ITEM_COMPARATOR.compare(one, other);
       }
       return oneToca.compareTo(otherToca);
     }
   }
 
   public static Collection<Item> getSortedItems(PersistenceManager pm) {
-    return new TreeSet<Item>(allBooks(pm));
+    return Sets.newTreeSet(Items.ITEM_COMPARATOR, allBooks(pm));
   }
   
   public static Collection<Item> getParadeiroSortedItems(PersistenceManager pm) {
@@ -112,11 +114,11 @@ private final Map<Long, String> paradeiroToCodeMap;
 	  this.paradeiroToCodeMap = paradeiroToCodeMap;
   }
   
-  public Books getFancySortedBooks(PersistenceManager pm) {
+  public ItemBundle getFancySortedItems(PersistenceManager pm) {
     Collection<Item> borrowed = 
-      new TreeSet<Item>(new FancyMemberComparator(paradeiroToCodeMap));
+      new TreeSet<Item>(new FancyItemComparator(paradeiroToCodeMap));
     Collection<Item> available = 
-      new TreeSet<Item>(new FancyMemberComparator(paradeiroToCodeMap));
+      new TreeSet<Item>(new FancyItemComparator(paradeiroToCodeMap));
     for (Item item : allBooks(pm)) {
       if (item.getParadeiro() == null) {
         available.add(item);
@@ -124,30 +126,9 @@ private final Map<Long, String> paradeiroToCodeMap;
         borrowed.add(item);
       }
     }
-    return new Books(available, borrowed);
+    return new ItemBundle(available, borrowed);
   }
   
-  public static final class Books {
-
-    private final Collection<Item> available;
-    private final Collection<Item> borrowed;
-
-    public Books(
-        Collection<Item> available, 
-        Collection<Item> borrowed) {
-      this.available = available;
-      this.borrowed = borrowed;
-    }
-
-    public Collection<Item> getAvailable() {
-      return available;
-    }
-    
-    public Collection<Item> getBorrowed() {
-      return borrowed;
-    }
-  }
-
   @SuppressWarnings("unchecked")
   private static Collection<Item> allBooks(PersistenceManager pm) {
     return (Collection<Item>)pm.newQuery(Item.class).execute();

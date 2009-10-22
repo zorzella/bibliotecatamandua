@@ -55,7 +55,7 @@ public class Member implements Comparable<Member>, Serializable {
   /**
    * For GWT
    */
-  public Member() {}
+  Member() {}
   
   public Member(String codigo) {
     this(codigo, "", "", null, "", "", "", "", "", "", "", "", "", 0, 0, null, false, new Date());

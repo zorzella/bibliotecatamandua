@@ -33,7 +33,7 @@ public class DumpServlet extends HttpServlet {
       Collection<Item> items = Queries.getUnSortedItems(pm);
 
       for (Item item : items) {
-        ps.println(item.toDebugString());  
+        ps.println(toDebugString(item));
       }
 
       Collection<Loan> loans = Queries.getAll(Loan.class, pm);
@@ -50,6 +50,29 @@ public class DumpServlet extends HttpServlet {
       throw e;
     } finally {
       pm.close();
+    }
+  }
+  
+  private static String toDebugString(Item item) {
+    StringBuilder result = new StringBuilder("id:" + item.getId() + " ");
+
+    if (item.isEspecial()) {
+      result.append("<especial> ");
+    }
+    maybeAdd(result, "paradeiro", item.getParadeiro() + "");
+    maybeAdd(result, "toca", item.getToca());
+    maybeAdd(result, "isbn", item.getIsbn());
+    maybeAdd(result, "titulo", item.getTitulo());
+    maybeAdd(result, "autor", item.getAutor());
+    maybeAdd(result, "tamanho", item.getTamanho());
+    maybeAdd(result, "desde", Dates.dateToString(item.getDesde()));
+    result.append("tags:" + item.getTags());
+    return result.toString();
+  }
+  
+  private static void maybeAdd(StringBuilder result, String key, String value) {
+    if (value.trim().length() > 0) {
+      result.append(key + ":[" + value + "] ");
     }
   }
 }

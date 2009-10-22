@@ -2,5 +2,5 @@
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.7.1//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.7.1/distro-source/core/src/gwt-module.dtd">
 <module>
 	<inherits name="com.google.gwt.user.User" />
-	<source path="" includes="GwtSupport.java,Member.java,TamanduaUtil.java"/>
+	<source path="" includes="GwtSupport.java,Item.java,ItemBundle.java,Member.java,TamanduaUtil.java"/>
 </module>

@@ -10,6 +10,8 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import com.zorzella.tamandua.Item;
+import com.zorzella.tamandua.ItemBundle;
 import com.zorzella.tamandua.Member;
 import com.zorzella.tamandua.TamanduaUtil;
 
@@ -25,44 +27,67 @@ public class Tamandua implements EntryPoint {
     MemberServiceAsync memberService = GWT.create(MemberService.class);
     
     
-    final FlexTable stocksFlexTable = new FlexTable();
+    final FlexTable borrowedItems = new FlexTable();
+    final FlexTable availableItems = new FlexTable();
     final ListBox membersDropDown = new ListBox();
     
-    AsyncCallback<Collection<Member>> callback = new AsyncCallback<Collection<Member>>() {
+    AsyncCallback<Collection<Member>> sortedMembersCallback = 
+      new AsyncCallback<Collection<Member>>() {
 
-//      @Override
-      public void onFailure(Throwable caught) {
-        caught.printStackTrace();
-      }
-
-//      @Override
-      public void onSuccess(Collection<Member> members) {
-        for (Member member : members) {
-          if (member.getNome().trim().equals("")) {
-            continue;
-          }
-          membersDropDown.addItem(
-        		  member.getCodigo() + " - " + TamanduaUtil.nome(member),
-        		  member.getId().toString());
+  //      @Override
+        public void onFailure(Throwable caught) {
+          caught.printStackTrace();
         }
-        
-      }};
-    memberService.getSortedMembers(callback);
+  
+  //      @Override
+        public void onSuccess(Collection<Member> members) {
+          for (Member member : members) {
+            if (member.getNome().trim().equals("")) {
+              continue;
+            }
+            membersDropDown.addItem(
+          		  member.getCodigo() + " - " + TamanduaUtil.nome(member),
+          		  member.getId().toString());
+          }
+          
+        }};
+    memberService.getSortedMembers(sortedMembersCallback);
     
     ChangeHandler memberChangeHandler = new ChangeHandler() {
 		
 		public void onChange(ChangeEvent event) {
-			stocksFlexTable.setText(0, 0, ((ListBox)event.getSource()).getSelectedIndex() + "");
+			borrowedItems.setText(0, 0, ((ListBox)event.getSource()).getSelectedIndex() + "");
 		}
 	};
 	
 	membersDropDown.addChangeHandler(memberChangeHandler);
-    
-    
-    stocksFlexTable.setText(0, 0, "Symbol");
 
-    mainPanel.add(stocksFlexTable);
+	AsyncCallback<ItemBundle> sortedItemsCallback = new AsyncCallback<ItemBundle>() {
+
+	  @Override
+	  public void onFailure(Throwable caught) {
+	    caught.printStackTrace();
+	  }
+
+	  @Override
+	  public void onSuccess(ItemBundle itemBundle) {
+	    int i = 0;
+	    for (Item item : itemBundle.getBorrowed()) {
+	      borrowedItems.setText(i, 0, item.getTitulo());
+	      i++;
+	    }
+	    i = 0;
+        for (Item item : itemBundle.getAvailable()) {
+          availableItems.setText(i, 0, item.getTitulo());
+          i++;
+        }
+	  }};
+	memberService.getFancySortedItems(sortedItemsCallback);
+    
+
     mainPanel.add(membersDropDown);
+    mainPanel.add(borrowedItems);
+    mainPanel.add(availableItems);
     
     RootPanel.get("list").add(mainPanel);
 

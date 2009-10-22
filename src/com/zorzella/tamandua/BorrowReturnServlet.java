@@ -3,7 +3,6 @@ package com.zorzella.tamandua;
 import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import com.google.appengine.repackaged.com.google.common.collect.Maps;
 
-import com.zorzella.tamandua.Queries.Books;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -73,16 +72,16 @@ public class BorrowReturnServlet extends HttpServlet {
 //    ps.println("<input type='submit' value='Empresta e Devolve'><br>");
 
     Map<Long, String> map = getMap(members);
-    Books books = new Queries(map).getFancySortedBooks(pm);
+    ItemBundle itemBundle = new Queries(map).getFancySortedItems(pm);
 
     ps.println("<select name='r' multiple size=6>");
 
-    printBorrowedSelectOptions(pm, ps, books);
+    printBorrowedSelectOptions(pm, ps, itemBundle);
 
     ps.println("</select><br><br><br><br>\n" +
     		"<select name='b' multiple size=10>");
     
-    printAvailableSelectOptions(ps, books);
+    printAvailableSelectOptions(ps, itemBundle);
 
     ps.println("</select><br><br><br><br>");
 
@@ -91,54 +90,54 @@ public class BorrowReturnServlet extends HttpServlet {
   }
 
   private static void printBorrowedSelectOptions(PersistenceManager pm, PrintWriter ps,
-      Books books) {
-    for (Item book : books.getBorrowed()) {
-      Long paradeiro = book.getParadeiro();
+      ItemBundle itemBundle) {
+    for (Item item : itemBundle.getBorrowed()) {
+      Long paradeiro = item.getParadeiro();
       String memberCodigo = "";
       if (paradeiro != null) {
         memberCodigo = "[" + 
           Queries.getById(Member.class, pm, "id", paradeiro + "").getCodigo()
           + "] ";
       }
-      String htmlValue = memberCodigo + book.getStrippedTitle();
+      String htmlValue = memberCodigo + Items.getStrippedTitle(item);
       ps.println(String.format(
-          "<option value='%s'>%s", book.getId(), htmlValue));
+          "<option value='%s'>%s", item.getId(), htmlValue));
     }
   }
 
-  private static void printAvailableSelectOptions(PrintWriter ps, Books books) {
+  private static void printAvailableSelectOptions(PrintWriter ps, ItemBundle itemBundle) {
     String lastTitle = "";
-    for (Item book : books.getAvailable()) {
-      Long paradeiro = book.getParadeiro();
-      String strippedTitle = book.getStrippedTitle();
+    for (Item item : itemBundle.getAvailable()) {
+      Long paradeiro = item.getParadeiro();
+      String strippedTitle = Items.getStrippedTitle(item);
       if (lastTitle.equals(strippedTitle)) {
         // Show only a single copy of each available title
         continue;
       }
-      if (isABreak(lastTitle, book)) {
+      if (isABreak(lastTitle, item)) {
         ps.println("</select><br>\n" +
           "<select name='b' multiple size=10>");
       }
       ps.println(String.format(
-          "<option value='%s'> %s", book.getId(), strippedTitle));
+          "<option value='%s'> %s", item.getId(), strippedTitle));
 
       lastTitle = strippedTitle;
     }
   }
 
-  private static boolean isABreak(String lastTitle, Item book) {
-    String bookTitle = book.getStrippedTitle().toLowerCase();
-    String lastBookTitle = lastTitle.toLowerCase();
-    boolean dToH = lastBookTitle.matches("^[a-c].*") && 
-        bookTitle.matches("^[d-h].*");
-    boolean iToO = lastBookTitle.matches("^[d-h].*") && 
-        bookTitle.matches("^[i-o].*");
-    boolean pToZ = lastBookTitle.matches("^[i-o].*") && 
-        bookTitle.matches("^[p-z].*");
+  private static boolean isABreak(String lastTitle, Item item) {
+    String itemTitle = Items.getStrippedTitle(item).toLowerCase();
+    String lastItemTitle = lastTitle.toLowerCase();
+    boolean dToH = lastItemTitle.matches("^[a-c].*") && 
+        itemTitle.matches("^[d-h].*");
+    boolean iToO = lastItemTitle.matches("^[d-h].*") && 
+        itemTitle.matches("^[i-o].*");
+    boolean pToZ = lastItemTitle.matches("^[i-o].*") && 
+        itemTitle.matches("^[p-z].*");
     return dToH || iToO || pToZ;
   }
 
-  private static Map<Long, String> getMap(Collection<Member> members) {
+  public static Map<Long, String> getMap(Collection<Member> members) {
     Map<Long, String> result = Maps.newHashMap();
     for (Member member : members) {
         result.put(member.getId(), member.getCodigo());
