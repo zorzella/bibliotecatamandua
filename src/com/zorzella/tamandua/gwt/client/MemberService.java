@@ -3,6 +3,7 @@ package com.zorzella.tamandua.gwt.client;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import com.zorzella.tamandua.Item;
 import com.zorzella.tamandua.ItemBundle;
 import com.zorzella.tamandua.Member;
 
@@ -14,5 +15,7 @@ public interface MemberService extends RemoteService {
   Collection<Member> getSortedMembers();
   
   ItemBundle getFancySortedItems();
+
+  void returnItem(String memberCode, Item item);
   
 }
