@@ -1,5 +1,6 @@
 package com.zorzella.tamandua;
 
+import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import com.google.appengine.repackaged.com.google.common.collect.Sets;
 
 import com.zorzella.tamandua.Item.Type;
@@ -134,8 +135,24 @@ private final Map<Long, String> paradeiroToCodeMap;
     return (Collection<Item>)pm.newQuery(Item.class).execute();
   }
   
-  public static Collection<Member> getSortedMembers(PersistenceManager pm) {
+  public static Collection<Member> getSortedMembersWithBlanks(PersistenceManager pm) {
     return new TreeSet<Member>(allMembers(pm));
+  }
+
+  public static Collection<Member> getSortedMembers(PersistenceManager pm) {
+    return new TreeSet<Member>(allValidMembers(pm));
+  }
+
+  @SuppressWarnings("unchecked")
+  private static Collection<Member> allValidMembers(PersistenceManager pm) {
+    Collection<Member> temp = (Collection<Member>)pm.newQuery(Member.class).execute();
+    Collection<Member> result = Lists.newArrayList();
+    for (Member member : temp) {
+      if (!member.getCodigo().trim().equals("")) {
+        result.add(member);
+      }
+    }
+    return result;
   }
 
   @SuppressWarnings("unchecked")

@@ -112,7 +112,7 @@ public class ModifyMembersServlet extends HttpServlet {
         ps.println("<th>Zip</th>");
       }
 
-      Collection<Member> sortedMembers = Queries.getSortedMembers(pm);
+      Collection<Member> sortedMembers = Queries.getSortedMembersWithBlanks(pm);
 
       boolean even = false;
       for (Member member : sortedMembers) {

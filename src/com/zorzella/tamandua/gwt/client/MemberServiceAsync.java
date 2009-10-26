@@ -16,4 +16,6 @@ public interface MemberServiceAsync {
 
   void returnItem(String memberCode, Item item, AsyncCallback<Void> callback);
 
+  void borrowItem(String memberCode, Item item, AsyncCallback<Void> borrowItemCallback);
+
 }

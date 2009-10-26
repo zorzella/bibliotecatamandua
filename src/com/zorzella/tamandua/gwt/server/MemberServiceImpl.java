@@ -42,18 +42,32 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
 
   @Override
-  public void returnItem(String memberCode, Item item) {
+  public void returnItem(String memberId, Item item) {
     Item liveItem = pm.getObjectById(Item.class, item.getId());
-    if (!memberCode.equals(liveItem.getParadeiro().toString())) {
+    if (!memberId.equals(liveItem.getParadeiro().toString())) {
       throw new IllegalArgumentException(String.format(
           "Item '%s' is in paradeiro '%s', not in '%s'.", 
-          item.getTitulo(), item.getParadeiro(), memberCode));
+          item.getTitulo(), item.getParadeiro(), memberId));
     }
     Transaction currentTransaction = pm.currentTransaction();
     currentTransaction.begin();
     liveItem.setParadeiro(null);
     pm.makePersistent(liveItem);
     currentTransaction.commit();
-//    pm.flush();
+  }
+
+  @Override
+  public void borrowItem(String memberId, Item item) {
+    Item liveItem = pm.getObjectById(Item.class, item.getId());
+    if (liveItem.getParadeiro() != null) {
+      throw new IllegalArgumentException(String.format(
+          "Item '%s' is already in paradeiro '%s'.", 
+          item.getTitulo(), item.getParadeiro()));
+    }
+    Transaction currentTransaction = pm.currentTransaction();
+    currentTransaction.begin();
+    liveItem.setParadeiro(Long.valueOf(memberId));
+    pm.makePersistent(liveItem);
+    currentTransaction.commit();
   }
 }

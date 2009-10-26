@@ -17,5 +17,7 @@ public interface MemberService extends RemoteService {
   ItemBundle getFancySortedItems();
 
   void returnItem(String memberCode, Item item);
+
+  void borrowItem(String memberCode, Item item);
   
 }
