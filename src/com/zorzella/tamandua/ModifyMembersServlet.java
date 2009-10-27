@@ -306,79 +306,79 @@ public class ModifyMembersServlet extends HttpServlet {
       pm.makePersistent(new Member(""));
     }
 
-    Collection<Member> items = Queries.getSortedMembersWithBlanks(pm);
-    for (Member item : items) {
-      String id = item.getId() + "";
+    Collection<Member> members = Queries.getSortedMembersWithBlanks(pm);
+    for (Member member : members) {
+      String id = member.getId() + "";
       String 
       key = "codigo-" + id;
       if (map.containsKey(key)) {
-        item.setCodigo(toString(map, key));
+        member.setCodigo(toString(map, key));
       }
       key = "nome-" + id;
       if (map.containsKey(key)) {
-        item.setNome(toString(map, key));
+        member.setNome(toString(map, key));
       }
       key = "sobrenome-" + id;
       if (map.containsKey(key)) {
-        item.setSobrenome(toString(map, key));
+        member.setSobrenome(toString(map, key));
       }
       key = "nascimento-" + id;
       if (map.containsKey(key)) {
-        item.setNascimento(toDate(map, key));
+        member.setNascimento(toDate(map, key));
       } 
       key = "email-" + id;
       if (map.containsKey(key)) {
-        item.setEmail(toString(map, key));
+        member.setEmail(toString(map, key));
       } 
       key = "pai-" + id;
       if (map.containsKey(key)) {
-        item.setPai(toString(map, key));
+        member.setPai(toString(map, key));
       } 
       key = "mae-" + id;
       if (map.containsKey(key)) {
-        item.setMae(toString(map, key));
+        member.setMae(toString(map, key));
       } 
       key = "dolares-" + id;
       if (map.containsKey(key)) {
-        item.setDolares(toInt(map, key));
+        member.setDolares(toInt(map, key));
       } 
       key = "livros-" + id;
       if (map.containsKey(key)) {
-        item.setLivrosDoados(toInt(map, key));
+        member.setLivrosDoados(toInt(map, key));
       } 
       key = "fone-" + id;
       if (map.containsKey(key)) {
-        item.setFone(toString(map, key));
+        member.setFone(toString(map, key));
       } 
       key = "fone2-" + id;
       if (map.containsKey(key)) {
-        item.setFone2(toString(map, key));
+        member.setFone2(toString(map, key));
       } 
       key = "desde-" + id;
       if (map.containsKey(key)) {
-        item.setDesde(toDate(map, key));
+        member.setDesde(toDate(map, key));
       } 
       key = "confirmado-" + id;
       if (map.containsKey(key)) {
-        item.setConfirmado(toBoolean(map, key));
+        member.setConfirmado(toBoolean(map, key));
       } 
       key = "endereco-" + id;
       if (map.containsKey(key)) {
-        item.setEndereco(toString(map, key));
+        member.setEndereco(toString(map, key));
       } 
       key = "cidade-" + id;
       if (map.containsKey(key)) {
-        item.setCidade(toString(map, key));
+        member.setCidade(toString(map, key));
       } 
       key = "estado-" + id;
       if (map.containsKey(key)) {
-        item.setEstado(toString(map, key));
+        member.setEstado(toString(map, key));
       } 
       key = "zip-" + id;
       if (map.containsKey(key)) {
-        item.setZip(toString(map, key));
+        member.setZip(toString(map, key));
       }
-      pm.makePersistent(item);
+      pm.makePersistent(member);
     }
     pm.close();
     resp.sendRedirect("/modifymembers" + (toAdd > 0 ? "?added=true" : ""));

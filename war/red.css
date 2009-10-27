@@ -1,3 +1,50 @@
+.gwt-SliderBar-shell {
+/*  border: 2px solid #faf9f7; 
+  border-right: 2px solid #848280;
+  border-bottom: 2px solid #848280;
+  background-color: #efebe7; */
+  height: 30pt;
+  width: 100%;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-line {
+  border: 1px solid black;
+/*  background-color: white; */
+  height: 4px;
+  width: 90%;
+/*  top: 22pt; */
+  top: 13pt; 
+    overflow: hidden;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-knob {
+/*  top: 14pt; */
+  top: 5pt; 
+    width: 11px;
+  height: 21px;
+  z-index: 1;
+  cursor: pointer;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-tick {
+  top: 12pt;
+  width: 1px;
+  height: 8pt;
+  background: black;
+  overflow: hidden;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-label {
+  top: 2pt;
+  font-size: 8pt;
+  cursor: default;
+}
+.gwt-SliderBar-shell-focused {
+}
+.gwt-SliderBar-shell .gwt-SliderBar-line-sliding {
+  background-color: #DDDDDD;
+  cursor: pointer;
+}
+
+
+
+
 .m-button {
 background-color:#E3E3E3;
 background-image:url(/reader/ui/1360359416-mobile-sprite.png);

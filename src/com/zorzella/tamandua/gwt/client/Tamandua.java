@@ -6,7 +6,10 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.gen2.picker.client.SliderBar;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -165,6 +168,7 @@ public class Tamandua implements EntryPoint {
     private final MembersDropDown membersDropDown;
     private final ActivityTable activityTable;
     private final MemberServiceAsync memberService;
+    private final SliderBar sliderBar;
 
     private ItemBundle itemBundle;
 
@@ -173,12 +177,14 @@ public class Tamandua implements EntryPoint {
         Panel borrowedItemListWidget, 
         MembersDropDown membersDropDown, 
         ActivityTable activityTable, 
-        MemberServiceAsync memberService) {
+        MemberServiceAsync memberService, 
+        SliderBar sliderBar) {
       this.availableItemListWidget = availableItemListWidget;
       this.borrowedItemListWidget = borrowedItemListWidget;
       this.membersDropDown = membersDropDown;
       this.activityTable = activityTable;
       this.memberService = memberService;
+      this.sliderBar = sliderBar;
     }
 
     public void onSuccess(ItemBundle itemBundle) {
@@ -205,6 +211,8 @@ public class Tamandua implements EntryPoint {
         Widget temp = buildAvailableItemWidget(item);
         availableItemListWidget.add(temp);
       }
+      // 10 is a fudge
+      sliderBar.setMaxValue(10 + availableItemListWidget.getOffsetHeight() - SCROLL_PANEL_HEIGH);
     }
 
     private Widget buildAvailableItemWidget(final Item item) {
@@ -280,25 +288,28 @@ public class Tamandua implements EntryPoint {
     memberService.adminOrDie(callback);
   }
 
+  public static final int SCROLL_PANEL_HEIGH = 320;
+  
   void foo(MemberServiceAsync memberService) {
     final Panel borrowedItemsTable = new FlowPanel();
     final Widget separator = new HTML("<hr/>");
     final Panel availableItemsTable = new FlowPanel();
-    final ScrollPanel p = new ScrollPanel();
-    p.setHeight("320px");
-    p.add(availableItemsTable);
+    final ScrollPanel scrollPanel = new ScrollPanel();
+    scrollPanel.setHeight(SCROLL_PANEL_HEIGH + "px");
+    scrollPanel.add(availableItemsTable);
     final ActivityTable activityTable = new ActivityTable();
     final MembersDropDown membersDropDown = new MembersDropDown();
     
+    SliderBar sliderBar = new SliderBar(0.0, 100.0);
+
     final SortedItemsCallback sortedItemsCallback =
       new SortedItemsCallback(
           availableItemsTable, 
           borrowedItemsTable, 
           membersDropDown, 
           activityTable, 
-          memberService);
-
-    
+          memberService,
+          sliderBar);
     
     final AsyncCallback<Collection<Member>> sortedMembersCallback = 
       new MembersDropDownCallback(membersDropDown, memberService, sortedItemsCallback);
@@ -311,8 +322,22 @@ public class Tamandua implements EntryPoint {
     mainPanel.add(activityTable);
     mainPanel.add(membersDropDown);
     mainPanel.add(borrowedItemsTable);
-    mainPanel.add(separator);
-    mainPanel.add(p);
+    
+    sliderBar.setStepSize(5.0);
+//    sliderBar.setNumTicks(10);
+//    sliderBar.setNumLabels(5);
+    mainPanel.add(sliderBar);
+    
+    ValueChangeHandler<Double> handler = new ValueChangeHandler<Double>() {
+      
+      public void onValueChange(ValueChangeEvent<Double> event) {
+        scrollPanel.setScrollPosition(event.getValue().intValue());
+      }
+    };
+    sliderBar.addValueChangeHandler(handler);
+    
+//    mainPanel.add(separator);
+    mainPanel.add(scrollPanel);
 //    mainPanel.add(availableItemsTable);
     
     RootPanel.get("list").add(mainPanel);

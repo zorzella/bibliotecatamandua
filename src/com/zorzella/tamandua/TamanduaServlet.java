@@ -37,7 +37,6 @@ public class TamanduaServlet extends HttpServlet {
     if (AdminOrDie.adminOrLogin(req, resp) == null){
       return;
     }
-
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
     PrintWriter ps = new PrintWriter(
