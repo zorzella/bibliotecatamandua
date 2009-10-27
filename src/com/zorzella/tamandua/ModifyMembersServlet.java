@@ -306,7 +306,7 @@ public class ModifyMembersServlet extends HttpServlet {
       pm.makePersistent(new Member(""));
     }
 
-    Collection<Member> items = Queries.getSortedMembers(pm);
+    Collection<Member> items = Queries.getSortedMembersWithBlanks(pm);
     for (Member item : items) {
       String id = item.getId() + "";
       String 

@@ -42,7 +42,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
         Lists.newArrayList(temp.getBorrowed()));
   }
 
-  @Override
+//  @Override
   public void returnItem(String memberId, Item item) {
     Item liveItem = pm.getObjectById(Item.class, item.getId());
     if (!memberId.equals(liveItem.getParadeiro().toString())) {
@@ -57,7 +57,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
     currentTransaction.commit();
   }
 
-  @Override
+//  @Override
   public void borrowItem(String memberId, Item item) {
     Item liveItem = pm.getObjectById(Item.class, item.getId());
     if (liveItem.getParadeiro() != null) {
@@ -72,7 +72,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
     currentTransaction.commit();
   }
 
-  @Override
+//  @Override
   public void adminOrDie() {
     AdminOrDie.adminOrDie();
   }

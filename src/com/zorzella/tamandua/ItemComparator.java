@@ -9,7 +9,7 @@ public class ItemComparator implements Comparator<Item> {
 
   private static final Collator collator = Collator.getInstance(Locale.US);
 
-  @Override
+//  @Override
   public int compare(Item one, Item other) {
     String tituloOne = Items.strip(one.getTitulo());
     String tituloOther = Items.strip(other.getTitulo());

@@ -140,7 +140,7 @@ public class Tamandua implements EntryPoint {
         this.returned = new Label("[" + memberCode + "] returned: " + item.getTitulo());
       }
       
-      @Override
+//      @Override
       public void onSuccess(Void result) {
         activityTable.addItem(returned);
       }
@@ -154,7 +154,7 @@ public class Tamandua implements EntryPoint {
         this.borrowed = new Label("[" + memberCode + "] borrowed: " + item.getTitulo());
       }
 
-      @Override
+//      @Override
       public void onSuccess(Void result) {
         activityTable.addItem(borrowed);
       }
@@ -212,7 +212,7 @@ public class Tamandua implements EntryPoint {
       result.setStyleName("entry-row");
       ClickHandler clickHandler = new ClickHandler() {
         
-        @Override
+//        @Override
         public void onClick(ClickEvent event) {
           String memberCode = selectedMember();
           if (memberCode.trim().equals("")) {
@@ -244,7 +244,7 @@ public class Tamandua implements EntryPoint {
       result.setStyleName("entry-row");
       ClickHandler clickHandler = new ClickHandler() {
         
-        @Override
+//        @Override
         public void onClick(ClickEvent event) {
           String memberCode = selectedMember();
           AsyncCallback<Void> returnItemCallback = new ReturnItemCallback(membersDropDown.idToCode(memberCode), item);
@@ -268,12 +268,12 @@ public class Tamandua implements EntryPoint {
 
     AsyncCallback<Void> callback = new AsyncCallback<Void>() {
       
-      @Override
+//      @Override
       public void onSuccess(Void result) {
         foo(memberService);
       }
       
-      @Override
+//      @Override
       public void onFailure(Throwable caught) {}
     };
     
@@ -285,7 +285,7 @@ public class Tamandua implements EntryPoint {
     final Widget separator = new HTML("<hr/>");
     final Panel availableItemsTable = new FlowPanel();
     final ScrollPanel p = new ScrollPanel();
-    p.setHeight("200px");
+    p.setHeight("320px");
     p.add(availableItemsTable);
     final ActivityTable activityTable = new ActivityTable();
     final MembersDropDown membersDropDown = new MembersDropDown();
@@ -312,12 +312,22 @@ public class Tamandua implements EntryPoint {
     mainPanel.add(membersDropDown);
     mainPanel.add(borrowedItemsTable);
     mainPanel.add(separator);
-//    mainPanel.add(p);
-//    mainPanel.add(separator);
-    mainPanel.add(availableItemsTable);
+    mainPanel.add(p);
+//    mainPanel.add(availableItemsTable);
     
     RootPanel.get("list").add(mainPanel);
 
   }
 
+  public native void iphone() /*-{
+    if (navigator.userAgent.indexOf('iPhone') != -1) {
+      addEventListener("load", function() {
+          setTimeout(hideURLbar, 0);
+      }, false);
+    }
+
+    function hideURLbar() {
+      window.scrollTo(0, 1);
+    }
+  }-*/; 
 }
