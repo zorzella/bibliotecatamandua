@@ -1,10 +1,282 @@
-function com_zorzella_tamandua_gwt_tamandua(){var l='',F='" for "gwt:onLoadErrorFn"',D='" for "gwt:onPropertyErrorFn"',n='"><\/script>',p='#',r='/',vb='<script defer="defer">com_zorzella_tamandua_gwt_tamandua.onInjectionDone(\'com.zorzella.tamandua.gwt.tamandua\')<\/script>',Ab='<script id="',A='=',q='?',C='Bad handler "',ub='DOMContentLoaded',tb="GWT module 'com.zorzella.tamandua.gwt.tamandua' needs to be (re)compiled, please run a compile or use the Compile/Browse button in hosted mode",o='SCRIPT',zb='__gwt_marker_com.zorzella.tamandua.gwt.tamandua',s='base',nb='begin',cb='bootstrap',u='clear.cache.gif',m='com.zorzella.tamandua.gwt.tamandua',z='content',yb='end',mb='gecko',ob='gecko1_8',wb='gwt.hybrid',E='gwt:onLoadErrorFn',B='gwt:onPropertyErrorFn',y='gwt:property',rb='hosted.html?com_zorzella_tamandua_gwt_tamandua',lb='ie6',kb='ie8',ab='iframe',t='img',bb="javascript:''",qb='loadExternalRefs',v='meta',eb='moduleRequested',xb='moduleStartup',jb='msie',w='name',gb='opera',db='position:absolute;width:0;height:0;border:none',ib='safari',sb='selectingPermutation',x='startup',pb='unknown',fb='user.agent',hb='webkit';var Cb=window,k=document,Bb=Cb.__gwtStatsEvent?function(a){return Cb.__gwtStatsEvent(a)}:null,qc,gc,bc,ac=l,jc={},tc=[],pc=[],Fb=[],mc,oc;Bb&&Bb({moduleName:m,subSystem:x,evtGroup:cb,millis:(new Date()).getTime(),type:nb});if(!Cb.__gwt_stylesLoaded){Cb.__gwt_stylesLoaded={}}if(!Cb.__gwt_scriptsLoaded){Cb.__gwt_scriptsLoaded={}}function fc(){var b=false;try{b=Cb.external&&(Cb.external.gwtOnLoad&&Cb.location.search.indexOf(wb)==-1)}catch(a){}fc=function(){return b};return b}
-function ic(){if(qc&&gc){var c=k.getElementById(m);var b=c.contentWindow;if(fc()){b.__gwt_getProperty=function(a){return cc(a)}}com_zorzella_tamandua_gwt_tamandua=null;b.gwtOnLoad(mc,m,ac);Bb&&Bb({moduleName:m,subSystem:x,evtGroup:xb,millis:(new Date()).getTime(),type:yb})}}
-function dc(){var j,h=zb,i;k.write(Ab+h+n);i=k.getElementById(h);j=i&&i.previousSibling;while(j&&j.tagName!=o){j=j.previousSibling}function f(b){var a=b.lastIndexOf(p);if(a==-1){a=b.length}var c=b.indexOf(q);if(c==-1){c=b.length}var d=b.lastIndexOf(r,Math.min(c,a));return d>=0?b.substring(0,d+1):l}
-;if(j&&j.src){ac=f(j.src)}if(ac==l){var e=k.getElementsByTagName(s);if(e.length>0){ac=e[e.length-1].href}else{ac=f(k.location.href)}}else if(ac.match(/^\w+:\/\//)){}else{var g=k.createElement(t);g.src=ac+u;ac=f(g.src)}if(i){i.parentNode.removeChild(i)}}
-function nc(){var f=document.getElementsByTagName(v);for(var d=0,g=f.length;d<g;++d){var e=f[d],h=e.getAttribute(w),b;if(h){if(h==y){b=e.getAttribute(z);if(b){var i,c=b.indexOf(A);if(c>=0){h=b.substring(0,c);i=b.substring(c+1)}else{h=b;i=l}jc[h]=i}}else if(h==B){b=e.getAttribute(z);if(b){try{oc=eval(b)}catch(a){alert(C+b+D)}}}else if(h==E){b=e.getAttribute(z);if(b){try{mc=eval(b)}catch(a){alert(C+b+F)}}}}}}
-function cc(d){var e=pc[d](),b=tc[d];if(e in b){return e}var a=[];for(var c in b){a[b[c]]=c}if(oc){oc(d,a,e)}throw null}
-var ec;function hc(){if(!ec){ec=true;var a=k.createElement(ab);a.src=bb;a.id=m;a.style.cssText=db;a.tabIndex=-1;k.body.appendChild(a);Bb&&Bb({moduleName:m,subSystem:x,evtGroup:xb,millis:(new Date()).getTime(),type:eb});a.contentWindow.location.replace(ac+rc)}}
-pc[fb]=function(){var d=navigator.userAgent.toLowerCase();var b=function(a){return parseInt(a[1])*1000+parseInt(a[2])};if(d.indexOf(gb)!=-1){return gb}else if(d.indexOf(hb)!=-1){return ib}else if(d.indexOf(jb)!=-1){if(document.documentMode>=8){return kb}else{var c=/msie ([0-9]+)\.([0-9]+)/.exec(d);if(c&&c.length==3){var e=b(c);if(e>=6000){return lb}}}}else if(d.indexOf(mb)!=-1){var c=/rv:([0-9]+)\.([0-9]+)/.exec(d);if(c&&c.length==3){if(b(c)>=1008)return ob}return mb}return pb};tc[fb]={gecko:0,gecko1_8:1,ie6:2,ie8:3,opera:4,safari:5};com_zorzella_tamandua_gwt_tamandua.onScriptLoad=function(){if(ec){gc=true;ic()}};com_zorzella_tamandua_gwt_tamandua.onInjectionDone=function(){qc=true;Bb&&Bb({moduleName:m,subSystem:x,evtGroup:qb,millis:(new Date()).getTime(),type:yb});ic()};dc();var rc;if(fc()){if(Cb.external.initModule&&Cb.external.initModule(m)){Cb.location.reload();return}rc=rb}nc();Bb&&Bb({moduleName:m,subSystem:x,evtGroup:cb,millis:(new Date()).getTime(),type:sb});if(!rc){try{alert(tb);return}catch(a){return}}var lc;function kc(){if(!bc){bc=true;ic();if(k.removeEventListener){k.removeEventListener(ub,kc,false)}if(lc){clearInterval(lc)}}}
-if(k.addEventListener){k.addEventListener(ub,function(){hc();kc()},false)}var lc=setInterval(function(){if(/loaded|complete/.test(k.readyState)){hc();kc()}},50);Bb&&Bb({moduleName:m,subSystem:x,evtGroup:cb,millis:(new Date()).getTime(),type:yb});Bb&&Bb({moduleName:m,subSystem:x,evtGroup:qb,millis:(new Date()).getTime(),type:nb});k.write(vb)}
+function com_zorzella_tamandua_gwt_tamandua(){
+  var $wnd_0 = window, $doc_0 = document, $stats = $wnd_0.__gwtStatsEvent?function(a){
+    return $wnd_0.__gwtStatsEvent(a);
+  }
+  :null, scriptsDone, loadDone, bodyDone, base = '', metaProps = {}, values = [], providers = [], answers = [], onLoadErrorFunc, propertyErrorFunc;
+  $stats && $stats({moduleName:'com.zorzella.tamandua.gwt.tamandua', subSystem:'startup', evtGroup:'bootstrap', millis:(new Date()).getTime(), type:'begin'});
+  if (!$wnd_0.__gwt_stylesLoaded) {
+    $wnd_0.__gwt_stylesLoaded = {};
+  }
+  if (!$wnd_0.__gwt_scriptsLoaded) {
+    $wnd_0.__gwt_scriptsLoaded = {};
+  }
+  function isHostedMode(){
+    var result = false;
+    try {
+      result = $wnd_0.external && ($wnd_0.external.gwtOnLoad && $wnd_0.location.search.indexOf('gwt.hybrid') == -1);
+    }
+     catch (e) {
+    }
+    isHostedMode = function(){
+      return result;
+    }
+    ;
+    return result;
+  }
+
+  function maybeStartModule(){
+    if (scriptsDone && loadDone) {
+      var iframe = $doc_0.getElementById('com.zorzella.tamandua.gwt.tamandua');
+      var frameWnd = iframe.contentWindow;
+      if (isHostedMode()) {
+        frameWnd.__gwt_getProperty = function(name_0){
+          return computePropValue(name_0);
+        }
+        ;
+      }
+      com_zorzella_tamandua_gwt_tamandua = null;
+      frameWnd.gwtOnLoad(onLoadErrorFunc, 'com.zorzella.tamandua.gwt.tamandua', base);
+      $stats && $stats({moduleName:'com.zorzella.tamandua.gwt.tamandua', subSystem:'startup', evtGroup:'moduleStartup', millis:(new Date()).getTime(), type:'end'});
+    }
+  }
+
+  function computeScriptBase(){
+    var thisScript, markerId = '__gwt_marker_com.zorzella.tamandua.gwt.tamandua', markerScript;
+    $doc_0.write('<script id="' + markerId + '"><\/script>');
+    markerScript = $doc_0.getElementById(markerId);
+    thisScript = markerScript && markerScript.previousSibling;
+    while (thisScript && thisScript.tagName != 'SCRIPT') {
+      thisScript = thisScript.previousSibling;
+    }
+    function getDirectoryOfFile(path){
+      var hashIndex = path.lastIndexOf('#');
+      if (hashIndex == -1) {
+        hashIndex = path.length;
+      }
+      var queryIndex = path.indexOf('?');
+      if (queryIndex == -1) {
+        queryIndex = path.length;
+      }
+      var slashIndex = path.lastIndexOf('/', Math.min(queryIndex, hashIndex));
+      return slashIndex >= 0?path.substring(0, slashIndex + 1):'';
+    }
+
+    ;
+    if (thisScript && thisScript.src) {
+      base = getDirectoryOfFile(thisScript.src);
+    }
+    if (base == '') {
+      var baseElements = $doc_0.getElementsByTagName('base');
+      if (baseElements.length > 0) {
+        base = baseElements[baseElements.length - 1].href;
+      }
+       else {
+        base = getDirectoryOfFile($doc_0.location.href);
+      }
+    }
+     else if (base.match(/^\w+:\/\//)) {
+    }
+     else {
+      var img = $doc_0.createElement('img');
+      img.src = base + 'clear.cache.gif';
+      base = getDirectoryOfFile(img.src);
+    }
+    if (markerScript) {
+      markerScript.parentNode.removeChild(markerScript);
+    }
+  }
+
+  function processMetas(){
+    var metas = document.getElementsByTagName('meta');
+    for (var i = 0, n = metas.length; i < n; ++i) {
+      var meta = metas[i], name_0 = meta.getAttribute('name'), content;
+      if (name_0) {
+        if (name_0 == 'gwt:property') {
+          content = meta.getAttribute('content');
+          if (content) {
+            var value, eq = content.indexOf('=');
+            if (eq >= 0) {
+              name_0 = content.substring(0, eq);
+              value = content.substring(eq + 1);
+            }
+             else {
+              name_0 = content;
+              value = '';
+            }
+            metaProps[name_0] = value;
+          }
+        }
+         else if (name_0 == 'gwt:onPropertyErrorFn') {
+          content = meta.getAttribute('content');
+          if (content) {
+            try {
+              propertyErrorFunc = eval(content);
+            }
+             catch (e) {
+              alert('Bad handler "' + content + '" for "gwt:onPropertyErrorFn"');
+            }
+          }
+        }
+         else if (name_0 == 'gwt:onLoadErrorFn') {
+          content = meta.getAttribute('content');
+          if (content) {
+            try {
+              onLoadErrorFunc = eval(content);
+            }
+             catch (e) {
+              alert('Bad handler "' + content + '" for "gwt:onLoadErrorFn"');
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function unflattenKeylistIntoAnswers(propValArray, value){
+    var answer = answers;
+    for (var i = 0, n = propValArray.length - 1; i < n; ++i) {
+      answer = answer[propValArray[i]] || (answer[propValArray[i]] = []);
+    }
+    answer[propValArray[n]] = value;
+  }
+
+  function computePropValue(propName){
+    var value = providers[propName](), allowedValuesMap = values[propName];
+    if (value in allowedValuesMap) {
+      return value;
+    }
+    var allowedValuesList = [];
+    for (var k in allowedValuesMap) {
+      allowedValuesList[allowedValuesMap[k]] = k;
+    }
+    if (propertyErrorFunc) {
+      propertyErrorFunc(propName, allowedValuesList, value);
+    }
+    throw null;
+  }
+
+  var frameInjected;
+  function maybeInjectFrame(){
+    if (!frameInjected) {
+      frameInjected = true;
+      var iframe = $doc_0.createElement('iframe');
+      iframe.src = "javascript:''";
+      iframe.id = 'com.zorzella.tamandua.gwt.tamandua';
+      iframe.style.cssText = 'position:absolute;width:0;height:0;border:none';
+      iframe.tabIndex = -1;
+      $doc_0.body.appendChild(iframe);
+      $stats && $stats({moduleName:'com.zorzella.tamandua.gwt.tamandua', subSystem:'startup', evtGroup:'moduleStartup', millis:(new Date()).getTime(), type:'moduleRequested'});
+      iframe.contentWindow.location.replace(base + strongName);
+    }
+  }
+
+  providers['user.agent'] = function(){
+    var ua = navigator.userAgent.toLowerCase();
+    var makeVersion = function(result){
+      return parseInt(result[1]) * 1000 + parseInt(result[2]);
+    }
+    ;
+    if (ua.indexOf('opera') != -1) {
+      return 'opera';
+    }
+     else if (ua.indexOf('webkit') != -1) {
+      return 'safari';
+    }
+     else if (ua.indexOf('msie') != -1) {
+      if (document.documentMode >= 8) {
+        return 'ie8';
+      }
+       else {
+        var result_0 = /msie ([0-9]+)\.([0-9]+)/.exec(ua);
+        if (result_0 && result_0.length == 3) {
+          var v = makeVersion(result_0);
+          if (v >= 6000) {
+            return 'ie6';
+          }
+        }
+      }
+    }
+     else if (ua.indexOf('gecko') != -1) {
+      var result_0 = /rv:([0-9]+)\.([0-9]+)/.exec(ua);
+      if (result_0 && result_0.length == 3) {
+        if (makeVersion(result_0) >= 1008)
+          return 'gecko1_8';
+      }
+      return 'gecko';
+    }
+    return 'unknown';
+  }
+  ;
+  values['user.agent'] = {gecko:0, gecko1_8:1, ie6:2, ie8:3, opera:4, safari:5};
+  com_zorzella_tamandua_gwt_tamandua.onScriptLoad = function(){
+    if (frameInjected) {
+      loadDone = true;
+      maybeStartModule();
+    }
+  }
+  ;
+  com_zorzella_tamandua_gwt_tamandua.onInjectionDone = function(){
+    scriptsDone = true;
+    $stats && $stats({moduleName:'com.zorzella.tamandua.gwt.tamandua', subSystem:'startup', evtGroup:'loadExternalRefs', millis:(new Date()).getTime(), type:'end'});
+    maybeStartModule();
+  }
+  ;
+  computeScriptBase();
+  var strongName;
+  if (isHostedMode()) {
+    if ($wnd_0.external.initModule && $wnd_0.external.initModule('com.zorzella.tamandua.gwt.tamandua')) {
+      $wnd_0.location.reload();
+      return;
+    }
+    strongName = 'hosted.html?com_zorzella_tamandua_gwt_tamandua';
+  }
+  processMetas();
+  $stats && $stats({moduleName:'com.zorzella.tamandua.gwt.tamandua', subSystem:'startup', evtGroup:'bootstrap', millis:(new Date()).getTime(), type:'selectingPermutation'});
+  if (!strongName) {
+    try {
+      unflattenKeylistIntoAnswers(['ie6'], '0C680E94942E2445755BE4D9FF92EE0A.cache.html');
+      unflattenKeylistIntoAnswers(['ie8'], '21F214CC88EC00D005721772243DAE96.cache.html');
+      unflattenKeylistIntoAnswers(['gecko1_8'], 'F562928CA2ACCDCD46A752F7BCDE8C69.cache.html');
+      unflattenKeylistIntoAnswers(['opera'], '5822FE138274202BBE80216F118008B4.cache.html');
+      unflattenKeylistIntoAnswers(['safari'], '86516083FE7DF1E39697B6A05413C010.cache.html');
+      unflattenKeylistIntoAnswers(['gecko'], '306FA5674EA3A28161D9C9B6E0283A60.cache.html');
+      strongName = answers[computePropValue('user.agent')];
+    }
+     catch (e) {
+      return;
+    }
+  }
+  var onBodyDoneTimerId;
+  function onBodyDone(){
+    if (!bodyDone) {
+      bodyDone = true;
+      maybeStartModule();
+      if ($doc_0.removeEventListener) {
+        $doc_0.removeEventListener('DOMContentLoaded', onBodyDone, false);
+      }
+      if (onBodyDoneTimerId) {
+        clearInterval(onBodyDoneTimerId);
+      }
+    }
+  }
+
+  if ($doc_0.addEventListener) {
+    $doc_0.addEventListener('DOMContentLoaded', function(){
+      maybeInjectFrame();
+      onBodyDone();
+    }
+    , false);
+  }
+  var onBodyDoneTimerId = setInterval(function(){
+    if (/loaded|complete/.test($doc_0.readyState)) {
+      maybeInjectFrame();
+      onBodyDone();
+    }
+  }
+  , 50);
+  $stats && $stats({moduleName:'com.zorzella.tamandua.gwt.tamandua', subSystem:'startup', evtGroup:'bootstrap', millis:(new Date()).getTime(), type:'end'});
+  $stats && $stats({moduleName:'com.zorzella.tamandua.gwt.tamandua', subSystem:'startup', evtGroup:'loadExternalRefs', millis:(new Date()).getTime(), type:'begin'});
+  $doc_0.write('<script defer="defer">com_zorzella_tamandua_gwt_tamandua.onInjectionDone(\'com.zorzella.tamandua.gwt.tamandua\')<\/script>');
+}
+
 com_zorzella_tamandua_gwt_tamandua();

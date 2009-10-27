@@ -18,4 +18,6 @@ public interface MemberServiceAsync {
 
   void borrowItem(String memberCode, Item item, AsyncCallback<Void> borrowItemCallback);
 
+  void adminOrDie(AsyncCallback<Void> callback);
+
 }

@@ -8,12 +8,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.zorzella.tamandua.Item;
@@ -27,18 +27,26 @@ import java.util.Map;
 
 public class Tamandua implements EntryPoint {
 
-  private final class MembersDropDownCallback extends 
+  private static final class MembersDropDownCallback extends 
       NaiveAsyncCallback<Collection<Member>> {
     private final MembersDropDown membersDropDown;
+    private final MemberServiceAsync memberService;
+    private final SortedItemsCallback sortedItemsCallback;
 
-    private MembersDropDownCallback(MembersDropDown membersDropDown) {
+    private MembersDropDownCallback(
+        MembersDropDown membersDropDown, 
+        MemberServiceAsync memberService, 
+        SortedItemsCallback sortedItemsCallback) {
       this.membersDropDown = membersDropDown;
+      this.memberService = memberService;
+      this.sortedItemsCallback = sortedItemsCallback;
     }
 
     //      @Override
     public void onSuccess(Collection<Member> members) {
       membersDropDown.setMembers(members);
       membersDropDown.refresh();
+      memberService.getFancySortedItems(sortedItemsCallback);
     }
   }
   
@@ -56,6 +64,10 @@ public class Tamandua implements EntryPoint {
       for (Member member : members) {
         memberIdToCodeMap.put(member.getId(), member.getCodigo());
       }
+    }
+
+    public String idToCode(Long id) {
+      return memberIdToCodeMap.get(id);
     }
 
     public String idToCode(String id) {
@@ -96,7 +108,7 @@ public class Tamandua implements EntryPoint {
     }
   }
 
-  private static final class ActivityTable extends FlexTable {
+  private static final class ActivityTable extends FlowPanel {
     private boolean dirty;
 
     /**
@@ -108,8 +120,9 @@ public class Tamandua implements EntryPoint {
       return result;
     }
 
-    public void addItem(Widget item) {
-      setWidget(getRowCount(), 0, item);
+    public void addItem(Label item) {
+      item.setStyleName("entry-row read");
+      add(item);
       dirty = true;
     }
   }
@@ -119,7 +132,7 @@ public class Tamandua implements EntryPoint {
     
     private final class ReturnItemCallback extends NaiveAsyncCallback<Void> {
 
-      private Widget returned;
+      private Label returned;
 
       public ReturnItemCallback(String memberCode, Item item) {
         this.returned = new Label("[" + memberCode + "] returned: " + item.getTitulo());
@@ -133,7 +146,7 @@ public class Tamandua implements EntryPoint {
 
     private final class BorrowItemCallback extends NaiveAsyncCallback<Void> {
 
-      private Widget borrowed;
+      private Label borrowed;
       
       public BorrowItemCallback(String memberCode, Item item) {
         this.borrowed = new Label("[" + memberCode + "] borrowed: " + item.getTitulo());
@@ -145,8 +158,8 @@ public class Tamandua implements EntryPoint {
       }
     }
 
-    private final FlexTable availableItems;
-    private final FlexTable borrowedItems;
+    private final Panel availableItemListWidget;
+    private final Panel borrowedItemListWidget;
     private final MembersDropDown membersDropDown;
     private final ActivityTable activityTable;
     private final MemberServiceAsync memberService;
@@ -154,13 +167,13 @@ public class Tamandua implements EntryPoint {
     private ItemBundle itemBundle;
 
     private SortedItemsCallback(
-        FlexTable availableItems, 
-        FlexTable borrowedItems, 
+        Panel availableItemListWidget, 
+        Panel borrowedItemListWidget, 
         MembersDropDown membersDropDown, 
         ActivityTable activityTable, 
         MemberServiceAsync memberService) {
-      this.availableItems = availableItems;
-      this.borrowedItems = borrowedItems;
+      this.availableItemListWidget = availableItemListWidget;
+      this.borrowedItemListWidget = borrowedItemListWidget;
       this.membersDropDown = membersDropDown;
       this.activityTable = activityTable;
       this.memberService = memberService;
@@ -172,28 +185,29 @@ public class Tamandua implements EntryPoint {
     }
     
     public void refresh() {
-      borrowedItems.clear();
-      availableItems.clear();
-      int i = 0;
+      borrowedItemListWidget.clear();
+      availableItemListWidget.clear();
       String selectedMember = selectedMember();
       for (Item item : itemBundle.getBorrowed()) {
         if (selectedMember.equals("")) {
-          borrowedItems.setText(++i, 0, 
-              membersDropDown.memberIdToCodeMap.get(item.getParadeiro()) + "-" + item.getTitulo());
+          Label label = new Label(
+              membersDropDown.idToCode(item.getParadeiro()) + "-" + item.getTitulo());
+          label.setStyleName("whisper");
+          borrowedItemListWidget.add(label);
         } else if (item.getParadeiro().toString().equals(selectedMember)) {
           Widget temp = buildBorrowedItemWidget(item);
-          borrowedItems.setWidget(++i, 0, temp);
+          borrowedItemListWidget.add(temp);
         }
       }
-      i = 0;
       for (Item item : itemBundle.getAvailable()) {
         Widget temp = buildAvailableItemWidget(item);
-        availableItems.setWidget(++i, 0, temp);
+        availableItemListWidget.add(temp);
       }
     }
 
     private Widget buildAvailableItemWidget(final Item item) {
       final Label result = new Label(item.getTitulo());
+      result.setStyleName("entry-row");
       ClickHandler clickHandler = new ClickHandler() {
         
         @Override
@@ -225,6 +239,7 @@ public class Tamandua implements EntryPoint {
     
     private Label buildBorrowedItemWidget(final Item item) {
       final Label result = new Label(item.getTitulo());
+      result.setStyleName("entry-row");
       ClickHandler clickHandler = new ClickHandler() {
         
         @Override
@@ -242,34 +257,51 @@ public class Tamandua implements EntryPoint {
     }
   }
 
-  private VerticalPanel mainPanel = new VerticalPanel();
+  private Panel mainPanel = new FlowPanel();
 
 //  @Override
   public void onModuleLoad() {
 
-    MemberServiceAsync memberService = GWT.create(MemberService.class);
+    final MemberServiceAsync memberService = GWT.create(MemberService.class);
+
+    AsyncCallback<Void> callback = new AsyncCallback<Void>() {
+      
+      @Override
+      public void onSuccess(Void result) {
+        foo(memberService);
+      }
+      
+      @Override
+      public void onFailure(Throwable caught) {}
+    };
     
-    final FlexTable borrowedItemsTable = new FlexTable();
+    memberService.adminOrDie(callback);
+  }
+
+  void foo(MemberServiceAsync memberService) {
+    final Panel borrowedItemsTable = new FlowPanel();
     final TextBox toBorrow = new TextBox();
-    final FlexTable availableItemsTable = new FlexTable();
+    final Panel availableItemsTable = new FlowPanel();
     final ActivityTable activityTable = new ActivityTable();
     final MembersDropDown membersDropDown = new MembersDropDown();
-    borrowedItemsTable.setText(0, 0, "borrowed");
-    availableItemsTable.setText(0, 0, "available");
-    activityTable.setText(0, 0, "activity");
+    
+    final SortedItemsCallback sortedItemsCallback =
+      new SortedItemsCallback(
+          availableItemsTable, 
+          borrowedItemsTable, 
+          membersDropDown, 
+          activityTable, 
+          memberService);
+
+    
     
     final AsyncCallback<Collection<Member>> sortedMembersCallback = 
-      new MembersDropDownCallback(membersDropDown);
+      new MembersDropDownCallback(membersDropDown, memberService, sortedItemsCallback);
     memberService.getSortedMembers(sortedMembersCallback);
     
-	final SortedItemsCallback sortedItemsCallback =
-	  new SortedItemsCallback(availableItemsTable, borrowedItemsTable, membersDropDown, activityTable, memberService);
-	memberService.getFancySortedItems(sortedItemsCallback);
-
 	final CurrentMemberChangeHandler memberChangeHandler = 
       new CurrentMemberChangeHandler(sortedItemsCallback, memberService, activityTable);
     membersDropDown.addChangeHandler(memberChangeHandler);
-    
 
     mainPanel.add(membersDropDown);
     mainPanel.add(borrowedItemsTable);

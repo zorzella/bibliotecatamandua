@@ -32,4 +32,14 @@ public class AdminOrDie {
       return user.getNickname();
     }
   }
+
+  public static void adminOrDie() {
+    UserService userService = UserServiceFactory.getUserService();
+    User user = userService.getCurrentUser();
+
+    if ((user == null) || (!Constants.admins.contains(user.getNickname()))) {
+        throw new RuntimeException(String.format(
+            "User %s not an admin", user == null ? null : user.getNickname()));
+    }
+  }
 }

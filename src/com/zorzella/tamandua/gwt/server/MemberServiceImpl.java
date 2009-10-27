@@ -3,6 +3,7 @@ package com.zorzella.tamandua.gwt.server;
 import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
+import com.zorzella.tamandua.AdminOrDie;
 import com.zorzella.tamandua.BorrowReturnServlet;
 import com.zorzella.tamandua.Item;
 import com.zorzella.tamandua.ItemBundle;
@@ -69,5 +70,10 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
     liveItem.setParadeiro(Long.valueOf(memberId));
     pm.makePersistent(liveItem);
     currentTransaction.commit();
+  }
+
+  @Override
+  public void adminOrDie() {
+    AdminOrDie.adminOrDie();
   }
 }

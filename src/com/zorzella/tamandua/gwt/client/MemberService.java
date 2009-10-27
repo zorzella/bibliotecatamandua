@@ -12,6 +12,8 @@ import java.util.Collection;
 @RemoteServiceRelativePath("member")
 public interface MemberService extends RemoteService {
 
+  void adminOrDie();
+  
   Collection<Member> getSortedMembers();
   
   ItemBundle getFancySortedItems();
