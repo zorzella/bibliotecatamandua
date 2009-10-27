@@ -78,35 +78,35 @@ public class Queries {
   }
 
   public static Collection<Item> getSortedItems(PersistenceManager pm) {
-    return Sets.newTreeSet(Items.ITEM_COMPARATOR, allBooks(pm));
+    return Sets.newTreeSet(Items.ITEM_COMPARATOR, allItems(pm));
   }
   
   public static Collection<Item> getParadeiroSortedItems(PersistenceManager pm) {
     Collection<Item> result = new TreeSet<Item>(new ParadeiroComparator());
-    result.addAll(allBooks(pm));
+    result.addAll(allItems(pm));
     return result;
   }
 
   public static Collection<Item> getTocaSortedItems(PersistenceManager pm) {
     Collection<Item> result = new TreeSet<Item>(new TocaComparator());
-    result.addAll(allBooks(pm));
+    result.addAll(allItems(pm));
     return result;
   }
   
   public static Collection<Item> getTypeSortedItems(PersistenceManager pm) {
     Collection<Item> result = new TreeSet<Item>(new TypeComparator());
-    result.addAll(allBooks(pm));
+    result.addAll(allItems(pm));
     return result;
   }
   
   public static Collection<Item> getAutorSortedItems(PersistenceManager pm) {
     Collection<Item> result = new TreeSet<Item>(new AutorComparator());
-    result.addAll(allBooks(pm));
+    result.addAll(allItems(pm));
     return result;
   }
 
   public static Collection<Item> getUnSortedItems(PersistenceManager pm) {
-    return allBooks(pm);
+    return allItems(pm);
   }
 
 private final Map<Long, String> paradeiroToCodeMap;
@@ -120,7 +120,7 @@ private final Map<Long, String> paradeiroToCodeMap;
       new TreeSet<Item>(new FancyItemComparator(paradeiroToCodeMap));
     Collection<Item> available = 
       new TreeSet<Item>(new FancyItemComparator(paradeiroToCodeMap));
-    for (Item item : allBooks(pm)) {
+    for (Item item : allValidItems(pm)) {
       if (item.getParadeiro() == null) {
         available.add(item);
       } else {
@@ -131,7 +131,19 @@ private final Map<Long, String> paradeiroToCodeMap;
   }
   
   @SuppressWarnings("unchecked")
-  private static Collection<Item> allBooks(PersistenceManager pm) {
+  private static Collection<Item> allValidItems(PersistenceManager pm) {
+    Collection<Item> temp = (Collection<Item>)pm.newQuery(Item.class).execute();
+    Collection<Item> result = Lists.newArrayList();
+    for (Item item : temp) {
+      if (!item.getTitulo().trim().equals("")) {
+        result.add(item);
+      }
+    }
+    return result;
+  }
+
+  @SuppressWarnings("unchecked")
+  private static Collection<Item> allItems(PersistenceManager pm) {
     return (Collection<Item>)pm.newQuery(Item.class).execute();
   }
   

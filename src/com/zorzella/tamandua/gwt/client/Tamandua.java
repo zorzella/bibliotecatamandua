@@ -9,10 +9,12 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -280,8 +282,11 @@ public class Tamandua implements EntryPoint {
 
   void foo(MemberServiceAsync memberService) {
     final Panel borrowedItemsTable = new FlowPanel();
-    final TextBox toBorrow = new TextBox();
+    final Widget separator = new HTML("<hr/>");
     final Panel availableItemsTable = new FlowPanel();
+    final ScrollPanel p = new ScrollPanel();
+    p.setHeight("200px");
+    p.add(availableItemsTable);
     final ActivityTable activityTable = new ActivityTable();
     final MembersDropDown membersDropDown = new MembersDropDown();
     
@@ -303,11 +308,13 @@ public class Tamandua implements EntryPoint {
       new CurrentMemberChangeHandler(sortedItemsCallback, memberService, activityTable);
     membersDropDown.addChangeHandler(memberChangeHandler);
 
+    mainPanel.add(activityTable);
     mainPanel.add(membersDropDown);
     mainPanel.add(borrowedItemsTable);
-    mainPanel.add(toBorrow);
+    mainPanel.add(separator);
+//    mainPanel.add(p);
+//    mainPanel.add(separator);
     mainPanel.add(availableItemsTable);
-    mainPanel.add(activityTable);
     
     RootPanel.get("list").add(mainPanel);
 
