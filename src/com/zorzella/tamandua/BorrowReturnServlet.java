@@ -166,7 +166,7 @@ public class BorrowReturnServlet extends HttpServlet {
     }
   }
 
-  private void goPost(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String admin) {
+  private void goPost(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String adminCode) {
 //    resp.setContentType("text/html");
 //    resp.setCharacterEncoding(Constants.encoding);
 //    PrintWriter ps = new PrintWriter(
@@ -207,7 +207,7 @@ public class BorrowReturnServlet extends HttpServlet {
               //  && returnDate == null" +
               "", memberId);
           //                "memberCode == ? && itemId == ? && returnDate == NULL", memberCode, item.getId());
-          loan.setReturnDate(new Date());
+          loan.setReturnDate(adminCode, new Date());
           pm.makePersistent(loan);
   
           item.setParadeiro(null);
@@ -221,7 +221,7 @@ public class BorrowReturnServlet extends HttpServlet {
       for (String key : borrowed) {
         Item item = Queries.getById(Item.class, pm, "id", key);
   
-        Loan loan = new Loan(admin, memberId, item.getId());
+        Loan loan = new Loan(adminCode, memberId, item.getId());
         pm.makePersistent(loan);
   
         item.setParadeiro(memberId);

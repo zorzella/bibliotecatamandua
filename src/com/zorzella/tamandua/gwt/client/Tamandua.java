@@ -4,11 +4,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.gen2.picker.client.SliderBar;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -18,7 +15,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.zorzella.tamandua.Item;
@@ -26,14 +22,14 @@ import com.zorzella.tamandua.ItemBundle;
 import com.zorzella.tamandua.Member;
 import com.zorzella.tamandua.TamanduaUtil;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
 
 public class Tamandua implements EntryPoint {
 
   private static final class MembersDropDownCallback extends 
-      NaiveAsyncCallback<Collection<Member>> {
+      NaiveAsyncCallback<SortedSet<Member>> {
     private final MembersDropDown membersDropDown;
     private final MemberServiceAsync memberService;
     private final SortedItemsCallback sortedItemsCallback;
@@ -48,37 +44,42 @@ public class Tamandua implements EntryPoint {
     }
 
     //      @Override
-    public void onSuccess(Collection<Member> members) {
+    public void onSuccess(SortedSet<Member> members) {
       membersDropDown.setMembers(members);
       membersDropDown.refresh();
       memberService.getFancySortedItems(sortedItemsCallback);
     }
   }
   
-  private static final class MembersDropDown extends ListBox {
+  public static final class MembersDropDown extends ListBox {
 
-    private Collection<Member> members;
-    private final Map<Long, String> memberIdToCodeMap = new HashMap<Long, String>();
+    private SortedSet<Member> members;
+    private final Map<Long, Member> memberIdToCodeMap = new HashMap<Long, Member>();
 
     public MembersDropDown() {
       addItem("");
     }
     
-    public void setMembers(Collection<Member> members) {
+    public void setMembers(SortedSet<Member> members) {
       this.members = members;
       for (Member member : members) {
-        memberIdToCodeMap.put(member.getId(), member.getCodigo());
+        memberIdToCodeMap.put(member.getId(), member);
       }
     }
 
-    public String idToCode(Long id) {
-      return memberIdToCodeMap.get(id);
-    }
-
-    public String idToCode(String id) {
-      return memberIdToCodeMap.get(Long.valueOf(id));
+    public Member getSelectedMember() {
+      int index = getSelectedIndex();
+      String value = getValue(index);
+      if (value.equals("")) {
+        return null;
+      }
+      return memberIdToCodeMap.get(Long.valueOf(value));
     }
     
+    public String idToCode(Long id) {
+      return memberIdToCodeMap.get(id).getCodigo();
+    }
+
     public void refresh() {
       clear();
       addItem("");
@@ -113,7 +114,7 @@ public class Tamandua implements EntryPoint {
     }
   }
 
-  private static final class ActivityTable extends FlowPanel {
+  public static final class ActivityTable extends FlowPanel {
     private boolean dirty;
 
     /**
@@ -132,37 +133,9 @@ public class Tamandua implements EntryPoint {
     }
   }
   
-  private static final class SortedItemsCallback 
+  public static final class SortedItemsCallback 
       extends NaiveAsyncCallback<ItemBundle> {
     
-    private final class ReturnItemCallback extends NaiveAsyncCallback<Void> {
-
-      private Label returned;
-
-      public ReturnItemCallback(String memberCode, Item item) {
-        this.returned = new Label("[" + memberCode + "] returned: " + item.getTitulo());
-      }
-      
-//      @Override
-      public void onSuccess(Void result) {
-        activityTable.addItem(returned);
-      }
-    }
-
-    private final class BorrowItemCallback extends NaiveAsyncCallback<Void> {
-
-      private Label borrowed;
-      
-      public BorrowItemCallback(String memberCode, Item item) {
-        this.borrowed = new Label("[" + memberCode + "] borrowed: " + item.getTitulo());
-      }
-
-//      @Override
-      public void onSuccess(Void result) {
-        activityTable.addItem(borrowed);
-      }
-    }
-
     private final Panel availableItemListWidget;
     private final Panel borrowedItemListWidget;
     private final MembersDropDown membersDropDown;
@@ -170,6 +143,7 @@ public class Tamandua implements EntryPoint {
     private final MemberServiceAsync memberService;
     private final SliderBar sliderBar;
 
+    private ItemWidgetBundle itemWidgetBundle;
     private ItemBundle itemBundle;
 
     private SortedItemsCallback(
@@ -189,81 +163,35 @@ public class Tamandua implements EntryPoint {
 
     public void onSuccess(ItemBundle itemBundle) {
       this.itemBundle = itemBundle;
+      this.itemWidgetBundle = new ItemWidgetBundle(
+          itemBundle, 
+          membersDropDown, 
+          memberService, 
+          activityTable);
       this.refresh();
     }
     
     public void refresh() {
       borrowedItemListWidget.clear();
       availableItemListWidget.clear();
-      String selectedMember = selectedMember();
+      Member selectedMember = membersDropDown.getSelectedMember();
       for (Item item : itemBundle.getBorrowed()) {
-        if (selectedMember.equals("")) {
-          Label label = new Label(
-              membersDropDown.idToCode(item.getParadeiro()) + "-" + item.getTitulo());
-          label.setStyleName("whisper");
-          borrowedItemListWidget.add(label);
-        } else if (item.getParadeiro().toString().equals(selectedMember)) {
-          Widget temp = buildBorrowedItemWidget(item);
-          borrowedItemListWidget.add(temp);
-        }
+        borrowedItemListWidget.add(itemWidgetBundle.getWidgetForBorrowed(item, selectedMember));
+//        if (selectedMember == null) {
+//          Label label = new Label(
+//              membersDropDown.idToCode(item.getParadeiro()) + "-" + item.getTitulo());
+//          label.setStyleName("whisper");
+//          borrowedItemListWidget.add(label);
+//        } else if (item.getParadeiro().equals(selectedMember.getId())) {
+//          Widget temp = buildBorrowedItemWidget(item);
+//          borrowedItemListWidget.add(temp);
+//        }
       }
       for (Item item : itemBundle.getAvailable()) {
-        Widget temp = buildAvailableItemWidget(item);
-        availableItemListWidget.add(temp);
+        availableItemListWidget.add(itemWidgetBundle.getWidgetForAvailable(item));
       }
       // 10 is a fudge
       sliderBar.setMaxValue(10 + availableItemListWidget.getOffsetHeight() - SCROLL_PANEL_HEIGH);
-    }
-
-    private Widget buildAvailableItemWidget(final Item item) {
-      final Label result = new Label(item.getTitulo());
-      result.setStyleName("entry-row");
-      ClickHandler clickHandler = new ClickHandler() {
-        
-//        @Override
-        public void onClick(ClickEvent event) {
-          String memberCode = selectedMember();
-          if (memberCode.trim().equals("")) {
-            return;
-          }
-          AsyncCallback<Void> borrowItemCallback = new BorrowItemCallback(membersDropDown.idToCode(memberCode), item);
-          memberService.borrowItem(memberCode, item, borrowItemCallback);
-          result.setText(item.getTitulo() + " - borrowing");
-          availableItemsHandlerRegistrationMap.remove(item).removeHandler();
-          //TODO: install new one (to undo)
-        }
-      };
-      availableItemsHandlerRegistrationMap.put(item, result.addClickHandler(clickHandler));
-      return result;
-    }
-
-    private String selectedMember() {
-      return membersDropDown.getValue(membersDropDown.getSelectedIndex());
-    }
-
-    private final Map<Item, HandlerRegistration> borrowedItemsHandlerRegistrationMap = 
-      new HashMap<Item, HandlerRegistration>();
-    
-    private final Map<Item, HandlerRegistration> availableItemsHandlerRegistrationMap = 
-      new HashMap<Item, HandlerRegistration>();
-    
-    private Label buildBorrowedItemWidget(final Item item) {
-      final Label result = new Label(item.getTitulo());
-      result.setStyleName("entry-row");
-      ClickHandler clickHandler = new ClickHandler() {
-        
-//        @Override
-        public void onClick(ClickEvent event) {
-          String memberCode = selectedMember();
-          AsyncCallback<Void> returnItemCallback = new ReturnItemCallback(membersDropDown.idToCode(memberCode), item);
-          memberService.returnItem(memberCode, item, returnItemCallback);
-          result.setText(item.getTitulo() + " - returning");
-          borrowedItemsHandlerRegistrationMap.remove(item).removeHandler();
-          //TODO: install new one (to undo)
-        }
-      };
-      borrowedItemsHandlerRegistrationMap.put(item, result.addClickHandler(clickHandler));
-      return result;
     }
   }
 
@@ -278,11 +206,13 @@ public class Tamandua implements EntryPoint {
       
 //      @Override
       public void onSuccess(Void result) {
-        foo(memberService);
+        adminOk(memberService);
       }
       
 //      @Override
-      public void onFailure(Throwable caught) {}
+      public void onFailure(Throwable caught) {
+        throw new IllegalArgumentException(caught);
+      }
     };
     
     memberService.adminOrDie(callback);
@@ -290,7 +220,7 @@ public class Tamandua implements EntryPoint {
 
   public static final int SCROLL_PANEL_HEIGH = 320;
   
-  void foo(MemberServiceAsync memberService) {
+  void adminOk(MemberServiceAsync memberService) {
     final Panel borrowedItemsTable = new FlowPanel();
     final Widget separator = new HTML("<hr/>");
     final Panel availableItemsTable = new FlowPanel();
@@ -311,7 +241,7 @@ public class Tamandua implements EntryPoint {
           memberService,
           sliderBar);
     
-    final AsyncCallback<Collection<Member>> sortedMembersCallback = 
+    final AsyncCallback<SortedSet<Member>> sortedMembersCallback = 
       new MembersDropDownCallback(membersDropDown, memberService, sortedItemsCallback);
     memberService.getSortedMembers(sortedMembersCallback);
     

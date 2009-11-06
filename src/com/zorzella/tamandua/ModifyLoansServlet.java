@@ -1,6 +1,7 @@
 package com.zorzella.tamandua;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -38,11 +39,12 @@ public class ModifyLoansServlet extends HttpServlet {
       @SuppressWarnings("unchecked")
       Map<String,String[]> map = req.getParameterMap();
 
-      boolean editableAdminCode = map.containsKey("adminCode");
+      boolean editableBorrowAdminCode = map.containsKey("borrowAdminCode");
       boolean editableMemberCode = map.containsKey("memberCode");
       boolean editableBookId = map.containsKey("bookId");
       boolean editableLoanDate = map.containsKey("loanDate");
       boolean editableReturnDate = map.containsKey("returnDate");
+      boolean editableReturnAdminCode = map.containsKey("returnAdminCode");
       boolean editableComment = map.containsKey("comment");
       
       if (!map.containsKey("custom")) {
@@ -56,11 +58,12 @@ public class ModifyLoansServlet extends HttpServlet {
       ps.println("<input type='submit' value='Change'>");
       ps.println("<table>");
       
-      ps.println("<th>Admin</th>");
+      ps.println("<th>Borrow Admin</th>");
       ps.println("<th>Member</th>");
       ps.println("<th>Book</th>");
       ps.println("<th>Loaned</th>");
       ps.println("<th>Returned</th>");
+      ps.println("<th>Return Admin</th>");
       ps.println("<th>Comment</th>");
 
       Collection<Loan> loans = //Queries.getByQuery(Loan.class, pm, "ORDER BY loanDate");
@@ -81,7 +84,8 @@ public class ModifyLoansServlet extends HttpServlet {
         } else {
           ps.printf("<tr class='b'>");
         }
-        choose(ps, false, editableAdminCode, loan, true, loan.getAdminCode(), "adminCode");
+        choose(ps, false, editableBorrowAdminCode, 
+            loan, true, loan.getBorrowAdminCode(), "borrowAdminCode");
         Long memberId = loan.getMemberId();
         if (editableMemberCode) {
 //          shortInput(ps, loan, "memberId", content);
@@ -100,6 +104,8 @@ public class ModifyLoansServlet extends HttpServlet {
 //        choose(ps, false, false, loan, false, item.getTitulo(), "titulo");
         choose(ps, false, editableLoanDate, loan, true, Dates.dateToString(loan.getLoanDate()), "loanDate");
         choose(ps, false, editableReturnDate, loan, true, Dates.dateToString(loan.getReturnDate()), "returnDate");
+        choose(ps, false, editableReturnAdminCode, 
+            loan, true, loan.getReturnAdminCode(), "returnAdminCode");
         choose(ps, false, editableComment, loan, true, loan.getComment(), "comment");
         ps.print("\n"); 
       }
@@ -110,7 +116,7 @@ public class ModifyLoansServlet extends HttpServlet {
       ps.println("<form action='/modifyloans'>");
 
       printCheckboxesAndDropdown(ps,
-          editableAdminCode, 
+          editableBorrowAdminCode, 
           editableMemberCode, 
           editableBookId, 
           editableLoanDate, 
@@ -240,7 +246,8 @@ public class ModifyLoansServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-	if (AdminOrDie.adminOrLogin(req, resp) == null) {
+	String adminCode = AdminOrDie.adminOrLogin(req, resp);
+    if (adminCode == null) {
 	  return;
 	}
 
@@ -268,7 +275,7 @@ public class ModifyLoansServlet extends HttpServlet {
       } 
       key = "returnDate-" + codigo;
       if (map.containsKey(key)) {
-        item.setReturnDate(toDate(map, key));
+        item.setReturnDate(adminCode, toDate(map, key));
       } 
       pm.makePersistent(item);
     }
@@ -290,11 +297,12 @@ public class ModifyLoansServlet extends HttpServlet {
       return null;
     }
     String[] split = string.split("-");
-    return new DateTime(
+    DateTime dateTime = new DateTime(
         Integer.parseInt(split[0]),
         Integer.parseInt(split[1]),
         Integer.parseInt(split[2]),
-        0, 0, 0, 0).toDate();
+        0, 0, 0, 0);
+    return dateTime.toDate();
   }
 
   private int toInt(Map<String, String[]> map, String key) {

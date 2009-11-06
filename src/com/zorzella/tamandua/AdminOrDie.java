@@ -33,7 +33,7 @@ public class AdminOrDie {
     }
   }
 
-  public static void adminOrDie() {
+  public static User adminOrDie() {
     UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();
 
@@ -41,5 +41,6 @@ public class AdminOrDie {
         throw new RuntimeException(String.format(
             "User %s not an admin", user == null ? null : user.getNickname()));
     }
+    return user;
   }
 }

@@ -8,6 +8,7 @@ import com.zorzella.tamandua.Item.Type;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.jdo.PersistenceManager;
@@ -58,6 +59,12 @@ public class Queries {
     }
     if ((oneParadeiro == null) && (otherParadeiro == null)) {
       return Items.ITEM_COMPARATOR.compare(one, other);
+    }
+    if (otherParadeiro == null) {
+      return -1;
+    }
+    if (oneParadeiro == null) {
+      return 1;
     }
     return oneParadeiro.compareTo(otherParadeiro);
       
@@ -151,7 +158,7 @@ private final Map<Long, String> paradeiroToCodeMap;
     return new TreeSet<Member>(allMembers(pm));
   }
 
-  public static Collection<Member> getSortedMembers(PersistenceManager pm) {
+  public static SortedSet<Member> getSortedMembers(PersistenceManager pm) {
     return new TreeSet<Member>(allValidMembers(pm));
   }
 

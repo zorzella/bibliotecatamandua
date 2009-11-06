@@ -15,7 +15,7 @@ public class Dates {
     if (date == null) {
       return "";
     }
-    DateTimeZone pst = DateTimeZone.forOffsetHours(-8);
+    DateTimeZone pst = DateTimeZone.forID("America/Los_Angeles");
     Instant temp = new Instant(pst.convertUTCToLocal(date.getTime()));
     return Join.join("-",
       temp.get(DateTimeFieldType.year()),

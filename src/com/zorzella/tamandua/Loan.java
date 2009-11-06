@@ -15,8 +15,15 @@ public class Loan {
   @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
   private Long id;
 
+  /** Misnomer: being renamed to borrowAdminCode */
   @Persistent
   private String adminCode;
+
+  @Persistent
+  private String borrowAdminCode;
+
+  @Persistent
+  private String returnAdminCode;
 
   @Persistent
   private Long memberId;
@@ -41,6 +48,7 @@ public class Loan {
     super();
     loanDate = new Date();    
     this.adminCode = adminCode;
+    this.borrowAdminCode = adminCode;
     this.memberId = memberId;
     this.itemId = itemId;
     this.comment = "";
@@ -50,10 +58,22 @@ public class Loan {
     return id;
   }
 
-  public String getAdminCode() {
-    return adminCode;
+  public String getBorrowAdminCode() {
+    if ((borrowAdminCode == null) || (borrowAdminCode == "")) {
+      borrowAdminCode = adminCode;
+    }
+    return borrowAdminCode;
   }
 
+  public String getReturnAdminCode() {
+    if ((returnAdminCode == null) || (returnAdminCode == "")) {
+      if (returnDate != null) {
+        returnAdminCode = borrowAdminCode;
+      }
+    }
+    return returnAdminCode;
+  }
+  
   public void setAdminCode(String adminCode) {
     this.adminCode = adminCode;
   }
@@ -86,7 +106,10 @@ public class Loan {
     return returnDate;
   }
 
-  public void setReturnDate(Date returnDate) {
+  public void setReturnDate(String adminCode, Date returnDate) {
+    if (returnDate != null) {
+      this.returnAdminCode = adminCode;
+    }
     this.returnDate = returnDate;
   }
 

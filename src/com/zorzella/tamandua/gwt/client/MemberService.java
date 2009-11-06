@@ -7,19 +7,19 @@ import com.zorzella.tamandua.Item;
 import com.zorzella.tamandua.ItemBundle;
 import com.zorzella.tamandua.Member;
 
-import java.util.Collection;
+import java.util.SortedSet;
 
 @RemoteServiceRelativePath("member")
 public interface MemberService extends RemoteService {
 
   void adminOrDie();
   
-  Collection<Member> getSortedMembers();
+  SortedSet<Member> getSortedMembers();
   
   ItemBundle getFancySortedItems();
 
-  void returnItem(String memberCode, Item item);
+  void returnItem(Long memberId, Item item);
 
-  void borrowItem(String memberCode, Item item);
+  void borrowItem(Long memberId, Item item);
   
 }
