@@ -1,3 +1,5 @@
+/war/com.zorzella.tamandua.DB/*
+/war/com.zorzella.tamandua.gwt.tamandua/*
 /war/WEB-INF/appengine-generated/*
 /war/WEB-INF/classes/*
 *~

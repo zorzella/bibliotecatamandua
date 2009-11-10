@@ -203,6 +203,10 @@ public class Member implements Comparable<Member>, Serializable {
     return lastContacted;
   }
   
+  public void setLastContacted(Date lastContacted) {
+    this.lastContacted = lastContacted;
+  }
+  
   public boolean isConfirmado() {
     return confirmado;
   }

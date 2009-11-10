@@ -5,10 +5,12 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +41,8 @@ public class EmailServlet extends HttpServlet {
     }
   }
 
-  private static final String subject = "Biblioteca Tamandua -- \u00EDtens sob sua cust\u00F3dia";
+// TODO:  private static final String subject = "Biblioteca Tamandua -- \u00EDtens sob sua cust\u00F3dia";
+  private static final String subject = "Biblioteca Tamandua -- itens sob sua custodia";
 
   private void go(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String admin)
   throws UnsupportedEncodingException, IOException {
@@ -89,7 +92,10 @@ public class EmailServlet extends HttpServlet {
 
       ps.printf("<input type='checkbox' name='sendto-%s'>\n", id);
       ps.printf("To: [%s] %s &lt;%s&gt; (\u00FAltimo email data '%s')\n", 
-          tudo(TamanduaUtil.nome(member), member.getEmail(), subject, message), TamanduaUtil.nome(member), member.getEmail(), Dates.dateToString(member.getLastContacted()));
+          tudo(TamanduaUtil.nome(member), member.getEmail(), subject, message), 
+          TamanduaUtil.nome(member), 
+          member.getEmail(), 
+          Dates.dateToString(member.getLastContacted()));
       ps.printf("<br>Subject: %s\n", subject);
       ps.printf("<br>Body: <textarea name='message-%s' rows='10' cols='100'>%s</textarea>\n", id, message);
       ps.println("<hr>");
@@ -147,6 +153,11 @@ public class EmailServlet extends HttpServlet {
             member.getEmail(),
             Emails.CC, 
             subject);
+
+        Transaction currentTransaction = pm.currentTransaction();
+        currentTransaction.begin();
+        member.setLastContacted(new Date());
+        currentTransaction.commit();
       }
     }
   }
