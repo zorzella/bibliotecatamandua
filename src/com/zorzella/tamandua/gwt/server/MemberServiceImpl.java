@@ -77,7 +77,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
     if (liveItem.getParadeiro() != null) {
       throw new IllegalArgumentException(String.format(
           "Item '%s' is already in paradeiro '%s'.", 
-          item.getTitulo(), item.getParadeiro()));
+          item.getTitulo(), liveItem.getParadeiro()));
     }
     
     String admin = AdminOrDie.adminOrDie().getNickname();
@@ -94,7 +94,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
     currentTransaction.commit();
   }
 
-  @Override
+//  @Override
   public void adminOrDie() {
     AdminOrDie.adminOrDie();
   }

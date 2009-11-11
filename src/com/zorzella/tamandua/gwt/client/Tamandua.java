@@ -164,10 +164,10 @@ public class Tamandua implements EntryPoint {
     public void onSuccess(ItemBundle itemBundle) {
       this.itemBundle = itemBundle;
       this.itemWidgetBundle = new ItemWidgetBundle(
-          itemBundle, 
           membersDropDown, 
           memberService, 
-          activityTable);
+          activityTable, 
+          itemBundle);
       this.refresh();
     }
     
@@ -175,17 +175,8 @@ public class Tamandua implements EntryPoint {
       borrowedItemListWidget.clear();
       availableItemListWidget.clear();
       Member selectedMember = membersDropDown.getSelectedMember();
-      for (Item item : itemBundle.getBorrowed()) {
+      for (Item item : itemBundle.getBorrowed(selectedMember)) {
         borrowedItemListWidget.add(itemWidgetBundle.getWidgetForBorrowed(item, selectedMember));
-//        if (selectedMember == null) {
-//          Label label = new Label(
-//              membersDropDown.idToCode(item.getParadeiro()) + "-" + item.getTitulo());
-//          label.setStyleName("whisper");
-//          borrowedItemListWidget.add(label);
-//        } else if (item.getParadeiro().equals(selectedMember.getId())) {
-//          Widget temp = buildBorrowedItemWidget(item);
-//          borrowedItemListWidget.add(temp);
-//        }
       }
       for (Item item : itemBundle.getAvailable()) {
         availableItemListWidget.add(itemWidgetBundle.getWidgetForAvailable(item));
