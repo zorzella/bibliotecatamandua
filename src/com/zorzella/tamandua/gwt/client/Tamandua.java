@@ -47,6 +47,8 @@ public class Tamandua implements EntryPoint {
     public void onSuccess(SortedSet<Member> members) {
       membersDropDown.setMembers(members);
       membersDropDown.refresh();
+      //TODO
+      membersDropDown.setSelectedIndex(2);
       memberService.getFancySortedItems(sortedItemsCallback);
     }
   }

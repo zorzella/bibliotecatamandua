@@ -255,20 +255,28 @@ public class ItemWidgetBundle {
 
     private final ItemWidgetBundle itemWidgetBundle;
     private final PopupPanel backing;
-    private final Label itemTitleLabel = new Label("None");
+    private final Label itemTitleLabel = label("None", "title");
+
+    private Label label(String text, String styleName) {
+      Label result = new Label(text);
+      result.setStyleName(styleName);
+      return result;
+    }
     
     private Item item;
     
     private static Panel HSPACER() {
+      return div("hspacer");
+    }
+
+    private static Panel div(String styleName) {
       Panel result = new FlowPanel();
-      result.setStyleName("hspacer");
+      result.setStyleName(styleName);
       return result;
     }
     
     private static Panel VSPACER() {
-      Panel result = new FlowPanel();
-      result.setStyleName("vspacer");
-      return result;
+      return div("vspacer");
     }
     
     TbrPopup(ItemWidgetBundle itemWidgetBundle) {
@@ -278,38 +286,64 @@ public class ItemWidgetBundle {
       //    result.setStyleName("demo-PopUpPanel");
       backing.setStyleName("demo-popup");
 
-
       Label prevButton = buildPrevButton();
       Label nextButton = buildNextButton();
-
       Label closeButton = buildCloseButton();
+
+      Label borrowPrevButton = buildBorrowPrevButton();
+      Label borrowNextButton = buildBorrowNextButton();
       Label borrowButton = buildBorrowButton();
 
-
       final Panel fullPanel = new FlowPanel();
-      fullPanel.setSize("200px", "400px");
-      //    toBorrowReturnItemWidget.setWidgetPosition(w, left, top)
-      //    toBorrowReturnItemWidget.setVisible(false);
+      fullPanel.setStyleName("popup-panel");
+//      fullPanel.setSize("200px", "400px");
       
-      Panel prevNextClosePanel = HSPACER();//new HorizontalPanel();
+      Panel prevNextClosePanel = div("prev-next-close");
       
       prevNextClosePanel.add(prevButton);
-//      prevNextClosePanel.add(HSPACER());
       prevNextClosePanel.add(nextButton);
-//      prevNextClosePanel.add(HSPACER());
       prevNextClosePanel.add(closeButton);
       
       fullPanel.add(prevNextClosePanel);
-      fullPanel.add(VSPACER());
       fullPanel.add(itemTitleLabel);
-      fullPanel.add(VSPACER());
-      Panel bottom = HSPACER();
-      bottom.add(borrowButton);
-      fullPanel.add(bottom);
+//      Panel bottom = div("borrow");
+//      bottom.add(borrowButton);
+//    fullPanel.add(bottom);
+      fullPanel.add(borrowPrevButton);
+      fullPanel.add(borrowNextButton);
+      fullPanel.add(borrowButton);
 
       backing.add(fullPanel);
     }
 
+    private Label buildBorrowPrevButton() {
+      ClickHandler handler = new ClickHandler() {
+        //        @Override
+        public void onClick(ClickEvent event) {
+          itemWidgetBundle.initiateBorrow(item);
+          item = itemWidgetBundle.prevAvailable(item);
+          repaint();
+        }
+      };
+      Label closeButton = label("Borrow", "borrow-prev");
+      closeButton.addClickHandler(handler);
+      return closeButton;
+    }
+    
+    private Label buildBorrowNextButton() {
+      ClickHandler handler = new ClickHandler() {
+        //        @Override
+        public void onClick(ClickEvent event) {
+          itemWidgetBundle.initiateBorrow(item);
+          item = itemWidgetBundle.nextAvailable(item);
+          repaint();
+        }
+      };
+      Label closeButton = label("Borrow", "borrow-next");
+      closeButton.addClickHandler(handler);
+      return closeButton;
+    }
+    
     private Label buildBorrowButton() {
       ClickHandler handler = new ClickHandler() {
         //        @Override
@@ -318,7 +352,7 @@ public class ItemWidgetBundle {
           itemWidgetBundle.initiateBorrow(item);
         }
       };
-      Label closeButton = new Label("Borrow");
+      Label closeButton = label("Borrow", "borrow");
       closeButton.addClickHandler(handler);
       return closeButton;
     }
@@ -331,6 +365,7 @@ public class ItemWidgetBundle {
         }
       };
       Label closeButton = new Label("Close");
+      closeButton.setStyleName("close");
       closeButton.addClickHandler(handler);
       return closeButton;
     }
@@ -344,7 +379,8 @@ public class ItemWidgetBundle {
           repaint();
         }
       };
-      Label closeButton = new Label("Previous");
+      Label closeButton = new Label("Prev");
+      closeButton.setStyleName("prev");
       closeButton.addClickHandler(handler);
       return closeButton;
     }
@@ -359,12 +395,13 @@ public class ItemWidgetBundle {
         }
       };
       Label closeButton = new Label("Next");
+      closeButton.setStyleName("next");
       closeButton.addClickHandler(handler);
       return closeButton;
     }
+
     private void repaint() {
       itemTitleLabel.setText(item.getTitulo());
-      
     }
     
     public void show(Item item) {

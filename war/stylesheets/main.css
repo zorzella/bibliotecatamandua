@@ -50,7 +50,7 @@ input.x-short {
 .demo-popup
 {
     background-color       :    #ffc;
-    border                 :    3px solid #009;
+    border                 :    1px solid #009;
     /* above the slider bar */
     z-index: 2;
 }
@@ -89,4 +89,54 @@ input.x-short {
 
 div {
   border: 1px solid #009;
+}
+
+.borrow-prev {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+}
+  
+.borrow-next {
+  position: absolute;
+  bottom: 0px;
+  right: 50%;
+}
+  
+.borrow {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+}
+  
+.prev {
+/*  float: left; */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.next {
+/*  float: left; */
+  position: absolute;
+  top: 0;
+  right: 50%;
+}
+
+.close {
+/*  float: right; */
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.title {
+  position: absolute;
+  bottom: 50%;
+  left: 0;
+}
+
+.popup-panel {
+  width: 320px;
+  height: 470px;
 }
