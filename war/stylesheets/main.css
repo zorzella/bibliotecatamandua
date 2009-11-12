@@ -78,3 +78,15 @@ input.x-short {
     text-align             :    center;
     width                  :    100%;
 }
+
+.hspacer {
+  width: 100%;
+}
+
+.vspacer {
+  height: 100%;
+}
+
+div {
+  border: 1px solid #009;
+}

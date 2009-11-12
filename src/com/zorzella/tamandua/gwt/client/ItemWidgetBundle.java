@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.zorzella.tamandua.Item;
@@ -258,6 +259,18 @@ public class ItemWidgetBundle {
     
     private Item item;
     
+    private static Panel HSPACER() {
+      Panel result = new FlowPanel();
+      result.setStyleName("hspacer");
+      return result;
+    }
+    
+    private static Panel VSPACER() {
+      Panel result = new FlowPanel();
+      result.setStyleName("vspacer");
+      return result;
+    }
+    
     TbrPopup(ItemWidgetBundle itemWidgetBundle) {
       this.itemWidgetBundle = itemWidgetBundle;
       backing = new PopupPanel(false);
@@ -278,15 +291,21 @@ public class ItemWidgetBundle {
       //    toBorrowReturnItemWidget.setWidgetPosition(w, left, top)
       //    toBorrowReturnItemWidget.setVisible(false);
       
-      HorizontalPanel prevNextClosePanel = new HorizontalPanel();
+      Panel prevNextClosePanel = HSPACER();//new HorizontalPanel();
       
       prevNextClosePanel.add(prevButton);
+//      prevNextClosePanel.add(HSPACER());
       prevNextClosePanel.add(nextButton);
+//      prevNextClosePanel.add(HSPACER());
       prevNextClosePanel.add(closeButton);
       
       fullPanel.add(prevNextClosePanel);
+      fullPanel.add(VSPACER());
       fullPanel.add(itemTitleLabel);
-      fullPanel.add(borrowButton);
+      fullPanel.add(VSPACER());
+      Panel bottom = HSPACER();
+      bottom.add(borrowButton);
+      fullPanel.add(bottom);
 
       backing.add(fullPanel);
     }
@@ -325,7 +344,7 @@ public class ItemWidgetBundle {
           repaint();
         }
       };
-      Label closeButton = new Label("<");
+      Label closeButton = new Label("Previous");
       closeButton.addClickHandler(handler);
       return closeButton;
     }
@@ -339,7 +358,7 @@ public class ItemWidgetBundle {
 //          backing.hide();
         }
       };
-      Label closeButton = new Label(">");
+      Label closeButton = new Label("Next");
       closeButton.addClickHandler(handler);
       return closeButton;
     }
