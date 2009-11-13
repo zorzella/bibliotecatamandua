@@ -42,7 +42,7 @@ public class TamanduaServlet extends HttpServlet {
     PrintWriter ps = new PrintWriter(
         new OutputStreamWriter(resp.getOutputStream(), Constants.encoding));
 
-    Html.htmlHeadBody(ps);
+    Html.justHeadBody(ps);
     ps.println(HTML);
     ps.println("</html></body>");
 

@@ -193,6 +193,8 @@ public class Tamandua implements EntryPoint {
 //  @Override
   public void onModuleLoad() {
 
+    iphone();
+    
     final MemberServiceAsync memberService = GWT.create(MemberService.class);
 
     AsyncCallback<Void> callback = new AsyncCallback<Void>() {
@@ -268,14 +270,18 @@ public class Tamandua implements EntryPoint {
   }
 
   public native void iphone() /*-{
-    if (navigator.userAgent.indexOf('iPhone') != -1) {
-      addEventListener("load", function() {
-          setTimeout(hideURLbar, 0);
-      }, false);
-    }
+    window.scrollTo(0, 1);
+  }-*/;
 
-    function hideURLbar() {
-      window.scrollTo(0, 1);
-    }
-  }-*/; 
+  //  public native void iphone() /*-{
+//    if (navigator.userAgent.indexOf('iPhone') != -1) {
+//      addEventListener("load", function() {
+//          setTimeout(hideURLbar, 0);
+//      }, false);
+//    }
+//
+//    function hideURLbar() {
+//      window.scrollTo(0, 1);
+//    }
+//  }-*/; 
 }

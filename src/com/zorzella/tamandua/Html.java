@@ -8,14 +8,19 @@ import com.google.appengine.api.users.UserServiceFactory;
 import java.io.PrintWriter;
 
 public class Html {
-  public static void htmlHeadBody(PrintWriter ps) {
+  
+  public static void justHeadBody(PrintWriter ps) {
     ps.println("<html>");
     ps.println("<head>" +
-    		"<title>Bilioteca Tamandu&aacute; Bandeira</title>" +
-    		"<link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/>" +
-    		"<meta name='viewport' content='width=device-width'/>" +
-    		"</head>");
+            "<title>Bilioteca Tamandu&aacute; Bandeira</title>" +
+            "<link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/>" +
+            "<meta name='viewport' content='width=device-width'/>" +
+            "</head>");
     ps.println("<body>");
+  }
+   
+  public static void htmlHeadBody(PrintWriter ps) {
+    justHeadBody(ps);
     a(ps, "/list", "Acervo");
     ps.println(
         "<a href='http://www.mensageirosdacultura.com/MDC_Biblioteca_const.html' target='_new'>" +
