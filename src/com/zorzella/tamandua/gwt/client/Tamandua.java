@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.gen2.picker.client.SliderBar;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -171,6 +172,7 @@ public class Tamandua implements EntryPoint {
           activityTable, 
           itemBundle);
       this.refresh();
+//      Window.scrollTo(0, 1);
     }
     
     public void refresh() {
@@ -193,7 +195,7 @@ public class Tamandua implements EntryPoint {
 //  @Override
   public void onModuleLoad() {
 
-    iphone();
+//    iphone();
     
     final MemberServiceAsync memberService = GWT.create(MemberService.class);
 
@@ -269,9 +271,9 @@ public class Tamandua implements EntryPoint {
 
   }
 
-  public native void iphone() /*-{
-    window.scrollTo(0, 1);
-  }-*/;
+//  public native void iphone() /*-{
+//    window.scrollTo(0, 1);
+//  }-*/;
 
   //  public native void iphone() /*-{
 //    if (navigator.userAgent.indexOf('iPhone') != -1) {

@@ -96,6 +96,7 @@ input.x-short {
   position: absolute;
   bottom: 0px;
   left: 0px;
+  padding: 0.5em;
 }
   
 .borrow-next {
@@ -103,6 +104,7 @@ input.x-short {
   position: absolute;
   bottom: 0px;
   right: 50%;
+  padding: 0.5em;
 }
   
 .borrow {
@@ -110,6 +112,7 @@ input.x-short {
   position: absolute;
   bottom: 0px;
   right: 0px;
+  padding: 0.5em;
 }
   
 .prev {
@@ -117,6 +120,7 @@ input.x-short {
   position: absolute;
   top: 0;
   left: 0;
+  padding: 0.5em;
 }
 
 .next {
@@ -124,6 +128,7 @@ input.x-short {
   position: absolute;
   top: 0;
   right: 50%;
+  padding: 0.5em;
 }
 
 .close {
@@ -131,6 +136,7 @@ input.x-short {
   position: absolute;
   top: 0;
   right: 0;
+  padding: 0.5em;
 }
 
 .title {
@@ -140,6 +146,8 @@ input.x-short {
 }
 
 .popup-panel {
-  width: 320px;
-  height: 470px;
+  margin: 1.25em;
+  width: 310px;
+  height: 420px;
+  position: relative;
 }
