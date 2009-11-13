@@ -10,13 +10,11 @@ import com.google.gwt.gen2.picker.client.SliderBar;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 import com.zorzella.tamandua.Item;
 import com.zorzella.tamandua.ItemBundle;
@@ -49,7 +47,7 @@ public class Tamandua implements EntryPoint {
       membersDropDown.setMembers(members);
       membersDropDown.refresh();
       //TODO
-      membersDropDown.setSelectedIndex(2);
+//      membersDropDown.setSelectedIndex(2);
       memberService.getFancySortedItems(sortedItemsCallback);
     }
   }
@@ -172,7 +170,7 @@ public class Tamandua implements EntryPoint {
           activityTable, 
           itemBundle);
       this.refresh();
-//      Window.scrollTo(0, 1);
+      Window.scrollTo(0, 1);
     }
     
     public void refresh() {
@@ -190,7 +188,7 @@ public class Tamandua implements EntryPoint {
     }
   }
 
-  private Panel mainPanel = new FlowPanel();
+  static Panel mainPanel = new FlowPanel();
 
 //  @Override
   public void onModuleLoad() {
@@ -215,11 +213,10 @@ public class Tamandua implements EntryPoint {
     memberService.adminOrDie(callback);
   }
 
-  public static final int SCROLL_PANEL_HEIGH = 320;
+  public static final int SCROLL_PANEL_HEIGH = 380;
   
   void adminOk(MemberServiceAsync memberService) {
     final Panel borrowedItemsTable = new FlowPanel();
-    final Widget separator = new HTML("<hr/>");
     final Panel availableItemsTable = new FlowPanel();
     final ScrollPanel scrollPanel = new ScrollPanel();
     scrollPanel.setHeight(SCROLL_PANEL_HEIGH + "px");

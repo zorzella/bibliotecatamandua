@@ -47,12 +47,17 @@ input.x-short {
     margin-left            :    auto;
     margin-right           :    auto;
 }
+
 .demo-popup
 {
     background-color       :    #FFFFEE;
     border                 :    1px solid #009;
     /* above the slider bar */
     z-index: 2;
+    overflow: visible; 
+    left: 0px; 
+    top: 5px; 
+    position: absolute;
 }
 .demo-Composite
 {
@@ -147,7 +152,7 @@ input.x-short {
 
 .popup-panel {
   margin: 1.25em;
-  width: 310px;
-  height: 420px;
+  width: 285px;
+  height: 380px;
   position: relative;
 }

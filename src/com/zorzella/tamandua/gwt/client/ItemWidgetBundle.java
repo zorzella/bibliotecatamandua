@@ -1,33 +1,27 @@
 package com.zorzella.tamandua.gwt.client;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.Widget;
-
 import com.zorzella.tamandua.Item;
 import com.zorzella.tamandua.ItemBundle;
 import com.zorzella.tamandua.Member;
 import com.zorzella.tamandua.gwt.client.Tamandua.ActivityTable;
 import com.zorzella.tamandua.gwt.client.Tamandua.MembersDropDown;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ItemWidgetBundle {
 
   private final class BorrowItemCallback implements AsyncCallback<Void> {
 
-//    private final ActivityTable activityTable;
     private final Member member;
     private final Item item;
 
     public BorrowItemCallback(ActivityTable activityTable, Member member, Item item) {
-//      this.activityTable = activityTable;
       this.member = member;
       this.item = item;
     }
@@ -53,12 +47,10 @@ public class ItemWidgetBundle {
 
   private final class ReturnItemCallback implements AsyncCallback<Void> {
 
-//    private final ActivityTable activityTable;
     private final Member member;
     private final Item item;
 
     public ReturnItemCallback(Member member, Item item, ActivityTable activityTable) {
-//      this.activityTable = activityTable;
       this.member = member;
       this.item = item;
     }
@@ -106,7 +98,8 @@ public class ItemWidgetBundle {
   private final MembersDropDown membersDropDown;
   private final MemberServiceAsync memberService;
   private final ActivityTable activityTable;
-  private final TbrPopup toBorrowReturnItemWidget;
+  private final ToBorrowPopup toBorrowPopup;
+  private final ToReturnPopup toReturnPopup;
   private final ItemBundle itemBundle;
 
   private final Map<Item, Label> availableItemToWidgetMap;
@@ -125,11 +118,11 @@ public class ItemWidgetBundle {
     this.activityTable = activityTable;
     this.itemBundle = itemBundle;
     
-    this.toBorrowReturnItemWidget = new TbrPopup(this);
-    
+    this.toBorrowPopup = new ToBorrowPopup(this);
+    this.toReturnPopup = new ToReturnPopup(this);
+    Tamandua.mainPanel.add(toBorrowPopup);
+    Tamandua.mainPanel.add(toReturnPopup);
 
-
-    
     this.availableItemToWidgetMap = new HashMap<Item, Label>();
     this.borrowedItemToWidgetSimpleMap = new HashMap<Item, Label>();
     this.borrowedItemToWidgetClickableMap = new HashMap<Item, Label>();
@@ -145,9 +138,24 @@ public class ItemWidgetBundle {
     }
   }
 
-  private Item nextAvailable(Item item) {
+  Item prevAvailable(Item item) {
+	  Collection<Item> allAvailable = itemBundle.getAvailable();
+	    Item last = allAvailable.iterator().next();
+		for (Item temp : allAvailable) {
+	      if (item == temp) {
+	        return last;
+	      }
+	      last = temp;
+	    }
+	    return last;
+	  }
+  
+  Item nextAvailable(Item item) {
     boolean found = false;
-    for (Item temp : itemBundle.getAvailable()) {
+    Collection<Item> allAvailable = itemBundle.getAvailable();
+    Item last = allAvailable.iterator().next(); 
+	for (Item temp : allAvailable) {
+		last = temp;
       if (found) {
         return temp;
       }
@@ -155,20 +163,36 @@ public class ItemWidgetBundle {
         found = true;
       }
     }
-    return null;
+    return last;
   }
   
-  private Item prevAvailable(Item item) {
-    Item last = null;
-    for (Item temp : itemBundle.getAvailable()) {
-      if (item == temp) {
-        return last;
-      }
-      last = temp;
-    }
-    throw new IllegalStateException();
-  }
-
+  Item prevBorrowed(Item item) {
+	  Collection<Item> borrowed = itemBundle.getBorrowed(item.getParadeiro());
+	    Item last = borrowed.iterator().next();
+		for (Item temp : borrowed) {
+	      if (item == temp) {
+	        return last;
+	      }
+	      last = temp;
+	    }
+	    return last;
+	  }
+  
+  Item nextBorrowed(Item item) {
+	    boolean found = false;
+	    Collection<Item> borrowed = itemBundle.getBorrowed(item.getParadeiro());
+	    Item last = borrowed.iterator().next();
+		for (Item temp : borrowed) {
+			last = temp;
+	      if (found) {
+	        return temp;
+	      }
+	      if (item == temp) {
+	        found = true;
+	      }
+	    }
+	    return last;
+	  }
   private Label buildBorrowedSimpleWidget(Item item) {
     Label result = new Label(
         membersDropDown.idToCode(item.getParadeiro()) + "-" + getLabelTextFor(item));
@@ -198,13 +222,26 @@ public class ItemWidgetBundle {
       
 //      @Override
       public void onClick(ClickEvent event) {
-        Member member = membersDropDown.getSelectedMember();
-        AsyncCallback<Void> returnItemCallback = 
-          new ItemWidgetBundle.ReturnItemCallback(member, item, activityTable);
-        memberService.returnItem(member.getId(), item, returnItemCallback);
-        itemStatusMap.put(item, Status.RETURNING);
-        result.setText(getLabelTextFor(item));
-        //TODO: install new one (to undo)
+    	switch (itemStatusMap.get(item)) {
+    	case BORROWED:
+    	case FAILURE_TO_RETURN:
+    		if (true) {
+    			toReturnPopup.show(item);
+    		} else {
+    			initiateReturn(item);
+    		}
+    		break;
+    	case RETURNING:
+    		// Ok, we're in the process of returning right now
+    		break;
+    	case AVAILABLE:
+    		// Ok, we have just returned this item, though it still shows up here
+    		break;
+    	case BORROWING:
+    	case FAILURE_TO_BORROW:
+    	default:
+    		throw new IllegalStateException();
+    	}
       }
     };
     result.addClickHandler(clickHandler);
@@ -224,19 +261,43 @@ public class ItemWidgetBundle {
           return;
         }
 
-        if (true) {
-          toBorrowReturnItemWidget.show(item);
-        } else {
-          initiateBorrow(item);
-        }
-        //TODO: install new one (to undo)
+    	switch (itemStatusMap.get(item)) {
+    	case AVAILABLE:
+    	case FAILURE_TO_BORROW:
+            if (true) {
+                toBorrowPopup.show(item);
+              } else {
+                initiateBorrow(item);
+              }
+    		break;
+    	case BORROWING:
+    		// Ok, we're in the process of borrowing right now
+    		break;
+    	case BORROWED:
+    		// Ok, we have just borrowed this item, though it still shows up here
+    		break;
+    	case FAILURE_TO_RETURN:
+    	case RETURNING:
+    	default:
+    		throw new IllegalStateException();
+    	}
       }
     };
     result.addClickHandler(clickHandler);
     return result;
   }
 
-  private void initiateBorrow(final Item item) {
+  public void initiateReturn(final Item item) {
+		Label label = availableItemToWidgetMap.get(item);
+		Member member = membersDropDown.getSelectedMember();
+      AsyncCallback<Void> returnItemCallback = 
+        new ItemWidgetBundle.ReturnItemCallback(member, item, activityTable);
+      memberService.returnItem(member.getId(), item, returnItemCallback);
+      itemStatusMap.put(item, Status.RETURNING);
+      label.setText(getLabelTextFor(item));
+	}
+  
+  void initiateBorrow(final Item item) {
     Member member = membersDropDown.getSelectedMember();
     if (member == null) {
       throw new IllegalArgumentException();
@@ -247,165 +308,5 @@ public class ItemWidgetBundle {
     memberService.borrowItem(member.getId(), item, borrowItemCallback);
     itemStatusMap.put(item, Status.BORROWING);
     label.setText(getLabelTextFor(item));
-  }
-
-  private static final class TbrPopup extends Widget {
-
-    private final ItemWidgetBundle itemWidgetBundle;
-    private final PopupPanel backing;
-    private final Label itemTitleLabel = label("None", "title");
-
-    private Label label(String text, String styleName) {
-      Label result = new Label(text);
-      result.setStyleName(styleName);
-      return result;
-    }
-    
-    private Item item;
-    
-    private static Panel HSPACER() {
-      return div("hspacer");
-    }
-
-    private static Panel div(String styleName) {
-      Panel result = new FlowPanel();
-      result.setStyleName(styleName);
-      return result;
-    }
-    
-    private static Panel VSPACER() {
-      return div("vspacer");
-    }
-    
-    TbrPopup(ItemWidgetBundle itemWidgetBundle) {
-      this.itemWidgetBundle = itemWidgetBundle;
-      backing = new PopupPanel(false);
-
-      //    result.setStyleName("demo-PopUpPanel");
-      backing.setStyleName("demo-popup");
-
-      Label prevButton = buildPrevButton();
-      Label nextButton = buildNextButton();
-      Label closeButton = buildCloseButton();
-
-      Label borrowPrevButton = buildBorrowPrevButton();
-      Label borrowNextButton = buildBorrowNextButton();
-      Label borrowButton = buildBorrowButton();
-
-      final Panel fullPanel = new FlowPanel();
-      fullPanel.setStyleName("popup-panel");
-//      fullPanel.setSize("200px", "400px");
-      
-      Panel prevNextClosePanel = div("prev-next-close");
-      
-      prevNextClosePanel.add(prevButton);
-      prevNextClosePanel.add(nextButton);
-      prevNextClosePanel.add(closeButton);
-      
-      fullPanel.add(prevNextClosePanel);
-      fullPanel.add(itemTitleLabel);
-//      Panel bottom = div("borrow");
-//      bottom.add(borrowButton);
-//    fullPanel.add(bottom);
-      fullPanel.add(borrowPrevButton);
-      fullPanel.add(borrowNextButton);
-      fullPanel.add(borrowButton);
-
-      backing.add(fullPanel);
-    }
-
-    private Label buildBorrowPrevButton() {
-      ClickHandler handler = new ClickHandler() {
-        //        @Override
-        public void onClick(ClickEvent event) {
-          itemWidgetBundle.initiateBorrow(item);
-          item = itemWidgetBundle.prevAvailable(item);
-          repaint();
-        }
-      };
-      Label closeButton = label("Borrow", "borrow-prev");
-      closeButton.addClickHandler(handler);
-      return closeButton;
-    }
-    
-    private Label buildBorrowNextButton() {
-      ClickHandler handler = new ClickHandler() {
-        //        @Override
-        public void onClick(ClickEvent event) {
-          itemWidgetBundle.initiateBorrow(item);
-          item = itemWidgetBundle.nextAvailable(item);
-          repaint();
-        }
-      };
-      Label closeButton = label("Borrow", "borrow-next");
-      closeButton.addClickHandler(handler);
-      return closeButton;
-    }
-    
-    private Label buildBorrowButton() {
-      ClickHandler handler = new ClickHandler() {
-        //        @Override
-        public void onClick(ClickEvent event) {
-          backing.hide();
-          itemWidgetBundle.initiateBorrow(item);
-        }
-      };
-      Label closeButton = label("Borrow", "borrow");
-      closeButton.addClickHandler(handler);
-      return closeButton;
-    }
-
-    private Label buildCloseButton() {
-      ClickHandler handler = new ClickHandler() {
-        //        @Override
-        public void onClick(ClickEvent event) {
-          backing.hide();
-        }
-      };
-      Label closeButton = new Label("Close");
-      closeButton.setStyleName("close");
-      closeButton.addClickHandler(handler);
-      return closeButton;
-    }
-
-    private Label buildPrevButton() {
-      ClickHandler handler = new ClickHandler() {
-        //        @Override
-        public void onClick(ClickEvent event) {
-//          backing.hide();
-          item = itemWidgetBundle.prevAvailable(item);
-          repaint();
-        }
-      };
-      Label closeButton = new Label("Prev");
-      closeButton.setStyleName("prev");
-      closeButton.addClickHandler(handler);
-      return closeButton;
-    }
-    
-    private Label buildNextButton() {
-      ClickHandler handler = new ClickHandler() {
-        //        @Override
-        public void onClick(ClickEvent event) {
-          item = itemWidgetBundle.nextAvailable(item);
-          repaint();
-//          backing.hide();
-        }
-      };
-      Label closeButton = new Label("Next");
-      closeButton.setStyleName("next");
-      closeButton.addClickHandler(handler);
-      return closeButton;
-    }
-
-    private void repaint() {
-      itemTitleLabel.setText(item.getTitulo());
-    }
-    
-    public void show(Item item) {
-      this.item = item;
-      repaint();
-      backing.show();
-    }
   }
 }
