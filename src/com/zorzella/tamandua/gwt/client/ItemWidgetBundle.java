@@ -288,7 +288,7 @@ public class ItemWidgetBundle {
   }
 
   public void initiateReturn(final Item item) {
-		Label label = availableItemToWidgetMap.get(item);
+		Label label = borrowedItemToWidgetClickableMap.get(item);
 		Member member = membersDropDown.getSelectedMember();
       AsyncCallback<Void> returnItemCallback = 
         new ItemWidgetBundle.ReturnItemCallback(member, item, activityTable);
