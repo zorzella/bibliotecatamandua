@@ -1,16 +1,11 @@
 package com.zorzella.tamandua.gwt.client;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -18,125 +13,17 @@ final class MainPanel extends Composite {
 
   private final Panel mainPanel = new FlowPanel();
   
-  private final Label message = new Label();
-  private final LendingPanel lendingPanel;
+  final Label message = new Label();
+  final LendingPanel lendingPanel;
   private final NewMemberPanel newMemberPanel = buildNewMemberPanel();
   private final Panel menuPanel = buildMenu();
-  private final MemberServiceAsync memberService;
+  final MemberServiceAsync memberService;
 
   
   private NewMemberPanel buildNewMemberPanel () {
-    return new NewMemberPanel();
+    return new NewMemberPanel(this);
   }
   
-  private final class NewMemberPanel extends Composite {
-
-    private final FlowPanel result = new FlowPanel();
-    private final TextBox parentNameInput = new TextBox();
-    private final TextBox childFirstNameInput = new TextBox();
-    private final TextBox childLastNameInput = new TextBox();
-    private final TextBox codeInput = new TextBox();
-    private final TextBox emailInput = new TextBox();
-
-    void clear() {
-      parentNameInput.setText("");
-      childFirstNameInput.setText("");
-      childLastNameInput.setText("");
-      codeInput.setText("");
-      emailInput.setText("");
-    }
-    
-    public NewMemberPanel() {
-      initWidget(result);
-
-      result.add(new Label("Parent name"));
-      result.add(parentNameInput);
-
-      result.add(new Label("Child First Name"));
-      result.add(childFirstNameInput);
-
-      result.add(new Label("Child Last Name"));
-      result.add(childLastNameInput);
-
-      result.add(new Label("Code"));
-      result.add(codeInput);
-
-      result.add(new Label("Email"));
-      result.add(emailInput);
-
-      final ListBox commonEmails = new ListBox();
-      commonEmails.addItem("");
-      commonEmails.addItem("@gmail.com");
-      commonEmails.addItem("@hotmail.com");
-      commonEmails.addItem("@yahoo.com");
-      {
-        ChangeHandler handler = new ChangeHandler() {
-
-          public void onChange(ChangeEvent event) {
-            String value = emailInput.getValue();
-            value = value + commonEmails.getValue(commonEmails.getSelectedIndex());
-            emailInput.setValue(value);
-          }
-        };
-        commonEmails.addChangeHandler(handler);
-      }
-      result.add(commonEmails);
-
-      Label ok = new Label("Ok");
-      ok.setStyleName("prev-page");
-      {
-        ClickHandler handler = new ClickHandler() {
-
-          public void onClick(ClickEvent event) {
-            String code = codeInput.getValue().trim();
-            if (code.equals("")) {
-              message.setText("Code is required.");
-              return;
-            }
-            if (lendingPanel.memberExistsWithCode(code)) {
-              message.setText("Code is already in use.");
-              return;
-            }
-            
-            AsyncCallback<Void> callback = new AsyncCallback<Void>() {
-
-              public void onSuccess(Void result) {
-                lendingPanel.reloadMembers();
-                makeLendingVisible();
-              }
-
-              public void onFailure(Throwable caught) {
-                message.setText("Failed!");
-              }
-            };
-            memberService.createNew(
-                parentNameInput.getValue(), 
-                childFirstNameInput.getValue(), 
-                childLastNameInput.getValue(), 
-                code, 
-                emailInput.getValue(), 
-                callback);
-          }
-        };
-        ok.addClickHandler(handler);
-      }
-      result.add(ok);
-
-      Label cancel = new Label("Cancel");
-      cancel.setStyleName("next-page");
-      {
-        ClickHandler handler = new ClickHandler() {
-
-          public void onClick(ClickEvent event) {
-            makeLendingVisible();
-          }
-        };
-        cancel.addClickHandler(handler);
-      }
-      result.add(cancel);
-    }
-  }
-
   private FlowPanel buildMenu() {
     FlowPanel result = new FlowPanel();
     Label lendingButton = new Label("Lending");
@@ -164,6 +51,22 @@ final class MainPanel extends Composite {
       newMemberButton.addClickHandler(newMemberHandler);
     }
     result.add(newMemberButton);
+
+    Label reloadButton = new Label("Reload");
+    reloadButton.setStyleName("menu-item");
+    {
+      ClickHandler reloadHandler = new ClickHandler() {
+        
+        public void onClick(ClickEvent event) {
+          lendingPanel.reloadMembers(null);
+          makeLendingVisible();
+        }
+      };
+      reloadButton.addClickHandler(reloadHandler);
+    }
+    result.add(reloadButton);
+
+    
     return result;
   }
 

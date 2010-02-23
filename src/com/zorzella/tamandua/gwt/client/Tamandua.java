@@ -6,24 +6,20 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
 
 import com.zorzella.tamandua.Item;
 import com.zorzella.tamandua.ItemBundle;
 import com.zorzella.tamandua.Member;
-import com.zorzella.tamandua.TamanduaUtil;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.Collection;
 
 public class Tamandua implements EntryPoint {
 
   public static final int SCROLL_PANEL_HEIGH = 380;
+
+  private MainPanel mainPanel;
 
   private static final class AdminOrDieCallback implements AsyncCallback<Void> {
     private final MemberServiceAsync memberService;
@@ -49,77 +45,38 @@ public class Tamandua implements EntryPoint {
   }
   
   static final class MembersDropDownCallback extends 
-      NaiveAsyncCallback<SortedSet<Member>> {
+      NaiveAsyncCallback<Collection<Member>> {
     private final MembersDropDown membersDropDown;
     private final MemberServiceAsync memberService;
     private final SortedItemsCallback sortedItemsCallback;
+    private final String selectedMemberCode;
 
+    /**
+     * If {@code selectedMemberCode} is not null, that member will be made the 
+     * selected member at the end of the callback.
+     */
     MembersDropDownCallback(
         MembersDropDown membersDropDown, 
         MemberServiceAsync memberService, 
-        SortedItemsCallback sortedItemsCallback) {
+        SortedItemsCallback sortedItemsCallback, 
+        String selectedMemberCode) {
       this.membersDropDown = membersDropDown;
       this.memberService = memberService;
       this.sortedItemsCallback = sortedItemsCallback;
+      this.selectedMemberCode = selectedMemberCode;
     }
 
     //      @Override
-    public void onSuccess(SortedSet<Member> members) {
+    public void onSuccess(Collection<Member> members) {
       membersDropDown.setMembers(members);
       membersDropDown.refresh();
+      if (selectedMemberCode != null) {
+        membersDropDown.setSelectedMember(selectedMemberCode);
+      }
       memberService.getFancySortedItems(sortedItemsCallback);
     }
   }
   
-  public static final class MembersDropDown extends ListBox {
-
-    private SortedSet<Member> members;
-    private final Map<Long, Member> memberIdToCodeMap = new HashMap<Long, Member>();
-
-    public MembersDropDown() {
-      addItem("");
-    }
-    
-    public void setMembers(SortedSet<Member> members) {
-      this.members = members;
-      for (Member member : members) {
-        memberIdToCodeMap.put(member.getId(), member);
-      }
-    }
-
-    public Member getSelectedMember() {
-      int index = getSelectedIndex();
-      String value = getValue(index);
-      if (value.equals("")) {
-        return null;
-      }
-      return memberIdToCodeMap.get(Long.valueOf(value));
-    }
-    
-    public String idToCode(Long id) {
-      return memberIdToCodeMap.get(id).getCodigo();
-    }
-
-    public void refresh() {
-      clear();
-      addItem("");
-      for (Member member : members) {
-        addItem(
-          member.getCodigo() + " - " + TamanduaUtil.nome(member),
-          member.getId().toString());
-      }
-    }
-    
-    public boolean memberExistsWithCode(String code) {
-      for (Member member : members) {
-        if (member.getCodigo().equalsIgnoreCase(code.trim())) {
-          return true;
-        }
-      }
-      return false;
-    }
-  }
-
   static final class CurrentMemberChangeHandler implements ChangeHandler {
     private final SortedItemsCallback sortedItemsCallback;
     private final MemberServiceAsync memberService;
@@ -143,25 +100,6 @@ public class Tamandua implements EntryPoint {
     }
   }
 
-  public static final class ActivityTable extends FlowPanel {
-    private boolean dirty;
-
-    /**
-     * Test and set, relying on single-threadness
-     */
-    public boolean clearDirty() {
-      boolean result = dirty;
-      dirty = false;
-      return result;
-    }
-
-    public void addItem(Label item) {
-      item.setStyleName("entry-row read");
-      add(item);
-      dirty = true;
-    }
-  }
-  
   public static final class SortedItemsCallback 
       extends NaiveAsyncCallback<ItemBundle> {
     
@@ -215,11 +153,8 @@ public class Tamandua implements EntryPoint {
     }
   }
 
-  private MainPanel mainPanel;
-
   //  @Override
   public void onModuleLoad() {
-
     final MemberServiceAsync memberService = GWT.create(MemberService.class);
     
     mainPanel = new MainPanel(memberService);

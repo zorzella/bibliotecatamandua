@@ -1,5 +1,3 @@
-// Copyright 2010 Google Inc. All Rights Reserved.
-
 package com.zorzella.tamandua.gwt.client;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -15,13 +13,11 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.zorzella.tamandua.Member;
-import com.zorzella.tamandua.gwt.client.Tamandua.ActivityTable;
 import com.zorzella.tamandua.gwt.client.Tamandua.CurrentMemberChangeHandler;
-import com.zorzella.tamandua.gwt.client.Tamandua.MembersDropDown;
 import com.zorzella.tamandua.gwt.client.Tamandua.MembersDropDownCallback;
 import com.zorzella.tamandua.gwt.client.Tamandua.SortedItemsCallback;
 
-import java.util.SortedSet;
+import java.util.Collection;
 
 public final class LendingPanel extends Composite {
 
@@ -62,7 +58,7 @@ public final class LendingPanel extends Composite {
   }
 
   void adminOk(MemberServiceAsync memberService, MainPanel mainPanel) {
-    reloadMembers();
+    reloadMembers(null);
 
     lendingPanel.add(activityTable);
     lendingPanel.add(membersDropDown);
@@ -119,9 +115,9 @@ public final class LendingPanel extends Composite {
     return scrollPanel;
   }
 
-  public void reloadMembers() {
-    final AsyncCallback<SortedSet<Member>> sortedMembersCallback = 
-      new MembersDropDownCallback(membersDropDown, memberService, sortedItemsCallback);
+  public void reloadMembers(String code) {
+    final AsyncCallback<Collection<Member>> sortedMembersCallback = 
+      new MembersDropDownCallback(membersDropDown, memberService, sortedItemsCallback, code);
     memberService.getSortedMembers(sortedMembersCallback);
   }
 }

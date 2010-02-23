@@ -13,8 +13,6 @@ import com.google.gwt.user.client.ui.Panel;
 import com.zorzella.tamandua.Item;
 import com.zorzella.tamandua.ItemBundle;
 import com.zorzella.tamandua.Member;
-import com.zorzella.tamandua.gwt.client.Tamandua.ActivityTable;
-import com.zorzella.tamandua.gwt.client.Tamandua.MembersDropDown;
 
 public class ItemWidgetBundle {
 

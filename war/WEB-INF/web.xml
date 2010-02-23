@@ -5,14 +5,6 @@
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
   <servlet>
-    <servlet-name>remoteLoggingServiceImpl</servlet-name>
-    <servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>remoteLoggingServiceImpl</servlet-name>
-    <url-pattern>/com.zorzella.tamandua.gwt.tamandua/logging</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <servlet-name>upload</servlet-name>
     <servlet-class>com.zorzella.tamandua.UploadServlet</servlet-class>
   </servlet>

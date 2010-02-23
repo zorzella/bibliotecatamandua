@@ -13,6 +13,7 @@ import com.zorzella.tamandua.PMF;
 import com.zorzella.tamandua.Queries;
 import com.zorzella.tamandua.gwt.client.MemberService;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.SortedSet;
@@ -29,20 +30,21 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
   
 //  @Override
-  public SortedSet<Member> getSortedMembers() {
+  public Collection<Member> getSortedMembers() {
     SortedSet<Member> members = Queries.getSortedMembers(pm);
-    return members;
+    
+    Collection<Member> result = Lists.newArrayList();
+    for (Member member : members) {
+      result.add(pm.detachCopy(member));
+    }
+    return result;
   }
 
   public ItemBundle getFancySortedItems() {
-    Map<Long, String> map = BorrowReturnServlet.getMap(getSortedMembers());
+    Map<Long, String> map = BorrowReturnServlet.getMap(Queries.getSortedMembers(pm));
 
     ItemBundle temp = new Queries(map).getDetachedFancySortedItems(pm);
 
-//    return temp;
-    
-//    return pm.detachCopy(temp);
-    
     return new ItemBundle(
         Lists.newArrayList(temp.getAvailable()), 
         Lists.newArrayList(temp.getBorrowed()));
