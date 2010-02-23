@@ -6,7 +6,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.gen2.picker.client.SliderBar;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -36,7 +35,6 @@ public final class LendingPanel extends Composite {
   private final Panel availableItemsTable = new FlowPanel();
   private final ScrollPanel scrollPanel = buildScrollPanel();
   private final ActivityTable activityTable = new ActivityTable();
-  private final SliderBar sliderBar = new SliderBar(0.0, 100.0);
   private final SortedItemsCallback sortedItemsCallback;
 
 
@@ -52,7 +50,6 @@ public final class LendingPanel extends Composite {
           membersDropDown, 
           activityTable, 
           memberService,
-          sliderBar,
           lendingPanel);
 
     final CurrentMemberChangeHandler memberChangeHandler = 
@@ -79,8 +76,6 @@ public final class LendingPanel extends Composite {
         scrollPanel.setScrollPosition(event.getValue().intValue());
       }
     };
-    sliderBar.addValueChangeHandler(handler);
-    sliderBar.setStepSize(5.0);
 
     Label prevPageButton = new Label("<");
     prevPageButton.setStyleName("prev-page");

@@ -4,7 +4,6 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.gen2.picker.client.SliderBar;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -171,7 +170,6 @@ public class Tamandua implements EntryPoint {
     private final MembersDropDown membersDropDown;
     private final ActivityTable activityTable;
     private final MemberServiceAsync memberService;
-    private final SliderBar sliderBar;
 
     private ItemWidgetBundle itemWidgetBundle;
     private ItemBundle itemBundle;
@@ -183,14 +181,12 @@ public class Tamandua implements EntryPoint {
         MembersDropDown membersDropDown, 
         ActivityTable activityTable, 
         MemberServiceAsync memberService, 
-        SliderBar sliderBar, 
         Panel lendingPanel) {
       this.availableItemListWidget = availableItemListWidget;
       this.borrowedItemListWidget = borrowedItemListWidget;
       this.membersDropDown = membersDropDown;
       this.activityTable = activityTable;
       this.memberService = memberService;
-      this.sliderBar = sliderBar;
       this.lendingPanel = lendingPanel;
     }
 
@@ -216,8 +212,6 @@ public class Tamandua implements EntryPoint {
       for (Item item : itemBundle.getAvailable()) {
         availableItemListWidget.add(itemWidgetBundle.getWidgetForAvailable(item));
       }
-      // 10 is a fudge
-      sliderBar.setMaxValue(10 + availableItemListWidget.getOffsetHeight() - SCROLL_PANEL_HEIGH);
     }
   }
 

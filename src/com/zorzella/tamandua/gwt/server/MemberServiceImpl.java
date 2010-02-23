@@ -37,7 +37,11 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   public ItemBundle getFancySortedItems() {
     Map<Long, String> map = BorrowReturnServlet.getMap(getSortedMembers());
 
-    ItemBundle temp = new Queries(map).getFancySortedItems(pm);
+    ItemBundle temp = new Queries(map).getDetachedFancySortedItems(pm);
+
+//    return temp;
+    
+//    return pm.detachCopy(temp);
     
     return new ItemBundle(
         Lists.newArrayList(temp.getAvailable()), 
@@ -45,55 +49,79 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
 
 //  @Override
-  public void returnItem(Long memberId, Item item) {
-    Item liveItem = pm.getObjectById(Item.class, item.getId());
+  public void returnItem(final Long memberId, final Item item) {
+    final Item liveItem = pm.getObjectById(Item.class, item.getId());
     if (!memberId.equals(liveItem.getParadeiro())) {
       throw new IllegalArgumentException(String.format(
           "Item '%s' is in paradeiro '%s', not in '%s'.", 
           item.getTitulo(), item.getParadeiro(), memberId));
     }
-    String adminCode = AdminOrDie.adminOrDie().getNickname();
+    final String adminCode = AdminOrDie.adminOrDie().getNickname();
 
-    Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
+    final Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
         "memberId == " + memberId + 
         " && itemId == " + item.getId() + 
         " && returnDate == null");
 
-    Transaction currentTransaction = pm.currentTransaction();
-    currentTransaction.begin();
+    doJob(new Runnable() {
+		
+		public void run() {
+			liveItem.setParadeiro(null);
+			pm.makePersistent(liveItem);
+		}
+	});
     
-    liveItem.setParadeiro(null);
-    pm.makePersistent(liveItem);
-    
-    loan.setReturnDate(adminCode, new Date());
-    pm.makePersistent(loan);
-    
-    currentTransaction.commit();
+	doJob(new Runnable() {
+		
+		public void run() {
+			loan.setReturnDate(adminCode, new Date());
+			pm.makePersistent(loan);
+		}
+	});    
   }
 
 //  @Override
-  public void borrowItem(Long memberId, Item item) {
-    Item liveItem = pm.getObjectById(Item.class, item.getId());
+  public void borrowItem(final Long memberId, final Item item) {
+    final Item liveItem = pm.getObjectById(Item.class, item.getId());
     if (liveItem.getParadeiro() != null) {
       throw new IllegalArgumentException(String.format(
           "Item '%s' is already in paradeiro '%s'.", 
           item.getTitulo(), liveItem.getParadeiro()));
     }
     
-    String admin = AdminOrDie.adminOrDie().getNickname();
+    final String admin = AdminOrDie.adminOrDie().getNickname();
 
-    Transaction currentTransaction = pm.currentTransaction();
-    currentTransaction.begin();
+	doJob(new Runnable() {
+      public void run() {
+        liveItem.setParadeiro(memberId);
+        pm.makePersistent(liveItem);
+      }
+    });
 
-    liveItem.setParadeiro(memberId);
-    pm.makePersistent(liveItem);
-    
-    Loan loan = new Loan(admin, memberId, item.getId());
-    pm.makePersistent(loan);
+    doJob(new Runnable() {	
+		public void run() {
+			Loan loan = new Loan(admin, memberId, item.getId());
+			pm.makePersistent(loan);
+		}
+	});
 
-    currentTransaction.commit();
   }
 
+  private void doJob(Runnable r) {
+    Transaction currentTransaction = pm.currentTransaction();
+    if (currentTransaction.isActive()) {
+      currentTransaction.rollback();
+    }
+    try {
+      currentTransaction.begin();
+      r.run();
+      currentTransaction.commit();
+    } catch (Exception e) {
+      currentTransaction.rollback();
+    }
+	  
+  }
+  
 //  @Override
   public void adminOrDie() {
     AdminOrDie.adminOrDie();

@@ -72,7 +72,7 @@ public class ItemWidgetBundle {
         new Label("[" + member.getCodigo() + "] failed to return: " + item.getTitulo());
       activityTable.addItem(failedToReturnLabel);
       itemStatusMap.put(item, Status.FAILURE_TO_RETURN);
-      getWidgetForAvailable(item).setText(item.getTitulo() + " - failed to return");
+      getWidgetForBorrowed(item, member).setText(item.getTitulo() + " - failed to return");
     }
   }
   

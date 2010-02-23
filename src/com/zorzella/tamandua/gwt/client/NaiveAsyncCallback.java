@@ -5,6 +5,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public abstract class NaiveAsyncCallback<T> implements AsyncCallback<T> {
 
   public final void onFailure(Throwable caught) {
-    caught.printStackTrace();
+    throw new RuntimeException(this.toString(), caught);
   }
 }

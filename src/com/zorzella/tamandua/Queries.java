@@ -136,6 +136,21 @@ private final Map<Long, String> paradeiroToCodeMap;
     }
     return new ItemBundle(available, borrowed);
   }
+
+  public ItemBundle getDetachedFancySortedItems(PersistenceManager pm) {
+    Collection<Item> borrowed = 
+      new TreeSet<Item>(new FancyItemComparator(paradeiroToCodeMap));
+    Collection<Item> available = 
+      new TreeSet<Item>(new FancyItemComparator(paradeiroToCodeMap));
+    for (Item item : allValidItems(pm)) {
+      if (item.getParadeiro() == null) {
+        available.add(pm.detachCopy(item));
+      } else {
+        borrowed.add(pm.detachCopy(item));
+      }
+    }
+    return new ItemBundle(available, borrowed);
+  }
   
   @SuppressWarnings("unchecked")
   private static Collection<Item> allValidItems(PersistenceManager pm) {
