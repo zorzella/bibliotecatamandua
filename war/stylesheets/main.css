@@ -52,7 +52,6 @@ input.x-short {
 {
     background-color       :    #FFFFEE;
     border                 :    1px solid #009;
-    /* above the slider bar */
     z-index: 2;
     overflow: visible; 
     left: 0px; 
@@ -197,6 +196,6 @@ input.x-short {
 .popup-panel {
   margin: 1.25em;
   width: 285px;
-  height: 380px;
+  height: 190px;
   position: relative;
 }
