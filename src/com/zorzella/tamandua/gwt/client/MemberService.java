@@ -22,4 +22,6 @@ public interface MemberService extends RemoteService {
 
   void borrowItem(Long memberId, Item item);
   
+  void createNew(String parentName, String childFirstName, String childLastName, String code, String email);
+  
 }

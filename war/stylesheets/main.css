@@ -96,6 +96,50 @@ input.x-short {
   border: 1px solid #FFFFcc;
 } */
 
+.message {
+  border: 1px;
+  padding: 0.5em;
+  color: red;
+}
+
+.menu-item {
+  border: 1px solid #0000FF;
+  padding: 0.5em;
+}
+
+.pagination {
+  position: relative;
+  height: 30px;
+}
+
+.prev-page {
+  border: 1px solid #0000FF;
+  position: absolute;
+  left: 0px;
+  padding: 0.1em;
+/*  width: 10px; */
+}
+  
+.menu-button {
+  border: 1px solid #0000FF;
+  position: absolute;
+  left: 50%;
+  padding: 0.1em;
+/*  width: 50px; */
+  text-align: center;
+}
+
+.next-page {
+  border: 1px solid #0000FF;
+  position: absolute;
+  right: 0px;
+  padding: 0.1em;
+/*  width: 10px; */
+  text-align: right;
+}
+
+
+
 .borrow-prev {
   border: 1px solid #0000FF;
   position: absolute;

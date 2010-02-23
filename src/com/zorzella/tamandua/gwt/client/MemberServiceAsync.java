@@ -20,4 +20,7 @@ public interface MemberServiceAsync {
 
   void adminOrDie(AsyncCallback<Void> callback);
 
+  void createNew(String parentName, String childFirstName, String childLastName, String code,
+      String email, AsyncCallback<Void> callback);
+
 }

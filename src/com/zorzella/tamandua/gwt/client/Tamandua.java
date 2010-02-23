@@ -4,8 +4,6 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.gen2.picker.client.SliderBar;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -14,7 +12,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
 
 import com.zorzella.tamandua.Item;
 import com.zorzella.tamandua.ItemBundle;
@@ -27,13 +24,38 @@ import java.util.SortedSet;
 
 public class Tamandua implements EntryPoint {
 
-  private static final class MembersDropDownCallback extends 
+  public static final int SCROLL_PANEL_HEIGH = 380;
+
+  private static final class AdminOrDieCallback implements AsyncCallback<Void> {
+    private final MemberServiceAsync memberService;
+    private final MainPanel mainPanel;
+
+    private AdminOrDieCallback(
+        MemberServiceAsync memberService,
+        MainPanel mainPanel) {
+      this.memberService = memberService;
+      this.mainPanel = mainPanel;
+    }
+
+    //      @Override
+    public void onSuccess(Void result) {
+      mainPanel.getLendingPanel().adminOk(memberService, mainPanel);
+    }
+
+    //      @Override
+    public void onFailure(Throwable caught) {
+      throw new IllegalArgumentException(caught);
+    }
+  
+  }
+  
+  static final class MembersDropDownCallback extends 
       NaiveAsyncCallback<SortedSet<Member>> {
     private final MembersDropDown membersDropDown;
     private final MemberServiceAsync memberService;
     private final SortedItemsCallback sortedItemsCallback;
 
-    private MembersDropDownCallback(
+    MembersDropDownCallback(
         MembersDropDown membersDropDown, 
         MemberServiceAsync memberService, 
         SortedItemsCallback sortedItemsCallback) {
@@ -46,8 +68,6 @@ public class Tamandua implements EntryPoint {
     public void onSuccess(SortedSet<Member> members) {
       membersDropDown.setMembers(members);
       membersDropDown.refresh();
-      //TODO
-//      membersDropDown.setSelectedIndex(2);
       memberService.getFancySortedItems(sortedItemsCallback);
     }
   }
@@ -90,14 +110,23 @@ public class Tamandua implements EntryPoint {
           member.getId().toString());
       }
     }
+    
+    public boolean memberExistsWithCode(String code) {
+      for (Member member : members) {
+        if (member.getCodigo().equalsIgnoreCase(code.trim())) {
+          return true;
+        }
+      }
+      return false;
+    }
   }
 
-  private final class CurrentMemberChangeHandler implements ChangeHandler {
+  static final class CurrentMemberChangeHandler implements ChangeHandler {
     private final SortedItemsCallback sortedItemsCallback;
     private final MemberServiceAsync memberService;
     private final ActivityTable activityTable;
 
-    private CurrentMemberChangeHandler(
+    CurrentMemberChangeHandler(
         SortedItemsCallback sortedItemsCallback, 
         MemberServiceAsync memberService, 
         ActivityTable activityTable) {
@@ -146,20 +175,23 @@ public class Tamandua implements EntryPoint {
 
     private ItemWidgetBundle itemWidgetBundle;
     private ItemBundle itemBundle;
+    private final Panel lendingPanel;
 
-    private SortedItemsCallback(
+    SortedItemsCallback(
         Panel availableItemListWidget, 
         Panel borrowedItemListWidget, 
         MembersDropDown membersDropDown, 
         ActivityTable activityTable, 
         MemberServiceAsync memberService, 
-        SliderBar sliderBar) {
+        SliderBar sliderBar, 
+        Panel lendingPanel) {
       this.availableItemListWidget = availableItemListWidget;
       this.borrowedItemListWidget = borrowedItemListWidget;
       this.membersDropDown = membersDropDown;
       this.activityTable = activityTable;
       this.memberService = memberService;
       this.sliderBar = sliderBar;
+      this.lendingPanel = lendingPanel;
     }
 
     public void onSuccess(ItemBundle itemBundle) {
@@ -168,7 +200,8 @@ public class Tamandua implements EntryPoint {
           membersDropDown, 
           memberService, 
           activityTable, 
-          itemBundle);
+          itemBundle,
+          lendingPanel);
       this.refresh();
       Window.scrollTo(0, 1);
     }
@@ -188,99 +221,18 @@ public class Tamandua implements EntryPoint {
     }
   }
 
-  static Panel mainPanel = new FlowPanel();
+  private MainPanel mainPanel;
 
-//  @Override
+  //  @Override
   public void onModuleLoad() {
 
-//    iphone();
-    
     final MemberServiceAsync memberService = GWT.create(MemberService.class);
+    
+    mainPanel = new MainPanel(memberService);
+    RootPanel.get("list").add(mainPanel);
 
-    AsyncCallback<Void> callback = new AsyncCallback<Void>() {
-      
-//      @Override
-      public void onSuccess(Void result) {
-        adminOk(memberService);
-      }
-      
-//      @Override
-      public void onFailure(Throwable caught) {
-        throw new IllegalArgumentException(caught);
-      }
-    };
+    AsyncCallback<Void> callback = new AdminOrDieCallback(memberService, mainPanel);
     
     memberService.adminOrDie(callback);
   }
-
-  public static final int SCROLL_PANEL_HEIGH = 380;
-  
-  void adminOk(MemberServiceAsync memberService) {
-    final Panel borrowedItemsTable = new FlowPanel();
-    final Panel availableItemsTable = new FlowPanel();
-    final ScrollPanel scrollPanel = new ScrollPanel();
-    scrollPanel.setHeight(SCROLL_PANEL_HEIGH + "px");
-    scrollPanel.add(availableItemsTable);
-    final ActivityTable activityTable = new ActivityTable();
-    final MembersDropDown membersDropDown = new MembersDropDown();
-    
-    SliderBar sliderBar = new SliderBar(0.0, 100.0);
-
-    final SortedItemsCallback sortedItemsCallback =
-      new SortedItemsCallback(
-          availableItemsTable, 
-          borrowedItemsTable, 
-          membersDropDown, 
-          activityTable, 
-          memberService,
-          sliderBar);
-    
-    final AsyncCallback<SortedSet<Member>> sortedMembersCallback = 
-      new MembersDropDownCallback(membersDropDown, memberService, sortedItemsCallback);
-    memberService.getSortedMembers(sortedMembersCallback);
-    
-	final CurrentMemberChangeHandler memberChangeHandler = 
-      new CurrentMemberChangeHandler(sortedItemsCallback, memberService, activityTable);
-    membersDropDown.addChangeHandler(memberChangeHandler);
-
-    mainPanel.add(activityTable);
-    mainPanel.add(membersDropDown);
-    mainPanel.add(borrowedItemsTable);
-    
-    sliderBar.setStepSize(5.0);
-//    sliderBar.setNumTicks(10);
-//    sliderBar.setNumLabels(5);
-    mainPanel.add(sliderBar);
-    
-    ValueChangeHandler<Double> handler = new ValueChangeHandler<Double>() {
-      
-      public void onValueChange(ValueChangeEvent<Double> event) {
-        scrollPanel.setScrollPosition(event.getValue().intValue());
-      }
-    };
-    sliderBar.addValueChangeHandler(handler);
-    
-//    mainPanel.add(separator);
-    mainPanel.add(scrollPanel);
-//    mainPanel.add(availableItemsTable);
-    
-    RootPanel.get("list").add(mainPanel);
-
-  }
-
-//  public native void iphone() /*-{
-//    window.scrollTo(0, 1);
-//  }-*/;
-
-  //  public native void iphone() /*-{
-//    if (navigator.userAgent.indexOf('iPhone') != -1) {
-//      addEventListener("load", function() {
-//          setTimeout(hideURLbar, 0);
-//      }, false);
-//    }
-//
-//    function hideURLbar() {
-//      window.scrollTo(0, 1);
-//    }
-//  }-*/; 
 }

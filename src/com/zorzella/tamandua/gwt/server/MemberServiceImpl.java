@@ -56,8 +56,8 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
 
     Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
         "memberId == " + memberId + 
-        " && itemId == " + item.getId() + "");
-    //                "memberCode == ? && itemId == ? && returnDate == NULL", memberCode, item.getId());
+        " && itemId == " + item.getId() + 
+        " && returnDate == null");
 
     Transaction currentTransaction = pm.currentTransaction();
     currentTransaction.begin();
@@ -97,5 +97,26 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
 //  @Override
   public void adminOrDie() {
     AdminOrDie.adminOrDie();
+  }
+
+  public void createNew(
+      String parentName, 
+      String childFirstName, 
+      String childLastName,
+      String code, 
+      String email) {
+    
+    Member member = new Member(code);
+    member.setMae(parentName);
+    member.setNome(childFirstName);
+    member.setSobrenome(childLastName);
+    member.setEmail(email);
+    
+    Transaction currentTransaction = pm.currentTransaction();
+    currentTransaction.begin();
+
+    pm.makePersistent(member);
+    
+    currentTransaction.commit();
   }
 }

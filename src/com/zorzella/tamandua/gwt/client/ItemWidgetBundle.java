@@ -8,6 +8,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
+
 import com.zorzella.tamandua.Item;
 import com.zorzella.tamandua.ItemBundle;
 import com.zorzella.tamandua.Member;
@@ -111,7 +113,8 @@ public class ItemWidgetBundle {
       MembersDropDown membersDropDown, 
       MemberServiceAsync memberService, 
       ActivityTable activityTable, 
-      ItemBundle itemBundle
+      ItemBundle itemBundle,
+      Panel lendingPanel
       ) {
     this.membersDropDown = membersDropDown;
     this.memberService = memberService;
@@ -120,8 +123,8 @@ public class ItemWidgetBundle {
     
     this.toBorrowPopup = new ToBorrowPopup(this);
     this.toReturnPopup = new ToReturnPopup(this);
-    Tamandua.mainPanel.add(toBorrowPopup);
-    Tamandua.mainPanel.add(toReturnPopup);
+    lendingPanel.add(toBorrowPopup);
+    lendingPanel.add(toReturnPopup);
 
     this.availableItemToWidgetMap = new HashMap<Item, Label>();
     this.borrowedItemToWidgetSimpleMap = new HashMap<Item, Label>();
