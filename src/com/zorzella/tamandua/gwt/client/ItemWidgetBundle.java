@@ -60,7 +60,7 @@ public class ItemWidgetBundle {
     //      @Override
     public void onSuccess(Void result) {
       Label returned = 
-        new Label("[" + member.getCodigo() + "] returned: " + item.getTitulo());
+        new Label("[" + member.getCodigo() + "] returned to {" + item.getToca() + "}: " + item.getTitulo());
       activityTable.addItem(returned);
       itemStatusMap.put(item, Status.AVAILABLE);
       borrowedItemToWidgetClickableMap.get(item).setText(item.getTitulo() + " - returned");
