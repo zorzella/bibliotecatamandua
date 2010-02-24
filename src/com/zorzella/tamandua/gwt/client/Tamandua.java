@@ -71,7 +71,7 @@ public class Tamandua implements EntryPoint {
       membersDropDown.setMembers(members);
       membersDropDown.refresh();
       if (selectedMemberCode != null) {
-        membersDropDown.setSelectedMember(selectedMemberCode);
+        membersDropDown.setSelectedMemberByCode(selectedMemberCode);
       }
       memberService.getFancySortedItems(sortedItemsCallback);
     }

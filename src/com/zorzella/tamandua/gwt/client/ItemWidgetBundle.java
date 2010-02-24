@@ -194,10 +194,17 @@ public class ItemWidgetBundle {
 	    }
 	    return last;
 	  }
-  private Label buildBorrowedSimpleWidget(Item item) {
+  private Label buildBorrowedSimpleWidget(final Item item) {
     Label result = new Label(
         membersDropDown.idToCode(item.getParadeiro()) + "-" + getLabelTextFor(item));
     result.setStyleName("whisper");
+    ClickHandler handler = new ClickHandler() {
+      
+      public void onClick(ClickEvent event) {
+        membersDropDown.setSelectedMemberById(item.getParadeiro());
+      }
+    };
+    result.addClickHandler(handler);
     return result;
   }
 

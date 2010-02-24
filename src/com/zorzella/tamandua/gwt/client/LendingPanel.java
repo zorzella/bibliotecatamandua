@@ -22,6 +22,7 @@ import java.util.Collection;
 public final class LendingPanel extends Composite {
 
   public static final int SCROLL_AMOUNT = Tamandua.SCROLL_PANEL_HEIGH - 30;
+
   private final MemberServiceAsync memberService;
   private final Widget menuButton;
 
