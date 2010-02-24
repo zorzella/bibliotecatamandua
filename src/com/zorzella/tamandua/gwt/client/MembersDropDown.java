@@ -1,5 +1,9 @@
 package com.zorzella.tamandua.gwt.client;
 
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
 
 import com.zorzella.tamandua.Member;
@@ -9,13 +13,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class MembersDropDown extends ListBox {
+public final class MembersDropDown extends Composite implements HasChangeHandlers {
 
   private Collection<Member> members;
   private final Map<Long, Member> memberIdToCodeMap = new HashMap<Long, Member>();
-
+  private final ListBox listBox = new ListBox();
+  
   public MembersDropDown() {
-    addItem("");
+    initWidget(listBox);
+    listBox.addItem("");
   }
   
   public void setMembers(Collection<Member> members) {
@@ -26,12 +32,12 @@ public final class MembersDropDown extends ListBox {
   }
 
   public void setSelectedMember(String code) {
-    setSelectedIndex(getIndexForMemberCode(code));
+    listBox.setSelectedIndex(getIndexForMemberCode(code));
   }
   
   public int getIndexForMemberCode(String code) {
-    for (int i=0 ; i < getItemCount() ; i++) {
-      String idToCode = idToCode(getValue(i));
+    for (int i=0 ; i < listBox.getItemCount() ; i++) {
+      String idToCode = idToCode(listBox.getValue(i));
       if (idToCode.equals(code)) {
         return i;
       }
@@ -40,8 +46,8 @@ public final class MembersDropDown extends ListBox {
   }
   
   public Member getSelectedMember() {
-    int index = getSelectedIndex();
-    String value = getValue(index);
+    int index = listBox.getSelectedIndex();
+    String value = listBox.getValue(index);
     if (value.equals("")) {
       return null;
     }
@@ -60,10 +66,10 @@ public final class MembersDropDown extends ListBox {
   }
 
   public void refresh() {
-    clear();
-    addItem("");
+    listBox.clear();
+    listBox.addItem("");
     for (Member member : members) {
-      addItem(
+      listBox.addItem(
         member.getCodigo() + " - " + TamanduaUtil.nome(member),
         member.getId().toString());
     }
@@ -76,5 +82,9 @@ public final class MembersDropDown extends ListBox {
       }
     }
     return false;
+  }
+
+  public HandlerRegistration addChangeHandler(ChangeHandler handler) {
+    return listBox.addChangeHandler(handler);
   }
 }
