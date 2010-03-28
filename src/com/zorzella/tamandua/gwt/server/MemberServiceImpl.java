@@ -16,6 +16,7 @@ import com.zorzella.tamandua.gwt.client.MemberService;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.SortedSet;
 
 import javax.jdo.PersistenceManager;
@@ -60,26 +61,37 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
     }
     final String adminCode = AdminOrDie.adminOrDie().getNickname();
 
-    final Loan loan = Queries.getFirstByQuery(Loan.class, pm, 
+    Loan loan;
+    try {
+      loan = Queries.getFirstByQuery(Loan.class, pm, 
         "memberId == " + memberId + 
         " && itemId == " + item.getId() + 
         " && returnDate == null");
+    } catch (NoSuchElementException e) {
+      doJob(createLoan(memberId, liveItem, adminCode));
+      loan = Queries.getFirstByQuery(Loan.class, pm, 
+    	        "memberId == " + memberId + 
+    	        " && itemId == " + item.getId() + 
+    	        " && returnDate == null");
+    }
 
     doJob(new Runnable() {
-		
 		public void run() {
 			liveItem.setParadeiro(null);
 			pm.makePersistent(liveItem);
 		}
 	});
     
-	doJob(new Runnable() {
-		
+	doJob(closeLoan(adminCode, loan));    
+  }
+
+  private Runnable closeLoan(final String adminCode, final Loan loan) {
+	return new Runnable() {
 		public void run() {
 			loan.setReturnDate(adminCode, new Date());
 			pm.makePersistent(loan);
 		}
-	});    
+	};
   }
 
 //  @Override
@@ -91,7 +103,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
           item.getTitulo(), liveItem.getParadeiro()));
     }
     
-    final String admin = AdminOrDie.adminOrDie().getNickname();
+    final String adminCode = AdminOrDie.adminOrDie().getNickname();
 
 	doJob(new Runnable() {
       public void run() {
@@ -100,13 +112,18 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
       }
     });
 
-    doJob(new Runnable() {	
+    doJob(createLoan(memberId, item, adminCode));
+
+  }
+
+  private Runnable createLoan(final Long memberId, final Item item,
+		final String adminCode) {
+	return new Runnable() {	
 		public void run() {
-			Loan loan = new Loan(admin, memberId, item.getId());
+			Loan loan = new Loan(adminCode, memberId, item.getId());
 			pm.makePersistent(loan);
 		}
-	});
-
+	};
   }
 
   private void doJob(Runnable r) {
@@ -118,10 +135,10 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
       currentTransaction.begin();
       r.run();
       currentTransaction.commit();
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       currentTransaction.rollback();
+      throw e;
     }
-	  
   }
   
 //  @Override

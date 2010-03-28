@@ -346,6 +346,9 @@ border-color:#EBEFF9;
 .read {
 background-color:#EBEFF9;
 }
+.error {
+background-color:#FF9999;
+}
 .expanded .entry-min-start {
 background-color:#FFFFFF;
 }

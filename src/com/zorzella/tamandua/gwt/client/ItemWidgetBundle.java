@@ -30,7 +30,7 @@ public class ItemWidgetBundle {
     public void onSuccess(Void result) {
       Label borrowedLabel = 
         new Label("[" + member.getCodigo() + "] borrowed: " + item.getTitulo());
-      activityTable.addItem(borrowedLabel);
+      activityTable.addItemSuccess(borrowedLabel);
       itemStatusMap.put(item, Status.BORROWED);
       getWidgetForAvailable(item).setText(item.getTitulo() + " - borrowed");
     }
@@ -39,7 +39,7 @@ public class ItemWidgetBundle {
     public void onFailure(Throwable caught) {
       Label failedToBorrowedLabel = 
         new Label("[" + member.getCodigo() + "] failed to borrow: " + item.getTitulo());
-      activityTable.addItem(failedToBorrowedLabel);
+      activityTable.addItemFail(failedToBorrowedLabel);
       itemStatusMap.put(item, Status.FAILURE_TO_BORROW);
       getWidgetForAvailable(item).setText(item.getTitulo() + " - failed to borrow");
     }
@@ -59,7 +59,7 @@ public class ItemWidgetBundle {
     public void onSuccess(Void result) {
       Label returned = 
         new Label("[" + member.getCodigo() + "] returned to {" + item.getToca() + "}: " + item.getTitulo());
-      activityTable.addItem(returned);
+      activityTable.addItemSuccess(returned);
       itemStatusMap.put(item, Status.AVAILABLE);
       borrowedItemToWidgetClickableMap.get(item).setText(item.getTitulo() + " - returned");
     }
@@ -68,7 +68,7 @@ public class ItemWidgetBundle {
     public void onFailure(Throwable caught) {
       Label failedToReturnLabel = 
         new Label("[" + member.getCodigo() + "] failed to return: " + item.getTitulo());
-      activityTable.addItem(failedToReturnLabel);
+      activityTable.addItemFail(failedToReturnLabel);
       itemStatusMap.put(item, Status.FAILURE_TO_RETURN);
       getWidgetForBorrowed(item, member).setText(item.getTitulo() + " - failed to return");
     }
