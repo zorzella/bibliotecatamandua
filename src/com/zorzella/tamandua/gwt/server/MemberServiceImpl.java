@@ -4,11 +4,11 @@ import com.google.appengine.repackaged.com.google.common.collect.Lists;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import com.zorzella.tamandua.AdminOrDie;
-import com.zorzella.tamandua.BorrowReturnServlet;
 import com.zorzella.tamandua.Item;
 import com.zorzella.tamandua.ItemBundle;
 import com.zorzella.tamandua.Loan;
 import com.zorzella.tamandua.Member;
+import com.zorzella.tamandua.Members;
 import com.zorzella.tamandua.PMF;
 import com.zorzella.tamandua.Queries;
 import com.zorzella.tamandua.gwt.client.MemberService;
@@ -42,7 +42,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
 
   public ItemBundle getFancySortedItems() {
-    Map<Long, String> map = BorrowReturnServlet.getMap(Queries.getSortedMembers(pm));
+    Map<Long, String> map = Members.getMap(Queries.getSortedMembers(pm));
 
     ItemBundle temp = new Queries(map).getDetachedFancySortedItems(pm);
 

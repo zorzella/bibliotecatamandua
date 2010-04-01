@@ -102,7 +102,7 @@ public class ItemWidgetBundle {
   private final ToReturnPopup toReturnPopup;
   private final ItemBundle itemBundle;
 
-  private final Map<Item, Label> availableItemToWidgetMap;
+  private final Map<Item, Label> allItemsToWidgetMap;
   private final Map<Item, Label> borrowedItemToWidgetSimpleMap;
   private final Map<Item, Label> borrowedItemToWidgetClickableMap;
   private final Map<Item,Status> itemStatusMap;
@@ -124,13 +124,13 @@ public class ItemWidgetBundle {
     lendingPanel.add(toBorrowPopup);
     lendingPanel.add(toReturnPopup);
 
-    this.availableItemToWidgetMap = new HashMap<Item, Label>();
+    this.allItemsToWidgetMap = new HashMap<Item, Label>();
     this.borrowedItemToWidgetSimpleMap = new HashMap<Item, Label>();
     this.borrowedItemToWidgetClickableMap = new HashMap<Item, Label>();
     this.itemStatusMap = new HashMap<Item, Status>();
     for (Item item : itemBundle.getAvailable()) {
       itemStatusMap.put(item, Status.AVAILABLE);
-      availableItemToWidgetMap.put(item, buildAvailableItemWidget(item));
+      allItemsToWidgetMap.put(item, buildAllItemsWidget(item));
     }
     for (Item item : itemBundle.getBorrowed()) {
       itemStatusMap.put(item, Status.BORROWED);
@@ -213,7 +213,7 @@ public class ItemWidgetBundle {
   }
   
   public Label getWidgetForAvailable(Item item) {
-    return this.availableItemToWidgetMap.get(item);
+    return this.allItemsToWidgetMap.get(item);
   }
 
   public Label getWidgetForBorrowed(Item item, Member selectedMember) {
@@ -233,11 +233,7 @@ public class ItemWidgetBundle {
     	switch (itemStatusMap.get(item)) {
     	case BORROWED:
     	case FAILURE_TO_RETURN:
-    		if (true) {
-    			toReturnPopup.show(item);
-    		} else {
-    			initiateReturn(item);
-    		}
+    		toReturnPopup.show(item);
     		break;
     	case RETURNING:
     		// Ok, we're in the process of returning right now
@@ -256,7 +252,7 @@ public class ItemWidgetBundle {
     return result;
   }
   
-  private Label buildAvailableItemWidget(final Item item) {
+  private Label buildAllItemsWidget(final Item item) {
     final Label result = new Label(item.getTitulo());
     result.setStyleName("entry-row");
     ClickHandler clickHandler = new ClickHandler() {
@@ -272,17 +268,14 @@ public class ItemWidgetBundle {
     	switch (itemStatusMap.get(item)) {
     	case AVAILABLE:
     	case FAILURE_TO_BORROW:
-            if (true) {
-                toBorrowPopup.show(item);
-              } else {
-                initiateBorrow(item);
-              }
+    		toBorrowPopup.show(item);
     		break;
     	case BORROWING:
     		// Ok, we're in the process of borrowing right now
     		break;
     	case BORROWED:
-    		// Ok, we have just borrowed this item, though it still shows up here
+    		// This item was already borrowed, or we have just borrowed 
+    		// it, though it still shows up here
     		break;
     	case FAILURE_TO_RETURN:
     	case RETURNING:
@@ -310,7 +303,7 @@ public class ItemWidgetBundle {
     if (member == null) {
       throw new IllegalArgumentException();
     }
-    Label label = availableItemToWidgetMap.get(item);
+    Label label = allItemsToWidgetMap.get(item);
     AsyncCallback<Void> borrowItemCallback = 
       new ItemWidgetBundle.BorrowItemCallback(activityTable, member, item);
     memberService.borrowItem(member.getId(), item, borrowItemCallback);

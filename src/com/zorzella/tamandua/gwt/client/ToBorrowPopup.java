@@ -8,6 +8,19 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.zorzella.tamandua.Item;
 
+/**
+ * The popup to confirm the borrowing of an item. This popup has 6 buttons (3 on top and 3 on the bottom):
+ * 
+ * Go To Prev
+ * Go To Next
+ * Close
+ * 
+ * Borrow and go to prev
+ * Borrow and go to next
+ * Borrow and close 
+ * 
+ * @author zorzella
+ */
 final class ToBorrowPopup extends Composite {
 
     private final ItemWidgetBundle itemWidgetBundle;
