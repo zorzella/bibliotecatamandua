@@ -17,6 +17,10 @@ public final class ActivityTable extends FlowPanel {
     return result;
   }
 
+  public void addItemWarning(Label item) {
+    addItemInternal(item, "entry-row warning");
+  }
+  
   public void addItemFail(Label item) {
     addItemInternal(item, "entry-row error");
   }

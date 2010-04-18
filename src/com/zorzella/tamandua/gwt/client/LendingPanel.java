@@ -2,8 +2,6 @@ package com.zorzella.tamandua.gwt.client;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -19,12 +17,17 @@ import com.zorzella.tamandua.gwt.client.Tamandua.SortedItemsCallback;
 
 import java.util.Collection;
 
+/**
+ * Panel for borrowing/returning items.
+ * 
+ * @author zorzella
+ */
 public final class LendingPanel extends Composite {
 
   public static final int SCROLL_AMOUNT = Tamandua.SCROLL_PANEL_HEIGH - 30;
 
   private final MemberServiceAsync memberService;
-  private final Widget menuButton;
+  private final Widget menuActivatorButton;
 
   private final Panel lendingPanel = new FlowPanel();
   private final MembersDropDown membersDropDown = new MembersDropDown();
@@ -34,11 +37,10 @@ public final class LendingPanel extends Composite {
   private final ActivityTable activityTable = new ActivityTable();
   private final SortedItemsCallback sortedItemsCallback;
 
-
-  public LendingPanel(MemberServiceAsync memberService, Widget menuButton) {
+  public LendingPanel(MainPanel mainPanel, MemberServiceAsync memberService, Widget menuActivatorButton) {
     initWidget(lendingPanel);
     this.memberService = memberService;
-    this.menuButton = menuButton;
+    this.menuActivatorButton = menuActivatorButton;
 
     sortedItemsCallback =
       new SortedItemsCallback(
@@ -52,40 +54,36 @@ public final class LendingPanel extends Composite {
     final CurrentMemberChangeHandler memberChangeHandler = 
       new CurrentMemberChangeHandler(sortedItemsCallback, memberService, activityTable);
     membersDropDown.addChangeHandler(memberChangeHandler);
+    
+    initialize(memberService, mainPanel);
   }
 
   public boolean memberExistsWithCode(String code) {
     return membersDropDown.memberExistsWithCode(code);
   }
 
-  void adminOk(MemberServiceAsync memberService, MainPanel mainPanel) {
+  void initialize(MemberServiceAsync memberService, MainPanel mainPanel) {
     reloadMembers(null);
 
     lendingPanel.add(activityTable);
     lendingPanel.add(membersDropDown);
     lendingPanel.add(borrowedItemsTable);
+    lendingPanel.add(buildPaginationBar());
+    lendingPanel.add(scrollPanel);
+  }
 
+  private FlowPanel buildPaginationBar() {
+    Label prevPageButton = buildPrevPageButton();
+    Label nextPageButton = buildNextPageButton();
     FlowPanel paginationBar = new FlowPanel();
     paginationBar.setStyleName("pagination");
+    paginationBar.add(prevPageButton);
+    paginationBar.add(menuActivatorButton);
+    paginationBar.add(nextPageButton);
+    return paginationBar;
+  }
 
-    ValueChangeHandler<Double> handler = new ValueChangeHandler<Double>() {
-      public void onValueChange(ValueChangeEvent<Double> event) {
-        scrollPanel.setScrollPosition(event.getValue().intValue());
-      }
-    };
-
-    Label prevPageButton = new Label("<");
-    prevPageButton.setStyleName("prev-page");
-    ClickHandler prevPageHandler = new ClickHandler() {
-
-      public void onClick(ClickEvent event) {
-        int scrollPosition = scrollPanel.getScrollPosition();
-        scrollPosition -= SCROLL_AMOUNT;
-        scrollPanel.setScrollPosition(scrollPosition);
-      }
-    };
-    prevPageButton.addClickHandler(prevPageHandler);
-
+  private Label buildNextPageButton() {
     Label nextPageButton = new Label(">");
     nextPageButton.setStyleName("next-page");
     ClickHandler nextPageHandler = new ClickHandler() {
@@ -97,16 +95,22 @@ public final class LendingPanel extends Composite {
       }
     };
     nextPageButton.addClickHandler(nextPageHandler);
+    return nextPageButton;
+  }
 
-    paginationBar.add(prevPageButton);
-    //      paginationBar.add(sliderBar);
-    menuButton.setStyleName("menu-button");
-    paginationBar.add(menuButton);
-    paginationBar.add(nextPageButton);
+  private Label buildPrevPageButton() {
+    Label prevPageButton = new Label("<");
+    prevPageButton.setStyleName("prev-page");
+    ClickHandler prevPageHandler = new ClickHandler() {
 
-    lendingPanel.add(paginationBar);
-
-    lendingPanel.add(scrollPanel);
+      public void onClick(ClickEvent event) {
+        int scrollPosition = scrollPanel.getScrollPosition();
+        scrollPosition -= SCROLL_AMOUNT;
+        scrollPanel.setScrollPosition(scrollPosition);
+      }
+    };
+    prevPageButton.addClickHandler(prevPageHandler);
+    return prevPageButton;
   }
 
   private ScrollPanel buildScrollPanel() {
@@ -116,9 +120,13 @@ public final class LendingPanel extends Composite {
     return scrollPanel;
   }
 
-  public void reloadMembers(String code) {
+  public void reloadMembers(String memberCodeToBeSelected) {
     final AsyncCallback<Collection<Member>> sortedMembersCallback = 
-      new MembersDropDownCallback(membersDropDown, memberService, sortedItemsCallback, code);
+      new MembersDropDownCallback(
+          membersDropDown, 
+          memberService, 
+          sortedItemsCallback, 
+          memberCodeToBeSelected);
     memberService.getSortedMembers(sortedMembersCallback);
   }
 }

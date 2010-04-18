@@ -11,28 +11,28 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 
-final class NewMemberPanel extends Composite {
+final class NewItemPanel extends Composite {
 
   private final FlowPanel result = new FlowPanel();
-  private final TextBox parentNameInput = new TextBox();
+  private final TextBox itemNameInput = new TextBox();
   private final TextBox childFirstNameInput = new TextBox();
   private final TextBox childLastNameInput = new TextBox();
   private final TextBox codeInput = new TextBox();
   private final TextBox emailInput = new TextBox();
 
   void clear() {
-    parentNameInput.setText("");
+    itemNameInput.setText("");
     childFirstNameInput.setText("");
     childLastNameInput.setText("");
     codeInput.setText("");
     emailInput.setText("");
   }
   
-  public NewMemberPanel(final MainPanel mainPanel) {
+  public NewItemPanel(final MainPanel mainPanel) {
     initWidget(result);
 
-    result.add(new Label("Parent name"));
-    result.add(parentNameInput);
+    result.add(new Label("Item name"));
+    result.add(itemNameInput);
 
     result.add(new Label("Child First Name"));
     result.add(childFirstNameInput);
@@ -93,7 +93,7 @@ final class NewMemberPanel extends Composite {
             }
           };
           mainPanel.memberService.createNewMember(
-              parentNameInput.getValue(), 
+              itemNameInput.getValue(), 
               childFirstNameInput.getValue(), 
               childLastNameInput.getValue(), 
               code, 

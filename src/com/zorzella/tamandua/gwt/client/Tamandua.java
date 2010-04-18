@@ -30,11 +30,13 @@ public class Tamandua implements EntryPoint {
         MainPanel mainPanel) {
       this.memberService = memberService;
       this.mainPanel = mainPanel;
+      this.mainPanel.setVisible(false);
     }
 
     //      @Override
     public void onSuccess(Void result) {
-      mainPanel.getLendingPanel().adminOk(memberService, mainPanel);
+//      mainPanel.getLendingPanel().adminOk(memberService, mainPanel);
+      mainPanel.setVisible(true);
     }
 
     //      @Override

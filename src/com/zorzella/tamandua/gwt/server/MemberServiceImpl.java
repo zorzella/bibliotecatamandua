@@ -11,7 +11,10 @@ import com.zorzella.tamandua.Member;
 import com.zorzella.tamandua.Members;
 import com.zorzella.tamandua.PMF;
 import com.zorzella.tamandua.Queries;
+import com.zorzella.tamandua.gwt.client.AlreadyBorrowedToThisMemberException;
+import com.zorzella.tamandua.gwt.client.AlreadyReturnedException;
 import com.zorzella.tamandua.gwt.client.MemberService;
+import com.zorzella.tamandua.gwt.client.NotAnAdminException;
 
 import java.util.Collection;
 import java.util.Date;
@@ -52,12 +55,16 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
 
 //  @Override
-  public void returnItem(final Long memberId, final Item item) {
+  public void returnItem(final Long memberId, final Item item) throws AlreadyReturnedException {
     final Item liveItem = pm.getObjectById(Item.class, item.getId());
-    if (!memberId.equals(liveItem.getParadeiro())) {
+    Long currentItemParadeiro = liveItem.getParadeiro();
+    if (currentItemParadeiro == null) {
+      throw new AlreadyReturnedException(); 
+    }
+	if (!memberId.equals(currentItemParadeiro)) {
       throw new IllegalArgumentException(String.format(
           "Item '%s' is in paradeiro '%s', not in '%s'.", 
-          item.getTitulo(), item.getParadeiro(), memberId));
+          item.getTitulo(), currentItemParadeiro, memberId));
     }
     final String adminCode = AdminOrDie.adminOrDie().getNickname();
 
@@ -95,17 +102,21 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
 
 //  @Override
-  public void borrowItem(final Long memberId, final Item item) {
+  public void borrowItem(final Long memberId, final Item item) throws AlreadyBorrowedToThisMemberException {
     final Item liveItem = pm.getObjectById(Item.class, item.getId());
-    if (liveItem.getParadeiro() != null) {
+    Long currentParadeiro = liveItem.getParadeiro();
+	  if (currentParadeiro != null) {
+      if (currentParadeiro.equals(memberId)) {
+        throw new AlreadyBorrowedToThisMemberException();
+      }
       throw new IllegalArgumentException(String.format(
           "Item '%s' is already in paradeiro '%s'.", 
-          item.getTitulo(), liveItem.getParadeiro()));
+          item.getTitulo(), currentParadeiro));
     }
     
     final String adminCode = AdminOrDie.adminOrDie().getNickname();
 
-	doJob(new Runnable() {
+    doJob(new Runnable() {
       public void run() {
         liveItem.setParadeiro(memberId);
         pm.makePersistent(liveItem);
@@ -142,11 +153,11 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
   
 //  @Override
-  public void adminOrDie() {
+  public void adminOrDie() throws NotAnAdminException {
     AdminOrDie.adminOrDie();
   }
 
-  public void createNew(
+  public void createNewMember(
       String parentName, 
       String childFirstName, 
       String childLastName,

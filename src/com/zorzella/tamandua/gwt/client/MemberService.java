@@ -12,16 +12,28 @@ import java.util.Collection;
 @RemoteServiceRelativePath("member")
 public interface MemberService extends RemoteService {
 
-  void adminOrDie();
+  void adminOrDie() throws NotAnAdminException;
   
   Collection<Member> getSortedMembers();
   
   ItemBundle getFancySortedItems();
 
-  void returnItem(Long memberId, Item item);
+  /**
+   * @throws AlreadyReturnedException
+   */
+  void returnItem(Long memberId, Item item)
+    throws AlreadyReturnedException;
 
-  void borrowItem(Long memberId, Item item);
+  /**
+   * @throws AlreadyBorrowedToThisMemberException
+   */
+  void borrowItem(Long memberId, Item item)
+    throws AlreadyBorrowedToThisMemberException;
   
-  void createNew(String parentName, String childFirstName, String childLastName, String code, String email);
-  
+  void createNewMember(
+      String parentName, 
+      String childFirstName, 
+      String childLastName, 
+      String code, 
+      String email);
 }

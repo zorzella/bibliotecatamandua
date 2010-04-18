@@ -37,11 +37,19 @@ public class ItemWidgetBundle {
 
 //    @Override
     public void onFailure(Throwable caught) {
-      Label failedToBorrowedLabel = 
-        new Label("[" + member.getCodigo() + "] failed to borrow: " + item.getTitulo());
-      activityTable.addItemFail(failedToBorrowedLabel);
-      itemStatusMap.put(item, Status.FAILURE_TO_BORROW);
-      getWidgetForAvailable(item).setText(item.getTitulo() + " - failed to borrow");
+      if (caught instanceof AlreadyBorrowedToThisMemberException) {
+        Label failedToBorrowedLabel = 
+          new Label("[" + member.getCodigo() + "] already has already borrowed: " + item.getTitulo());
+        activityTable.addItemWarning(failedToBorrowedLabel);
+//        itemStatusMap.put(item, Status.FAILURE_TO_BORROW);
+        getWidgetForAvailable(item).setText(item.getTitulo() + " - already borrowed to this member");
+      } else {
+        Label failedToBorrowedLabel = 
+          new Label("[" + member.getCodigo() + "] failed to borrow: " + item.getTitulo());
+        activityTable.addItemFail(failedToBorrowedLabel);
+        itemStatusMap.put(item, Status.FAILURE_TO_BORROW);
+        getWidgetForAvailable(item).setText(item.getTitulo() + " - failed to borrow");
+      }
     }
   }
 
@@ -66,11 +74,19 @@ public class ItemWidgetBundle {
 
 //    @Override
     public void onFailure(Throwable caught) {
-      Label failedToReturnLabel = 
-        new Label("[" + member.getCodigo() + "] failed to return: " + item.getTitulo());
-      activityTable.addItemFail(failedToReturnLabel);
-      itemStatusMap.put(item, Status.FAILURE_TO_RETURN);
-      getWidgetForBorrowed(item, member).setText(item.getTitulo() + " - failed to return");
+      if (caught instanceof AlreadyReturnedException) {
+        Label failedToReturnLabel = 
+          new Label("[" + member.getCodigo() + "] already returned: " + item.getTitulo());
+        activityTable.addItemWarning(failedToReturnLabel);
+//        itemStatusMap.put(item, Status.FAILURE_TO_RETURN);
+        getWidgetForBorrowed(item, member).setText(item.getTitulo() + " - already returned");     	
+      } else {
+        Label failedToReturnLabel = 
+          new Label("[" + member.getCodigo() + "] failed to return: " + item.getTitulo());
+        activityTable.addItemFail(failedToReturnLabel);
+        itemStatusMap.put(item, Status.FAILURE_TO_RETURN);
+        getWidgetForBorrowed(item, member).setText(item.getTitulo() + " - failed to return");
+      }
     }
   }
   

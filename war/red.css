@@ -349,6 +349,9 @@ background-color:#EBEFF9;
 .error {
 background-color:#FF9999;
 }
+.warning {
+background-color:#FF9966;
+}
 .expanded .entry-min-start {
 background-color:#FFFFFF;
 }
