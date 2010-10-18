@@ -28,4 +28,6 @@ public interface MemberServiceAsync {
       String code,
       String email, 
       AsyncCallback<Void> callback);
+
+  void createNewItem(String itemName, String authorName, String isbn, AsyncCallback<Void> callback);
 }

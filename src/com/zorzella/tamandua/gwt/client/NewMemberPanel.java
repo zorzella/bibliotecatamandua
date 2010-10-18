@@ -19,6 +19,7 @@ final class NewMemberPanel extends Composite {
   private final TextBox childLastNameInput = new TextBox();
   private final TextBox codeInput = new TextBox();
   private final TextBox emailInput = new TextBox();
+  private final ListBox commonEmails = new ListBox();
 
   void clear() {
     parentNameInput.setText("");
@@ -26,6 +27,7 @@ final class NewMemberPanel extends Composite {
     childLastNameInput.setText("");
     codeInput.setText("");
     emailInput.setText("");
+    commonEmails.setSelectedIndex(0);
   }
   
   public NewMemberPanel(final MainPanel mainPanel) {
@@ -46,7 +48,6 @@ final class NewMemberPanel extends Composite {
     result.add(new Label("Email"));
     result.add(emailInput);
 
-    final ListBox commonEmails = new ListBox();
     commonEmails.addItem("");
     commonEmails.addItem("@gmail.com");
     commonEmails.addItem("@hotmail.com");
@@ -56,6 +57,10 @@ final class NewMemberPanel extends Composite {
 
         public void onChange(ChangeEvent event) {
           String value = emailInput.getValue();
+          int indexOfAtSymbol = value.indexOf('@');
+		if (indexOfAtSymbol > -1) {
+            value = value.substring(0, indexOfAtSymbol);
+          }
           value = value + commonEmails.getValue(commonEmails.getSelectedIndex());
           emailInput.setValue(value);
         }

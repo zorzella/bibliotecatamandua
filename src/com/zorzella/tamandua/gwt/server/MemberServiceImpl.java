@@ -177,4 +177,15 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
     
     currentTransaction.commit();
   }
+
+  public void createNewItem(String itemName, String authorName, String isbn) {
+    Item item = new Item(null, "Z", isbn, itemName, authorName, false, "");
+    Transaction currentTransaction = pm.currentTransaction();
+    currentTransaction.begin();
+    
+    pm.makePersistent(item);
+    
+    currentTransaction.commit();
+	
+  }
 }

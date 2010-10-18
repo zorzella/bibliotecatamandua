@@ -129,4 +129,8 @@ public final class LendingPanel extends Composite {
           memberCodeToBeSelected);
     memberService.getSortedMembers(sortedMembersCallback);
   }
+
+  public void reloadItems() {
+    memberService.getFancySortedItems(this.sortedItemsCallback);
+  }
 }

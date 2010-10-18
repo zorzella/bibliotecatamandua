@@ -46,6 +46,7 @@ final class MainPanel extends Composite {
     FlowPanel result = new FlowPanel();
     result.add(buildLendingButton());
     result.add(buildNewMemberButton());
+    result.add(buildNewItemButton());
     result.add(buildReloadButton());
     return result;
   }
@@ -108,6 +109,7 @@ final class MainPanel extends Composite {
     lendingPanel = new LendingPanel(this, memberService, buildMenuActivator());
     mainPanel.add(lendingPanel);
     mainPanel.add(newMemberPanel);
+    mainPanel.add(newItemPanel);
     mainPanel.add(menuPanel);
     makeLendingVisible();
     this.memberService = memberService;
@@ -126,6 +128,7 @@ final class MainPanel extends Composite {
   private void makeAllInvisible() {
     lendingPanel.setVisible(false);
     newMemberPanel.setVisible(false);
+    newItemPanel.setVisible(false);
     menuPanel.setVisible(false);
   }
 

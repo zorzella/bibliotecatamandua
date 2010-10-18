@@ -36,4 +36,6 @@ public interface MemberService extends RemoteService {
       String childLastName, 
       String code, 
       String email);
+
+  void createNewItem(String itemName, String authorName, String isbn);
 }
