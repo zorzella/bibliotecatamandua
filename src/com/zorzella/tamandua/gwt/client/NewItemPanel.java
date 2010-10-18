@@ -36,47 +36,50 @@ final class NewItemPanel extends Composite implements FullPanel {
     
     Label ok = new Label("Ok");
     ok.setStyleName("prev-page");
-    
-    {
-      ClickHandler handler = new ClickHandler() {
-
-        public void onClick(ClickEvent event) {
-          
-          AsyncCallback<Void> callback = new AsyncCallback<Void>() {
-
-            public void onSuccess(Void result) {
-              mainPanel.lendingPanel.reloadItems();
-              mainPanel.makeLendingVisible();
-              mainPanel.clearMessage();
-            }
-
-            public void onFailure(Throwable caught) {
-              mainPanel.showMessage("Failed!");
-            }
-          };
-          mainPanel.memberService.createNewItem(
-              itemNameInput.getValue(), 
-              authorNameInput.getValue(), 
-              isbnInput.getValue(),
-              callback);
-        }
-      };
-      ok.addClickHandler(handler);
-    }
+    ok.addClickHandler(buildOkClickHandler(mainPanel));
     result.add(ok);
 
     Label cancel = new Label("Cancel");
     cancel.setStyleName("next-page");
-    {
-      ClickHandler handler = new ClickHandler() {
-
-        public void onClick(ClickEvent event) {
-          mainPanel.makeLendingVisible();
-        }
-      };
-      cancel.addClickHandler(handler);
-    }
+    cancel.addClickHandler(buildCancelClickHandler(mainPanel));
     result.add(cancel);
+  }
+
+  private ClickHandler buildCancelClickHandler(final MainPanel mainPanel) {
+    ClickHandler handler = new ClickHandler() {
+
+      public void onClick(ClickEvent event) {
+        mainPanel.makeLendingVisible();
+      }
+    };
+    return handler;
+  }
+
+  private ClickHandler buildOkClickHandler(final MainPanel mainPanel) {
+    ClickHandler result = new ClickHandler() {
+
+      public void onClick(ClickEvent event) {
+        
+        AsyncCallback<Void> callback = new AsyncCallback<Void>() {
+
+          public void onSuccess(Void result) {
+            mainPanel.lendingPanel.reloadItems();
+            mainPanel.makeLendingVisible();
+            mainPanel.clearMessage();
+          }
+
+          public void onFailure(Throwable caught) {
+            mainPanel.showMessage("Failed!");
+          }
+        };
+        mainPanel.memberService.createNewItem(
+            itemNameInput.getValue(), 
+            authorNameInput.getValue(), 
+            isbnInput.getValue(),
+            callback);
+      }
+    };
+    return result;
   }
 
   public String getName() {

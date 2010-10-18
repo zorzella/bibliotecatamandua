@@ -72,57 +72,60 @@ final class NewMemberPanel extends Composite implements FullPanel {
 
     Label ok = new Label("Ok");
     ok.setStyleName("prev-page");
-    {
-      ClickHandler handler = new ClickHandler() {
-
-        public void onClick(ClickEvent event) {
-          final String code = codeInput.getValue().trim();
-          if (code.equals("")) {
-            mainPanel.showMessage("Code is required.");
-            return;
-          }
-          if (mainPanel.lendingPanel.memberExistsWithCode(code)) {
-            mainPanel.showMessage("Code '" + code + "' is already in use.");
-            return;
-          }
-          
-          AsyncCallback<Void> callback = new AsyncCallback<Void>() {
-
-            public void onSuccess(Void result) {
-              mainPanel.lendingPanel.reloadMembers(code);
-              mainPanel.makeLendingVisible();
-              mainPanel.clearMessage();
-            }
-
-            public void onFailure(Throwable caught) {
-              mainPanel.showMessage("Failed!");
-            }
-          };
-          mainPanel.memberService.createNewMember(
-              parentNameInput.getValue(), 
-              childFirstNameInput.getValue(), 
-              childLastNameInput.getValue(), 
-              code, 
-              emailInput.getValue(), 
-              callback);
-        }
-      };
-      ok.addClickHandler(handler);
-    }
+    ok.addClickHandler(buildOkClickHandler(mainPanel));
     result.add(ok);
 
     Label cancel = new Label("Cancel");
     cancel.setStyleName("next-page");
-    {
-      ClickHandler handler = new ClickHandler() {
-
-        public void onClick(ClickEvent event) {
-          mainPanel.makeLendingVisible();
-        }
-      };
-      cancel.addClickHandler(handler);
-    }
+    cancel.addClickHandler(buildCancelClickHandler(mainPanel));
     result.add(cancel);
+  }
+
+  private ClickHandler buildCancelClickHandler(final MainPanel mainPanel) {
+    ClickHandler handler = new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        mainPanel.makeLendingVisible();
+      }
+    };
+    return handler;
+  }
+
+  private ClickHandler buildOkClickHandler(final MainPanel mainPanel) {
+    ClickHandler handler = new ClickHandler() {
+
+      public void onClick(ClickEvent event) {
+        final String code = codeInput.getValue().trim();
+        if (code.equals("")) {
+          mainPanel.showMessage("Code is required.");
+          return;
+        }
+        if (mainPanel.lendingPanel.memberExistsWithCode(code)) {
+          mainPanel.showMessage("Code '" + code + "' is already in use.");
+          return;
+        }
+        
+        AsyncCallback<Void> callback = new AsyncCallback<Void>() {
+
+          public void onSuccess(Void result) {
+            mainPanel.lendingPanel.reloadMembers(code);
+            mainPanel.makeLendingVisible();
+            mainPanel.clearMessage();
+          }
+
+          public void onFailure(Throwable caught) {
+            mainPanel.showMessage("Failed!");
+          }
+        };
+        mainPanel.memberService.createNewMember(
+            parentNameInput.getValue(), 
+            childFirstNameInput.getValue(), 
+            childLastNameInput.getValue(), 
+            code, 
+            emailInput.getValue(), 
+            callback);
+      }
+    };
+    return handler;
   }
 
   public String getName() {
