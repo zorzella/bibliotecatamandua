@@ -53,21 +53,7 @@ final class NewMemberPanel extends Composite implements FullPanel {
     commonEmails.addItem("@gmail.com");
     commonEmails.addItem("@hotmail.com");
     commonEmails.addItem("@yahoo.com");
-    {
-      ChangeHandler handler = new ChangeHandler() {
-
-        public void onChange(ChangeEvent event) {
-          String value = emailInput.getValue();
-          int indexOfAtSymbol = value.indexOf('@');
-		if (indexOfAtSymbol > -1) {
-            value = value.substring(0, indexOfAtSymbol);
-          }
-          value = value + commonEmails.getValue(commonEmails.getSelectedIndex());
-          emailInput.setValue(value);
-        }
-      };
-      commonEmails.addChangeHandler(handler);
-    }
+    commonEmails.addChangeHandler(buildCommonEmailsChangeHandler());
     result.add(commonEmails);
 
     Label ok = new Label("Ok");
@@ -79,6 +65,22 @@ final class NewMemberPanel extends Composite implements FullPanel {
     cancel.setStyleName("next-page");
     cancel.addClickHandler(buildCancelClickHandler(mainPanel));
     result.add(cancel);
+  }
+
+  private ChangeHandler buildCommonEmailsChangeHandler() {
+    ChangeHandler handler = new ChangeHandler() {
+
+      public void onChange(ChangeEvent event) {
+        String value = emailInput.getValue();
+        int indexOfAtSymbol = value.indexOf('@');
+if (indexOfAtSymbol > -1) {
+          value = value.substring(0, indexOfAtSymbol);
+        }
+        value = value + commonEmails.getValue(commonEmails.getSelectedIndex());
+        emailInput.setValue(value);
+      }
+    };
+    return handler;
   }
 
   private ClickHandler buildCancelClickHandler(final MainPanel mainPanel) {
