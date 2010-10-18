@@ -23,7 +23,7 @@ final class MainPanel extends Composite {
   final LendingPanel lendingPanel;
   private final NewMemberPanel newMemberPanel = buildNewMemberPanel();
   private final NewItemPanel newItemPanel = buildNewItemPanel();
-  private final Panel menuPanel = buildMenu();
+  private final Panel menuPanel;
   final MemberServiceAsync memberService;
 
   public void showMessage(String message) {
@@ -44,24 +44,24 @@ final class MainPanel extends Composite {
   
   private FlowPanel buildMenu() {
     FlowPanel result = new FlowPanel();
-    result.add(buildLendingButton());
-    result.add(buildNewMemberButton());
-    result.add(buildNewItemButton());
+    result.add(buildButton(this.lendingPanel));
+    result.add(buildButton(this.newMemberPanel));
+    result.add(buildButton(this.newItemPanel));
     result.add(buildReloadButton());
     return result;
   }
 
-  private Label buildLendingButton() {
-    Label lendingButton = new Label("Lending");
-    lendingButton.setStyleName("menu-item");
-    ClickHandler lendingHandler = new ClickHandler() {
+  private Label buildButton(final FullPanel fullPanel) {
+    Label result = new Label(fullPanel.getName());
+    result.setStyleName("menu-item");
+    ClickHandler clickHandler = new ClickHandler() {
 
       public void onClick(ClickEvent event) {
-        makeLendingVisible();
+        makePanelVisible(fullPanel);
       }
     };
-    lendingButton.addClickHandler(lendingHandler);
-    return lendingButton;
+    result.addClickHandler(clickHandler);
+    return result;
   }
 
   private Label buildReloadButton() {
@@ -70,37 +70,11 @@ final class MainPanel extends Composite {
     ClickHandler reloadHandler = new ClickHandler() {
       public void onClick(ClickEvent event) {
         lendingPanel.reloadMembers(null);
-        makeLendingVisible();
+        makePanelVisible(lendingPanel);
       }
     };
     reloadButton.addClickHandler(reloadHandler);
     return reloadButton;
-  }
-
-  private Label buildNewMemberButton() {
-    Label newMemberButton = new Label("New Member");
-    newMemberButton.setStyleName("menu-item");
-    ClickHandler newMemberHandler = new ClickHandler() {
-
-      public void onClick(ClickEvent event) {
-        makeNewMemberVisibleAndClear();
-      }
-    };
-    newMemberButton.addClickHandler(newMemberHandler);
-    return newMemberButton;
-  }
-
-  private Label buildNewItemButton() {
-    Label newItemButton = new Label("New Item");
-    newItemButton.setStyleName("menu-item");
-    ClickHandler newItemHandler = new ClickHandler() {
-
-      public void onClick(ClickEvent event) {
-        makeNewItemVisibleAndClear();
-      }
-    };
-    newItemButton.addClickHandler(newItemHandler);
-    return newItemButton;
   }
 
   public MainPanel(MemberServiceAsync memberService) {
@@ -110,15 +84,14 @@ final class MainPanel extends Composite {
     mainPanel.add(lendingPanel);
     mainPanel.add(newMemberPanel);
     mainPanel.add(newItemPanel);
+
+    this.menuPanel = buildMenu();
     mainPanel.add(menuPanel);
-    makeLendingVisible();
+    
+    makePanelVisible(this.lendingPanel);
     this.memberService = memberService;
   }
   
-  public LendingPanel getLendingPanel() {
-    return lendingPanel;
-  }
-
   private static Label buildMessageBox() {
     Label result = new Label();
     result.setStyleName("message");
@@ -132,26 +105,15 @@ final class MainPanel extends Composite {
     menuPanel.setVisible(false);
   }
 
-  public void makeMenuVisible() {
+  private void makeMenuVisible() {
     makeAllInvisible();
     menuPanel.setVisible(true);
   }
 
-  public void makeLendingVisible() {
+  private void makePanelVisible(FullPanel fullPanel) {
     makeAllInvisible();
-    lendingPanel.setVisible(true);
-  }
-
-  public void makeNewMemberVisibleAndClear() {
-    makeAllInvisible();
-    newMemberPanel.clear();
-    newMemberPanel.setVisible(true);
-  }
-  
-  public void makeNewItemVisibleAndClear() {
-    makeAllInvisible();
-    newItemPanel.clear();
-    newItemPanel.setVisible(true);
+    fullPanel.payload().setVisible(true);
+    fullPanel.clear();
   }
   
   private Widget buildMenuActivator() {
@@ -165,5 +127,9 @@ final class MainPanel extends Composite {
     };
     result.addClickHandler(handler);
     return result;
+  }
+
+  public void makeLendingVisible() {
+    makePanelVisible(this.lendingPanel);
   }
 }

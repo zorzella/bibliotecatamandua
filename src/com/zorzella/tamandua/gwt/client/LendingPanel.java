@@ -22,7 +22,7 @@ import java.util.Collection;
  * 
  * @author zorzella
  */
-public final class LendingPanel extends Composite {
+public final class LendingPanel extends Composite implements FullPanel {
 
   public static final int SCROLL_AMOUNT = Tamandua.SCROLL_PANEL_HEIGH - 30;
 
@@ -132,5 +132,16 @@ public final class LendingPanel extends Composite {
 
   public void reloadItems() {
     memberService.getFancySortedItems(this.sortedItemsCallback);
+  }
+
+  public String getName() {
+    return "Lending";
+  }
+
+  public Widget payload() {
+    return this;
+  }
+  
+  public void clear() {
   }
 }

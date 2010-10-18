@@ -10,8 +10,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
-final class NewMemberPanel extends Composite {
+final class NewMemberPanel extends Composite implements FullPanel {
 
   private final FlowPanel result = new FlowPanel();
   private final TextBox parentNameInput = new TextBox();
@@ -21,7 +22,7 @@ final class NewMemberPanel extends Composite {
   private final TextBox emailInput = new TextBox();
   private final ListBox commonEmails = new ListBox();
 
-  void clear() {
+  public void clear() {
     parentNameInput.setText("");
     childFirstNameInput.setText("");
     childLastNameInput.setText("");
@@ -122,5 +123,13 @@ final class NewMemberPanel extends Composite {
       cancel.addClickHandler(handler);
     }
     result.add(cancel);
+  }
+
+  public String getName() {
+    return "New Member";
+  }
+
+  public Widget payload() {
+    return this;
   }
 }

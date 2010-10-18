@@ -7,15 +7,16 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
-final class NewItemPanel extends Composite {
+final class NewItemPanel extends Composite implements FullPanel {
 
   private final FlowPanel result = new FlowPanel();
   private final TextBox itemNameInput = new TextBox();
   private final TextBox authorNameInput = new TextBox();
   private final TextBox isbnInput = new TextBox();
 
-  void clear() {
+  public void clear() {
     itemNameInput.setText("");
     authorNameInput.setText("");
     isbnInput.setText("");
@@ -76,5 +77,13 @@ final class NewItemPanel extends Composite {
       cancel.addClickHandler(handler);
     }
     result.add(cancel);
+  }
+
+  public String getName() {
+    return "New Item";
+  }
+
+  public Widget payload() {
+    return this;
   }
 }
