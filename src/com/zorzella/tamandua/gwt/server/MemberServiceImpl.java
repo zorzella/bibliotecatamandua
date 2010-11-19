@@ -138,7 +138,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
 
   private void doJob(Runnable r) {
-    Transaction currentTransaction = pm.currentTransaction();
+    Transaction currentTransaction = getCleanCurrentTransaction();
     if (currentTransaction.isActive()) {
       currentTransaction.rollback();
     }
@@ -170,7 +170,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
     member.setSobrenome(childLastName);
     member.setEmail(email);
     
-    Transaction currentTransaction = pm.currentTransaction();
+    Transaction currentTransaction = getCleanCurrentTransaction();
     currentTransaction.begin();
 
     pm.makePersistent(member);
@@ -180,7 +180,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
 
   public void createNewItem(String itemName, String authorName, String isbn) {
     Item item = new Item(null, "Z", isbn, itemName, authorName, false, "");
-    Transaction currentTransaction = pm.currentTransaction();
+    Transaction currentTransaction = getCleanCurrentTransaction();
     currentTransaction.begin();
     
     pm.makePersistent(item);
@@ -190,10 +190,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
 
   public void bulkUpload(String csvData) {
-    Transaction currentTransaction = pm.currentTransaction();
-    if (currentTransaction.isActive()) {
-      currentTransaction.rollback();
-    }
+    Transaction currentTransaction = getCleanCurrentTransaction();
     
     for (String csvLine : csvData.split("\n")) {
       currentTransaction.begin();
@@ -204,5 +201,13 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
       pm.makePersistent(item);
       currentTransaction.commit();
     }
+  }
+
+  private Transaction getCleanCurrentTransaction() {
+    Transaction result = pm.currentTransaction();
+    if (result.isActive()) {
+      result.rollback();
+    }
+    return result;
   }
 }
