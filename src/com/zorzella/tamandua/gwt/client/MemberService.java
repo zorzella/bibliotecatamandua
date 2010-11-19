@@ -38,4 +38,6 @@ public interface MemberService extends RemoteService {
       String email);
 
   void createNewItem(String itemName, String authorName, String isbn);
+
+  void bulkUpload(String csvData);
 }

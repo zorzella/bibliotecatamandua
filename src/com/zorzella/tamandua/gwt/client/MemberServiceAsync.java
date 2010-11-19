@@ -30,4 +30,6 @@ public interface MemberServiceAsync {
       AsyncCallback<Void> callback);
 
   void createNewItem(String itemName, String authorName, String isbn, AsyncCallback<Void> callback);
+
+  void bulkUpload(String csvData, AsyncCallback<Void> callback);
 }

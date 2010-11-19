@@ -23,6 +23,7 @@ final class MainPanel extends Composite {
   final LendingPanel lendingPanel;
   private final NewMemberPanel newMemberPanel = buildNewMemberPanel();
   private final NewItemPanel newItemPanel = buildNewItemPanel();
+  private final BulkItemUploadPanel bulkItemUploadPanel = new BulkItemUploadPanel(this);
   private final Panel menuPanel;
   final MemberServiceAsync memberService;
 
@@ -47,6 +48,7 @@ final class MainPanel extends Composite {
     result.add(buildButton(this.lendingPanel));
     result.add(buildButton(this.newMemberPanel));
     result.add(buildButton(this.newItemPanel));
+    result.add(buildButton(this.bulkItemUploadPanel));
     result.add(buildReloadButton());
     return result;
   }
@@ -84,6 +86,7 @@ final class MainPanel extends Composite {
     mainPanel.add(lendingPanel);
     mainPanel.add(newMemberPanel);
     mainPanel.add(newItemPanel);
+    mainPanel.add(bulkItemUploadPanel);
 
     this.menuPanel = buildMenu();
     mainPanel.add(menuPanel);
@@ -103,6 +106,7 @@ final class MainPanel extends Composite {
     newMemberPanel.setVisible(false);
     newItemPanel.setVisible(false);
     menuPanel.setVisible(false);
+    bulkItemUploadPanel.setVisible(false);
   }
 
   private void makeMenuVisible() {

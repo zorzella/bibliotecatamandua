@@ -188,4 +188,21 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
     currentTransaction.commit();
 	
   }
+
+  public void bulkUpload(String csvData) {
+    Transaction currentTransaction = pm.currentTransaction();
+    if (currentTransaction.isActive()) {
+      currentTransaction.rollback();
+    }
+    
+    for (String csvLine : csvData.split("\n")) {
+      currentTransaction.begin();
+      String[] parts = csvLine.split(",");
+      Item item = new Item(null, "R", "", parts[0], parts[1], false, "");
+      item.addTag(parts[2]);
+      
+      pm.makePersistent(item);
+      currentTransaction.commit();
+    }
+  }
 }
