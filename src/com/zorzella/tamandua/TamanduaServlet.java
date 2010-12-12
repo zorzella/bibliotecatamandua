@@ -18,11 +18,12 @@ public class TamanduaServlet extends HttpServlet {
     "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n" +
     "<html>\n" +
     "  <head>\n" +
+    "    <title>Bilioteca Tamandu&aacute; Bandeira</title>\n" +
+    "    <meta name='viewport' content='width=device-width'/>\n" +
     "    <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n" +
-    "    <title>Tamandua</title>\n" +
     "    <script type=\"text/javascript\" language=\"javascript\" " +
     "      src=\"com.zorzella.tamandua.gwt.tamandua/com.zorzella.tamandua.gwt.tamandua.nocache.js\"></script>\n" +
-    "    <LINK REL=StyleSheet HREF=\"red.css\" TYPE=\"text/css\"></LINK>\n" +
+    "    <link type='text/css' rel='stylesheet' href='/stylesheets/main.css'/>\n" +
     "  </head>\n" +
     "  <body>\n" +
     "    <iframe src=\"javascript:''\" id=\"__gwt_historyFrame\" tabIndex=\"-1\" " +
@@ -42,7 +43,7 @@ public class TamanduaServlet extends HttpServlet {
     PrintWriter ps = new PrintWriter(
         new OutputStreamWriter(resp.getOutputStream(), Constants.encoding));
 
-    Html.justHeadBody(ps);
+//    Html.justHeadBody(ps);
     ps.println(HTML);
     ps.println("</html></body>");
 

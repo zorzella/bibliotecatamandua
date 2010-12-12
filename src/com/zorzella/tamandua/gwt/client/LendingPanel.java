@@ -44,6 +44,7 @@ public final class LendingPanel extends Composite implements FullPanel {
 
     sortedItemsCallback =
       new SortedItemsCallback(
+          mainPanel.itemPanel,
           availableItemsTable, 
           borrowedItemsTable, 
           membersDropDown, 
@@ -76,7 +77,7 @@ public final class LendingPanel extends Composite implements FullPanel {
     Label prevPageButton = buildPrevPageButton();
     Label nextPageButton = buildNextPageButton();
     FlowPanel paginationBar = new FlowPanel();
-    paginationBar.setStyleName("pagination");
+    paginationBar.setStyleName(Styles.PAGINATION);
     paginationBar.add(prevPageButton);
     paginationBar.add(menuActivatorButton);
     paginationBar.add(nextPageButton);
@@ -85,7 +86,7 @@ public final class LendingPanel extends Composite implements FullPanel {
 
   private Label buildNextPageButton() {
     Label nextPageButton = new Label(">");
-    nextPageButton.setStyleName("next-page");
+    nextPageButton.setStyleName(Styles.NEXT_PAGE);
     ClickHandler nextPageHandler = new ClickHandler() {
 
       public void onClick(ClickEvent event) {
@@ -100,7 +101,7 @@ public final class LendingPanel extends Composite implements FullPanel {
 
   private Label buildPrevPageButton() {
     Label prevPageButton = new Label("<");
-    prevPageButton.setStyleName("prev-page");
+    prevPageButton.setStyleName(Styles.PREV_PAGE);
     ClickHandler prevPageHandler = new ClickHandler() {
 
       public void onClick(ClickEvent event) {

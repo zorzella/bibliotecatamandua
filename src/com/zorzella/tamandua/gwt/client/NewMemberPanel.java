@@ -56,13 +56,13 @@ final class NewMemberPanel extends Composite implements FullPanel {
     commonEmails.addChangeHandler(buildCommonEmailsChangeHandler());
     result.add(commonEmails);
 
-    Label ok = new Label("Ok");
-    ok.setStyleName("prev-page");
+    Label ok = new Label(Labels.OK);
+    ok.setStyleName(Styles.PREV_PAGE);
     ok.addClickHandler(buildOkClickHandler(mainPanel));
     result.add(ok);
 
-    Label cancel = new Label("Cancel");
-    cancel.setStyleName("next-page");
+    Label cancel = new Label(Labels.CANCEL);
+    cancel.setStyleName(Styles.NEXT_PAGE);
     cancel.addClickHandler(buildCancelClickHandler(mainPanel));
     result.add(cancel);
   }

@@ -8,22 +8,53 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.zorzella.tamandua.Item;
 
-final class NewItemPanel extends Composite implements FullPanel {
+/**
+ * Panel to add or edit an item.
+ */
+final class ItemPanel extends Composite implements FullPanel {
 
-  private final FlowPanel result = new FlowPanel();
   private final TextBox itemNameInput = new TextBox();
+  private final TextBox tocaInput = new TextBox();
   private final TextBox authorNameInput = new TextBox();
   private final TextBox isbnInput = new TextBox();
 
+  private Long itemId = null;
+  
   public void clear() {
+    itemId = null;
+    
+    tocaInput.setText(Labels.TOCA_Z);
     itemNameInput.setText("");
     authorNameInput.setText("");
     isbnInput.setText("");
   }
   
-  public NewItemPanel(final MainPanel mainPanel) {
-    initWidget(result);
+  /**
+   * Set the contents of this panel to match the given {@code item}.
+   * This will also set the {@link #itemId}, since this is to be used
+   * to start editing {@code item}. See {@link #buildOkClickHandler(MainPanel)}.
+   */
+  public void setToItem(Item item) {
+    itemId = item.getId();
+    tocaInput.setText(item.getToca());
+    itemNameInput.setText(item.getTitulo());
+    authorNameInput.setText(item.getAutor());
+    isbnInput.setText(item.getIsbn());
+  }
+  
+  public ItemPanel(final MainPanel mainPanel) {
+    final FlowPanel outer = new FlowPanel();
+    initWidget(outer);
+    outer.setStyleName(Styles.POPUP_OUTER);
+    
+    final FlowPanel result = new FlowPanel();
+    result.setStyleName(Styles.POPUP_INNER);
+    outer.add(result);
+
+    result.add(new Label("Toca"));
+    result.add(tocaInput);
 
     result.add(new Label("Item name"));
     result.add(itemNameInput);
@@ -34,13 +65,13 @@ final class NewItemPanel extends Composite implements FullPanel {
     result.add(new Label("ISBN"));
     result.add(isbnInput);
     
-    Label ok = new Label("Ok");
-    ok.setStyleName("prev-page");
+    Label ok = new Label(Labels.OK);
+    ok.setStyleName(Styles.PREV_PAGE);
     ok.addClickHandler(buildOkClickHandler(mainPanel));
     result.add(ok);
 
-    Label cancel = new Label("Cancel");
-    cancel.setStyleName("next-page");
+    Label cancel = new Label(Labels.CANCEL);
+    cancel.setStyleName(Styles.NEXT_PAGE);
     cancel.addClickHandler(buildCancelClickHandler(mainPanel));
     result.add(cancel);
   }
@@ -55,6 +86,10 @@ final class NewItemPanel extends Composite implements FullPanel {
     return handler;
   }
 
+  /**
+   * Id {@link #itemId} is {@code null}, Labels.OK will create a brand-new item,
+   * otherwise it will edit the item with {@link #itemId}.
+   */
   private ClickHandler buildOkClickHandler(final MainPanel mainPanel) {
     ClickHandler result = new ClickHandler() {
 
@@ -72,11 +107,22 @@ final class NewItemPanel extends Composite implements FullPanel {
             mainPanel.showMessage("Failed!");
           }
         };
-        mainPanel.memberService.createNewItem(
-            itemNameInput.getValue(), 
-            authorNameInput.getValue(), 
-            isbnInput.getValue(),
-            callback);
+        if (itemId == null) {
+          mainPanel.memberService.createNewItem(
+              tocaInput.getValue(),
+              itemNameInput.getValue(), 
+              authorNameInput.getValue(), 
+              isbnInput.getValue(),
+              callback);
+        } else {
+          mainPanel.memberService.editItem(
+              itemId,
+              tocaInput.getValue(),
+              itemNameInput.getValue(), 
+              authorNameInput.getValue(), 
+              isbnInput.getValue(),
+              callback);
+        }
       }
     };
     return result;

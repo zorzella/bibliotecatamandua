@@ -105,6 +105,7 @@ public class Tamandua implements EntryPoint {
   public static final class SortedItemsCallback 
       extends NaiveAsyncCallback<ItemBundle> {
     
+    private final ItemPanel editItemPanel;
     private final Panel availableItemListWidget;
     private final Panel borrowedItemListWidget;
     private final MembersDropDown membersDropDown;
@@ -116,12 +117,14 @@ public class Tamandua implements EntryPoint {
     private final Panel lendingPanel;
 
     SortedItemsCallback(
+        ItemPanel editItemPanel,
         Panel availableItemListWidget, 
         Panel borrowedItemListWidget, 
         MembersDropDown membersDropDown, 
         ActivityTable activityTable, 
         MemberServiceAsync memberService, 
         Panel lendingPanel) {
+      this.editItemPanel = editItemPanel;
       this.availableItemListWidget = availableItemListWidget;
       this.borrowedItemListWidget = borrowedItemListWidget;
       this.membersDropDown = membersDropDown;
@@ -133,6 +136,7 @@ public class Tamandua implements EntryPoint {
     public void onSuccess(ItemBundle itemBundle) {
       this.itemBundle = itemBundle;
       this.itemWidgetBundle = new ItemWidgetBundle(
+          editItemPanel,
           membersDropDown, 
           memberService, 
           activityTable, 

@@ -124,6 +124,7 @@ public class ItemWidgetBundle {
   private final Map<Item,Status> itemStatusMap;
   
   public ItemWidgetBundle(
+      ItemPanel editItemPanel,
       MembersDropDown membersDropDown, 
       MemberServiceAsync memberService, 
       ActivityTable activityTable, 
@@ -135,7 +136,7 @@ public class ItemWidgetBundle {
     this.activityTable = activityTable;
     this.itemBundle = itemBundle;
     
-    this.toBorrowPopup = new ToBorrowPopup(this);
+    this.toBorrowPopup = new ToBorrowPopup(editItemPanel, this);
     this.toReturnPopup = new ToReturnPopup(this);
     lendingPanel.add(toBorrowPopup);
     lendingPanel.add(toReturnPopup);
@@ -213,7 +214,7 @@ public class ItemWidgetBundle {
   private Label buildBorrowedSimpleWidget(final Item item) {
     Label result = new Label(
         membersDropDown.idToCode(item.getParadeiro()) + "-" + getLabelTextFor(item));
-    result.setStyleName("whisper");
+    result.setStyleName(Styles.MEMBERS_DROP_DOWN_LABEL_WHISPER);
     ClickHandler handler = new ClickHandler() {
       
       public void onClick(ClickEvent event) {
@@ -241,7 +242,7 @@ public class ItemWidgetBundle {
   
   private Label buildBorrowedItemClickableWidget(final Item item) {
     final Label result = new Label(item.getTitulo());
-    result.setStyleName("entry-row");
+    result.setStyleName(Styles.ENTRY_ROW);
     ClickHandler clickHandler = new ClickHandler() {
       
 //      @Override
@@ -270,10 +271,10 @@ public class ItemWidgetBundle {
   
   private Label buildAllItemsWidget(final Item item) {
     final Label result = new Label(item.getTitulo());
-    result.setStyleName("entry-row");
+    result.setStyleName(Styles.ENTRY_ROW);
     ClickHandler clickHandler = new ClickHandler() {
       
-//      @Override
+      @Override
       public void onClick(ClickEvent event) {
 
         Member member = membersDropDown.getSelectedMember();

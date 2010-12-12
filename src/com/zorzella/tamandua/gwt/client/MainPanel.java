@@ -22,7 +22,10 @@ final class MainPanel extends Composite {
 
   final LendingPanel lendingPanel;
   private final NewMemberPanel newMemberPanel = buildNewMemberPanel();
-  private final NewItemPanel newItemPanel = buildNewItemPanel();
+  /**
+   * Used both for "new item" and "edit item".
+   */
+  final ItemPanel itemPanel = buildItemPanel();
   private final BulkItemUploadPanel bulkItemUploadPanel = new BulkItemUploadPanel(this);
   private final Panel menuPanel;
   final MemberServiceAsync memberService;
@@ -39,15 +42,15 @@ final class MainPanel extends Composite {
     return new NewMemberPanel(this);
   }
 
-  private NewItemPanel buildNewItemPanel () {
-    return new NewItemPanel(this);
+  private ItemPanel buildItemPanel () {
+    return new ItemPanel(this);
   }
   
   private FlowPanel buildMenu() {
     FlowPanel result = new FlowPanel();
     result.add(buildButton(this.lendingPanel));
     result.add(buildButton(this.newMemberPanel));
-    result.add(buildButton(this.newItemPanel));
+    result.add(buildButton(this.itemPanel));
     result.add(buildButton(this.bulkItemUploadPanel));
     result.add(buildReloadButton());
     return result;
@@ -55,7 +58,7 @@ final class MainPanel extends Composite {
 
   private Label buildButton(final FullPanel fullPanel) {
     Label result = new Label(fullPanel.getName());
-    result.setStyleName("menu-item");
+    result.setStyleName(Styles.MENU_ITEM);
     ClickHandler clickHandler = new ClickHandler() {
 
       public void onClick(ClickEvent event) {
@@ -68,7 +71,7 @@ final class MainPanel extends Composite {
 
   private Label buildReloadButton() {
     Label reloadButton = new Label("Reload");
-    reloadButton.setStyleName("menu-item");
+    reloadButton.setStyleName(Styles.MENU_ITEM);
     ClickHandler reloadHandler = new ClickHandler() {
       public void onClick(ClickEvent event) {
         lendingPanel.reloadMembers(null);
@@ -85,7 +88,7 @@ final class MainPanel extends Composite {
     lendingPanel = new LendingPanel(this, memberService, buildMenuActivator());
     mainPanel.add(lendingPanel);
     mainPanel.add(newMemberPanel);
-    mainPanel.add(newItemPanel);
+    mainPanel.add(itemPanel);
     mainPanel.add(bulkItemUploadPanel);
 
     this.menuPanel = buildMenu();
@@ -97,14 +100,14 @@ final class MainPanel extends Composite {
   
   private static Label buildMessageBox() {
     Label result = new Label();
-    result.setStyleName("message");
+    result.setStyleName(Styles.MESSAGE);
     return result;
   }
   
   private void makeAllInvisible() {
     lendingPanel.setVisible(false);
     newMemberPanel.setVisible(false);
-    newItemPanel.setVisible(false);
+    itemPanel.setVisible(false);
     menuPanel.setVisible(false);
     bulkItemUploadPanel.setVisible(false);
   }
@@ -122,7 +125,7 @@ final class MainPanel extends Composite {
   
   private Widget buildMenuActivator() {
     Label result = new Label("menu");
-    result.setStyleName("menu-button");
+    result.setStyleName(Styles.MENU_BUTTON);
     
     ClickHandler handler = new ClickHandler() {
       public void onClick(ClickEvent event) {
