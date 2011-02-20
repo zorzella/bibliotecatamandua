@@ -91,6 +91,7 @@ public class UploadServlet extends HttpServlet {
           isbn, 
           titulo,
           autor,
+          "",
           especial,
           tamanho);
 

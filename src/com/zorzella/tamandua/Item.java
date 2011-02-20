@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -48,6 +50,9 @@ public class Item implements Serializable {
   private String autor;
 
   @Persistent
+  private String publishingHouse;
+
+  @Persistent
   private Boolean especial;
 
   @Persistent
@@ -63,6 +68,7 @@ public class Item implements Serializable {
     this.desde = new Date();
     this.titulo = "";
     this.autor = "";
+    this.publishingHouse = "";
     this.paradeiroLong = null;
     this.toca = "";
     this.isbn = "";
@@ -78,6 +84,7 @@ public class Item implements Serializable {
       String isbn, 
       String titulo,
       String autor,
+      String publishingHouse,
       boolean especial, 
       String tamanho) {
     super();
@@ -87,6 +94,7 @@ public class Item implements Serializable {
     this.titulo = titulo;
     this.isbn = isbn;
     this.autor = autor;
+    this.publishingHouse = publishingHouse;
     this.especial = especial;
     this.tamanho = tamanho;
     this.tags = new ArrayList<String>();
@@ -177,6 +185,14 @@ public class Item implements Serializable {
     this.autor = autor;
   }
 
+  public String getPublishingHouse() {
+    return publishingHouse;
+  }
+
+  public void setPublishingHouse(String publishingHouse) {
+    this.publishingHouse = publishingHouse;
+  }
+
   public boolean isEspecial() {
     return especial;
   }
@@ -189,16 +205,29 @@ public class Item implements Serializable {
     this.tamanho = tamanho;
   }
 
-  @SuppressWarnings("unchecked") List<String> getTags() {
+  public List<String> getTags() {
     // Bug in local DB impl causes tags to be null when they should be empty
     if (tags == null) {
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
     // Bug in prod DB impl causes tags to be have a null when they should be empty
     if ((tags.size() == 1) && (tags.iterator().next() == null)) {
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
     return tags;
+  }
+  
+  public String getTagsAsString() {
+    StringBuilder result = new StringBuilder();
+    Iterator<String> i = tags.iterator();
+    while (i.hasNext()) {
+      String item = i.next();
+      result.append(item);
+      if (i.hasNext()) {
+        result.append(",");
+      }
+    }
+    return result.toString();
   }
 
   @Override
@@ -211,6 +240,7 @@ public class Item implements Serializable {
         isbn,
         quote(titulo), 
         quote(autor), 
+        quote(publishingHouse), 
         especial,
         tamanho, 
         getTags());
@@ -224,6 +254,13 @@ public class Item implements Serializable {
       return string;
     }
     return '"' + string + '"';
+  }
+
+  public void addTags(String tags) {
+    String[] temp = tags.split(",");
+    for (String tag : temp) {
+      addTag(tag);
+    }
   }
 
   

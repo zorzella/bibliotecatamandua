@@ -37,9 +37,26 @@ public interface MemberService extends RemoteService {
       String code, 
       String email);
 
-  void editItem(Long itemId, String toca, String itemName, String authorName, String isbn);
+  void editItem(
+      Long itemId,
+      String toca,
+      String itemName,
+      String authorName,
+      String publishingHouse,
+      String isbn,
+      String tamanho,
+      String tags
+      );
   
-  void createNewItem(String toca, String itemName, String authorName, String isbn);
+  void createNewItem(
+      String toca,
+      String itemName,
+      String authorName,
+      String publishingHouse,
+      String isbn,
+      String tamanho,
+      String tags
+      );
 
   void bulkUpload(String csvData);
 }

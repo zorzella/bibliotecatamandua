@@ -158,7 +158,11 @@ final class ToBorrowPopup extends Composite {
 
     private void repaint() {
       itemTitleLabel.setText(item.getTitulo() + " -- "
-          + item.getAutor());
+          + item.getAutor() + " -- "
+          + item.getToca() + " -- "
+          + item.getIsbn() + " -- "
+          + item.getTamanho() + " -- "
+          + item.getTagsAsString());
     }
     
     public void show(Item item) {

@@ -1,2 +1,0 @@
-serviceClass: com.zorzella.tamandua.gwt.client.MemberService
-path: 37D01E67075B5A328B9D4B757F1454A2.gwt.rpc

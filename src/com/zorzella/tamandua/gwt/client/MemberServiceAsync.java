@@ -29,10 +29,26 @@ public interface MemberServiceAsync {
       String email, 
       AsyncCallback<Void> callback);
 
-  void createNewItem(String toca, String itemName, String authorName, String isbn, AsyncCallback<Void> callback);
+  void createNewItem(
+      String toca,
+      String itemName,
+      String authorName,
+      String publishingHouse,
+      String isbn,
+      String tamanho,
+      String tags,
+      AsyncCallback<Void> callback);
 
   void bulkUpload(String csvData, AsyncCallback<Void> callback);
 
-  void editItem(Long itemId, String toca, String itemName, String authorName,
-      String isbn, AsyncCallback<Void> callback);
+  void editItem(
+      Long itemId,
+      String toca,
+      String itemName,
+      String authorName,
+      String publishingHouse,
+      String isbn,
+      String tamanho,
+      String tags,
+      AsyncCallback<Void> callback);
 }

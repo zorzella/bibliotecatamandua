@@ -18,7 +18,10 @@ final class ItemPanel extends Composite implements FullPanel {
   private final TextBox itemNameInput = new TextBox();
   private final TextBox tocaInput = new TextBox();
   private final TextBox authorNameInput = new TextBox();
+  private final TextBox publishingHouseInput = new TextBox();
   private final TextBox isbnInput = new TextBox();
+  private final TextBox tamanhoInput = new TextBox();
+  private final TextBox tagsInput = new TextBox();
 
   private Long itemId = null;
   
@@ -28,7 +31,10 @@ final class ItemPanel extends Composite implements FullPanel {
     tocaInput.setText(Labels.TOCA_Z);
     itemNameInput.setText("");
     authorNameInput.setText("");
+    publishingHouseInput.setText("");
     isbnInput.setText("");
+    tamanhoInput.setText("");
+    tagsInput.setText("");
   }
   
   /**
@@ -41,7 +47,10 @@ final class ItemPanel extends Composite implements FullPanel {
     tocaInput.setText(item.getToca());
     itemNameInput.setText(item.getTitulo());
     authorNameInput.setText(item.getAutor());
+    publishingHouseInput.setText(item.getPublishingHouse());
     isbnInput.setText(item.getIsbn());
+    tamanhoInput.setText(item.getTamanho());
+    tagsInput.setText(item.getTagsAsString());
   }
   
   public ItemPanel(final MainPanel mainPanel) {
@@ -62,8 +71,17 @@ final class ItemPanel extends Composite implements FullPanel {
     result.add(new Label("Author Name"));
     result.add(authorNameInput);
 
+    result.add(new Label("Publishing House"));
+    result.add(publishingHouseInput);
+
     result.add(new Label("ISBN"));
     result.add(isbnInput);
+    
+    result.add(new Label("Tamanho"));
+    result.add(tamanhoInput);
+    
+    result.add(new Label("Tags"));
+    result.add(tagsInput);
     
     Label ok = new Label(Labels.OK);
     ok.setStyleName(Styles.PREV_PAGE);
@@ -112,7 +130,10 @@ final class ItemPanel extends Composite implements FullPanel {
               tocaInput.getValue(),
               itemNameInput.getValue(), 
               authorNameInput.getValue(), 
+              publishingHouseInput.getValue(), 
               isbnInput.getValue(),
+              tamanhoInput.getValue(),
+              tagsInput.getValue(),
               callback);
         } else {
           mainPanel.memberService.editItem(
@@ -120,7 +141,10 @@ final class ItemPanel extends Composite implements FullPanel {
               tocaInput.getValue(),
               itemNameInput.getValue(), 
               authorNameInput.getValue(), 
+              publishingHouseInput.getValue(), 
               isbnInput.getValue(),
+              tamanhoInput.getValue(),
+              tagsInput.getValue(),
               callback);
         }
       }

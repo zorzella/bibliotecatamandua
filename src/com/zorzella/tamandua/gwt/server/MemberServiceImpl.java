@@ -195,7 +195,15 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
 
   @Override
-  public void editItem(final Long itemId, final String toca, final String itemName, final String authorName, final String isbn) {
+  public void editItem(
+      final Long itemId,
+      final String toca,
+      final String itemName,
+      final String authorName,
+      final String publishingHouse,
+      final String tamanho,
+      final String tags,
+      final String isbn) {
     doJob(new Job<Void>() {
       
       @Override
@@ -204,7 +212,11 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
         item.setToca(toca);
         item.setTitulo(itemName);
         item.setAutor(authorName);
+        item.setPublishingHouse(publishingHouse);
         item.setIsbn(isbn);
+        item.setTamanho(tamanho);
+        item.getTags().clear();
+        item.addTags(tags);
         pm.makePersistent(item);
         return null;
       }
@@ -212,8 +224,17 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
   
   @Override
-  public void createNewItem(String toca, String itemName, String authorName, String isbn) {
-    final Item item = new Item(null, toca, isbn, itemName, authorName, false, "");
+  public void createNewItem(
+      String toca,
+      String itemName,
+      String authorName,
+      String publishingHouse,
+      String tamanho,
+      String tags,
+      String isbn) {
+    final Item item = new Item(null, toca, isbn, itemName, authorName,
+        publishingHouse, false, tamanho);
+    item.addTags(tags);
     
     doJob(new Job<Void>() {
       @Override
@@ -228,7 +249,8 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   public void bulkUpload(String csvData) {
     for (String csvLine : csvData.split("\n")) {
       String[] parts = csvLine.split(",");
-      final Item item = new Item(null, "R", "", parts[0], parts[1], false, "");
+      final Item item = new Item(null, "?", "", parts[0], parts[1],
+          "", false, "");
       item.addTag(parts[2]);
       
       doJob(new Job<Void> () {
