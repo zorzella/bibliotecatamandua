@@ -46,6 +46,6 @@ public class Emails {
 
   static final String FROM = "zorzella@gmail.com";
   static final List<String> CC = 
-    Lists.newArrayList(Emails.FROM);
+    Lists.newArrayList("keylazorzella@gmail.com");
 
 }

@@ -42,10 +42,11 @@ public class EmailServlet extends HttpServlet {
   }
 
 // TODO:  private static final String subject = "Biblioteca Tamandua -- \u00EDtens sob sua cust\u00F3dia";
-  private static final String subject = "Biblioteca Tamandua -- itens sob sua custodia";
 
   private void go(HttpServletRequest req, HttpServletResponse resp, PersistenceManager pm, String admin)
-  throws UnsupportedEncodingException, IOException {
+      throws UnsupportedEncodingException, IOException {
+    
+    
     resp.setContentType("text/html");
     resp.setCharacterEncoding(Constants.encoding);
     PrintWriter ps = new PrintWriter(
@@ -62,6 +63,7 @@ public class EmailServlet extends HttpServlet {
     Collection<Member> members = Queries.getAll(Member.class, pm);
 
     for (Member member : members) {
+      final String subject = "Biblioteca Tamandua -- itens sob custodia de " + TamanduaUtil.nome(member);
       if (member.getCodigo().equals("?")) {
         continue;
       }
@@ -76,11 +78,11 @@ public class EmailServlet extends HttpServlet {
         Long itemId = loan.getItemId();
         Item item = Queries.getById(Item.class, pm, "id", itemId + "");
         itemsOnLoan += "* "+ item.getTitulo() +
-//        " [emprestado em " + Dates.dateToString(loan.getLoanDate()) + "]" +
+          " [emprestado em " + Dates.dateToString(loan.getLoanDate()) + "]" +
         "\n";
       }
       String message = 
-        "Lembrete -- os seguintes \u00EDtens est\u00E3o sob sua cust\u00F3dia:\n" +
+        "Lembrete -- os seguintes \u00EDtens est\u00E3o sob cust\u00F3dia de " + TamanduaUtil.nome(member) + ":\n" +
         "\n" +
         itemsOnLoan +
         "\n" +
@@ -146,6 +148,7 @@ public class EmailServlet extends HttpServlet {
         String id = key.substring("sendto".length() + 1);
         String message = map.get("message-" + id)[0];
         Member member = Queries.getById(Member.class, pm, "id", id);
+        final String subject = "Biblioteca Tamandua -- itens sob custodia de " + TamanduaUtil.nome(member);
         
         Emails.sendEmail(
             message, 
