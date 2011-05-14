@@ -2,6 +2,7 @@
 package com.zorzella.tamandua;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,11 +35,19 @@ public class AdminOrDie {
     }
   }
 
+  public static User softAdminOrDie() throws NotAnAdminException {
+    return adminOrDie(Constants.softAdmins);
+  }
+  
   public static User adminOrDie() throws NotAnAdminException {
+    return adminOrDie(Constants.admins);    
+  }
+  
+  private static User adminOrDie(Collection<String> admins) throws NotAnAdminException {
     UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();
 
-    if ((user == null) || (!Constants.admins.contains(user.getNickname()))) {
+    if ((user == null) || (!admins.contains(user.getNickname()))) {
         throw new NotAnAdminException(String.format(
             "User %s not an admin", user == null ? null : user.getNickname()));
     }

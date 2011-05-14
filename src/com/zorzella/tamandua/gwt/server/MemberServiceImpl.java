@@ -166,8 +166,8 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   }
   
   @Override
-  public void adminOrDie() throws NotAnAdminException {
-    AdminOrDie.adminOrDie();
+  public void softAdminOrDie() throws NotAnAdminException {
+    AdminOrDie.softAdminOrDie();
   }
 
   @Override

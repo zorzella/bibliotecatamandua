@@ -12,7 +12,7 @@ import java.util.Collection;
 @RemoteServiceRelativePath("member")
 public interface MemberService extends RemoteService {
 
-  void adminOrDie() throws NotAnAdminException;
+  void softAdminOrDie() throws NotAnAdminException;
   
   Collection<Member> getSortedMembers();
   

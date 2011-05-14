@@ -9,7 +9,7 @@ import com.zorzella.tamandua.Member;
 
 public interface MemberServiceAsync {
 
-  void adminOrDie(AsyncCallback<Void> callback) throws NotAnAdminException;
+  void softAdminOrDie(AsyncCallback<Void> callback) throws NotAnAdminException;
 
   void getSortedMembers(AsyncCallback<Collection<Member>> callback);
 

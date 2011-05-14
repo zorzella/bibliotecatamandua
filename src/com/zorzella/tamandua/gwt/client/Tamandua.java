@@ -168,6 +168,6 @@ public class Tamandua implements EntryPoint {
 
     AsyncCallback<Void> callback = new AdminOrDieCallback(memberService, mainPanel);
     
-    memberService.adminOrDie(callback);
+    memberService.softAdminOrDie(callback);
   }
 }
