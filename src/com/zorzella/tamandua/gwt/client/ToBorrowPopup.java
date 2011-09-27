@@ -9,14 +9,13 @@ import com.google.gwt.user.client.ui.Panel;
 import com.zorzella.tamandua.Item;
 
 /**
- * The popup to confirm the borrowing of an item. This popup has 6 buttons (3 on top and 3 on the bottom):
+ * The popup to confirm the borrowing of an item. This popup has 5 buttons (3 on top and 2 on the bottom):
  * 
  * Go To Prev
  * Go To Next
  * Close
  * 
- * Borrow and go to prev
- * Borrow and go to next
+ * Edit
  * Borrow and close 
  * 
  * @author zorzella
@@ -25,28 +24,32 @@ final class ToBorrowPopup extends Composite {
 
     private final ItemWidgetBundle itemWidgetBundle;
     private final Panel backing;
-    private final Label itemTitleLabel = GwtUtil.label("None", "title");
+    private final Label itemTitleLabel = GwtUtil.label("None", Styles.TITLE);
+    private final ItemPanel editItemPanel;
 
     private Item item;
     
-    ToBorrowPopup(ItemWidgetBundle itemWidgetBundle) {
+    ToBorrowPopup(
+        ItemPanel editItemPanel,
+        ItemWidgetBundle itemWidgetBundle) {
+      this.editItemPanel = editItemPanel;
       this.itemWidgetBundle = itemWidgetBundle;
       backing = new FlowPanel();
 
-      backing.setStyleName("demo-popup");
+      backing.setStyleName(Styles.POPUP_OUTER);
 
       Label prevButton = buildPrevButton();
       Label nextButton = buildNextButton();
       Label closeButton = buildCloseButton();
 
-      Label borrowPrevButton = buildBorrowPrevButton();
-      Label borrowNextButton = buildBorrowNextButton();
+      Label editButton = buildEditButton();
+//      Label borrowNextButton = buildBorrowNextButton();
       Label borrowButton = buildBorrowButton();
 
       final Panel fullPanel = new FlowPanel();
-      fullPanel.setStyleName("popup-panel");
+      fullPanel.setStyleName(Styles.POPUP_INNER);
       
-      Panel prevNextClosePanel = GwtUtil.div("prev-next-close");
+      Panel prevNextClosePanel = GwtUtil.div(Styles.PREV_NEXT_CLOSE);
       
       prevNextClosePanel.add(prevButton);
       prevNextClosePanel.add(nextButton);
@@ -54,8 +57,8 @@ final class ToBorrowPopup extends Composite {
       
       fullPanel.add(prevNextClosePanel);
       fullPanel.add(itemTitleLabel);
-      fullPanel.add(borrowPrevButton);
-      fullPanel.add(borrowNextButton);
+      fullPanel.add(editButton);
+//      fullPanel.add(borrowNextButton);
       fullPanel.add(borrowButton);
 
       backing.add(fullPanel);
@@ -63,33 +66,37 @@ final class ToBorrowPopup extends Composite {
       initWidget(backing);
     }
 
-    private Label buildBorrowPrevButton() {
+    private Label buildEditButton() {
       ClickHandler handler = new ClickHandler() {
-        //        @Override
+        @Override
         public void onClick(ClickEvent event) {
-          itemWidgetBundle.initiateBorrow(item);
-          item = itemWidgetBundle.prevAvailable(item);
-          repaint();
+          setVisible(false);
+          editItemPanel.setToItem(item);
+          editItemPanel.setVisible(true);
+          
+//          itemWidgetBundle.initiateEdit(item);
+//          item = itemWidgetBundle.prevAvailable(item);
+//          repaint();
         }
       };
-      Label closeButton = GwtUtil.label("Borrow", "borrow-prev");
-      closeButton.addClickHandler(handler);
-      return closeButton;
+      Label result = GwtUtil.label("Edit", Styles.BORROW_PREV);
+      result.addClickHandler(handler);
+      return result;
     }
     
-    private Label buildBorrowNextButton() {
-      ClickHandler handler = new ClickHandler() {
-        //        @Override
-        public void onClick(ClickEvent event) {
-          itemWidgetBundle.initiateBorrow(item);
-          item = itemWidgetBundle.nextAvailable(item);
-          repaint();
-        }
-      };
-      Label closeButton = GwtUtil.label("Borrow", "borrow-next");
-      closeButton.addClickHandler(handler);
-      return closeButton;
-    }
+//    private Label buildBorrowNextButton() {
+//      ClickHandler handler = new ClickHandler() {
+//        //        @Override
+//        public void onClick(ClickEvent event) {
+//          itemWidgetBundle.initiateBorrow(item);
+//          item = itemWidgetBundle.nextAvailable(item);
+//          repaint();
+//        }
+//      };
+//      Label closeButton = GwtUtil.label("Borrow", "borrow-next");
+//      closeButton.addClickHandler(handler);
+//      return closeButton;
+//    }
     
     private Label buildBorrowButton() {
       ClickHandler handler = new ClickHandler() {
@@ -100,9 +107,9 @@ final class ToBorrowPopup extends Composite {
           itemWidgetBundle.initiateBorrow(item);
         }
       };
-      Label closeButton = GwtUtil.label("Borrow", "borrow");
-      closeButton.addClickHandler(handler);
-      return closeButton;
+      Label result = GwtUtil.label("Borrow", Styles.BORROW);
+      result.addClickHandler(handler);
+      return result;
     }
 
     private Label buildCloseButton() {
@@ -113,10 +120,10 @@ final class ToBorrowPopup extends Composite {
         	backing.setVisible(false);
         }
       };
-      Label closeButton = new Label("Close");
-      closeButton.setStyleName("close");
-      closeButton.addClickHandler(handler);
-      return closeButton;
+      Label result = new Label("Close");
+      result.setStyleName(Styles.CLOSE);
+      result.addClickHandler(handler);
+      return result;
     }
 
     private Label buildPrevButton() {
@@ -129,7 +136,7 @@ final class ToBorrowPopup extends Composite {
         }
       };
       Label closeButton = new Label("Prev");
-      closeButton.setStyleName("prev");
+      closeButton.setStyleName(Styles.PREV);
       closeButton.addClickHandler(handler);
       return closeButton;
     }
@@ -150,7 +157,12 @@ final class ToBorrowPopup extends Composite {
     }
 
     private void repaint() {
-      itemTitleLabel.setText(item.getTitulo());
+      itemTitleLabel.setText(item.getTitulo() + " -- "
+          + item.getAutor() + " -- "
+          + item.getToca() + " -- "
+          + item.getIsbn() + " -- "
+          + item.getTamanho() + " -- "
+          + item.getTagsAsString());
     }
     
     public void show(Item item) {

@@ -11,7 +11,10 @@ import com.zorzella.tamandua.Member;
 import com.zorzella.tamandua.Members;
 import com.zorzella.tamandua.PMF;
 import com.zorzella.tamandua.Queries;
+import com.zorzella.tamandua.gwt.client.AlreadyBorrowedToThisMemberException;
+import com.zorzella.tamandua.gwt.client.AlreadyReturnedException;
 import com.zorzella.tamandua.gwt.client.MemberService;
+import com.zorzella.tamandua.gwt.client.NotAnAdminException;
 
 import java.util.Collection;
 import java.util.Date;
@@ -20,18 +23,20 @@ import java.util.NoSuchElementException;
 import java.util.SortedSet;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Transaction;
 
 public class MemberServiceImpl extends RemoteServiceServlet implements MemberService {
 
-  private final PersistenceManager pm;
+  private final PersistenceManagerFactory pmf;
 
   public MemberServiceImpl() {
-    pm = PMF.get().getPersistenceManager();
+    pmf = PMF.get();
   }
   
-//  @Override
+  @Override
   public Collection<Member> getSortedMembers() {
+    PersistenceManager pm = pm();
     SortedSet<Member> members = Queries.getSortedMembers(pm);
     
     Collection<Member> result = Lists.newArrayList();
@@ -41,7 +46,13 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
     return result;
   }
 
+  private PersistenceManager pm() {
+    return pmf.getPersistenceManager();
+  }
+
+  @Override
   public ItemBundle getFancySortedItems() {
+    PersistenceManager pm = pm();
     Map<Long, String> map = Members.getMap(Queries.getSortedMembers(pm));
 
     ItemBundle temp = new Queries(map).getDetachedFancySortedItems(pm);
@@ -51,119 +62,209 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
         Lists.newArrayList(temp.getBorrowed()));
   }
 
-//  @Override
-  public void returnItem(final Long memberId, final Item item) {
-    final Item liveItem = pm.getObjectById(Item.class, item.getId());
-    if (!memberId.equals(liveItem.getParadeiro())) {
+  @Override
+  public void returnItem(final Long memberId, final Item item) throws AlreadyReturnedException {
+    Long currentItemParadeiro = item.getParadeiro();
+    if (currentItemParadeiro == null) {
+      throw new AlreadyReturnedException(); 
+    }
+	if (!memberId.equals(currentItemParadeiro)) {
       throw new IllegalArgumentException(String.format(
           "Item '%s' is in paradeiro '%s', not in '%s'.", 
-          item.getTitulo(), item.getParadeiro(), memberId));
+          item.getTitulo(), currentItemParadeiro, memberId));
     }
     final String adminCode = AdminOrDie.adminOrDie().getNickname();
 
-    Loan loan;
-    try {
-      loan = Queries.getFirstByQuery(Loan.class, pm, 
-        "memberId == " + memberId + 
-        " && itemId == " + item.getId() + 
-        " && returnDate == null");
-    } catch (NoSuchElementException e) {
-      doJob(createLoan(memberId, liveItem, adminCode));
-      loan = Queries.getFirstByQuery(Loan.class, pm, 
-    	        "memberId == " + memberId + 
-    	        " && itemId == " + item.getId() + 
-    	        " && returnDate == null");
-    }
-
-    doJob(new Runnable() {
-		public void run() {
-			liveItem.setParadeiro(null);
-			pm.makePersistent(liveItem);
+    doJob(new Job<Void>() {
+		public Void run(PersistenceManager pm) {
+		  Item liveItem = pm.getObjectById(Item.class, item.getId());
+		  liveItem.setParadeiro(null);
+		  pm.makePersistent(liveItem);
+          return null;
 		}
 	});
     
-	doJob(closeLoan(adminCode, loan));    
+	doJob(closeLoan(adminCode, memberId, item));    
   }
 
-  private Runnable closeLoan(final String adminCode, final Loan loan) {
-	return new Runnable() {
-		public void run() {
-			loan.setReturnDate(adminCode, new Date());
+  private Job<Void> closeLoan(final String adminCode, final Long memberId, final Item item) {
+	return new Job<Void>() {
+		public Void run(PersistenceManager pm) {
+	
+		    Loan loan;
+		    try {
+		      loan = Queries.getFirstByQuery(Loan.class, pm, 
+		        "memberId == " + memberId + 
+		        " && itemId == " + item.getId() + 
+		        " && returnDate == null");
+		    } catch (NoSuchElementException e) {
+		      doJob(createLoan(memberId, item, adminCode));
+		      loan = Queries.getFirstByQuery(Loan.class, pm, 
+		                "memberId == " + memberId + 
+		                " && itemId == " + item.getId() + 
+		                " && returnDate == null");
+		    }
+
+		  loan.setReturnDate(adminCode, new Date());
 			pm.makePersistent(loan);
+          return null;
 		}
 	};
   }
 
-//  @Override
-  public void borrowItem(final Long memberId, final Item item) {
-    final Item liveItem = pm.getObjectById(Item.class, item.getId());
-    if (liveItem.getParadeiro() != null) {
+  @Override
+  public void borrowItem(final Long memberId, final Item item) throws AlreadyBorrowedToThisMemberException {
+    Long currentParadeiro = item.getParadeiro();
+	  if (currentParadeiro != null) {
+      if (currentParadeiro.equals(memberId)) {
+        throw new AlreadyBorrowedToThisMemberException();
+      }
       throw new IllegalArgumentException(String.format(
           "Item '%s' is already in paradeiro '%s'.", 
-          item.getTitulo(), liveItem.getParadeiro()));
+          item.getTitulo(), currentParadeiro));
     }
     
     final String adminCode = AdminOrDie.adminOrDie().getNickname();
 
-	doJob(new Runnable() {
-      public void run() {
+    doJob(new Job<Void>() {
+      public Void run(PersistenceManager pm) {
+        final Item liveItem = pm.getObjectById(Item.class, item.getId());
         liveItem.setParadeiro(memberId);
         pm.makePersistent(liveItem);
+        return null;
       }
     });
 
     doJob(createLoan(memberId, item, adminCode));
-
   }
 
-  private Runnable createLoan(final Long memberId, final Item item,
+  private Job<Void> createLoan(final Long memberId, final Item item,
 		final String adminCode) {
-	return new Runnable() {	
-		public void run() {
+	return new Job<Void>() {	
+		public Void run(PersistenceManager pm) {
 			Loan loan = new Loan(adminCode, memberId, item.getId());
 			pm.makePersistent(loan);
+			return null;
 		}
 	};
   }
 
-  private void doJob(Runnable r) {
+  private <T> T doJob(Job<T> job) {
+    T result;
+    PersistenceManager pm = pm();
     Transaction currentTransaction = pm.currentTransaction();
-    if (currentTransaction.isActive()) {
-      currentTransaction.rollback();
-    }
     try {
       currentTransaction.begin();
-      r.run();
+      result = job.run(pm);
       currentTransaction.commit();
     } catch (RuntimeException e) {
       currentTransaction.rollback();
       throw e;
     }
+    pm.close();
+    return result;
   }
   
-//  @Override
-  public void adminOrDie() {
-    AdminOrDie.adminOrDie();
+  @Override
+  public void softAdminOrDie() throws NotAnAdminException {
+    AdminOrDie.softAdminOrDie();
   }
 
-  public void createNew(
+  @Override
+  public void createNewMember(
       String parentName, 
       String childFirstName, 
       String childLastName,
       String code, 
       String email) {
     
-    Member member = new Member(code);
+    final Member member = new Member(code);
     member.setMae(parentName);
     member.setNome(childFirstName);
     member.setSobrenome(childLastName);
     member.setEmail(email);
     
-    Transaction currentTransaction = pm.currentTransaction();
-    currentTransaction.begin();
+    doJob(new Job<Void>() {
+      
+      @Override
+      public Void run(PersistenceManager pm) {
+        pm.makePersistent(member);
+        return null;
+      }
+    });
+  }
 
-    pm.makePersistent(member);
+  @Override
+  public void editItem(
+      final Long itemId,
+      final String toca,
+      final String itemName,
+      final String authorName,
+      final String publishingHouse,
+      final String tamanho,
+      final String tags,
+      final String isbn) {
+    doJob(new Job<Void>() {
+      
+      @Override
+      public Void run(PersistenceManager pm) {
+        final Item item = pm.getObjectById(Item.class, itemId);
+        item.setToca(toca);
+        item.setTitulo(itemName);
+        item.setAutor(authorName);
+        item.setPublishingHouse(publishingHouse);
+        item.setIsbn(isbn);
+        item.setTamanho(tamanho);
+        item.getTags().clear();
+        item.addTags(tags);
+        pm.makePersistent(item);
+        return null;
+      }
+    });
+  }
+  
+  @Override
+  public void createNewItem(
+      String toca,
+      String itemName,
+      String authorName,
+      String publishingHouse,
+      String tamanho,
+      String tags,
+      String isbn) {
+    final Item item = new Item(null, toca, isbn, itemName, authorName,
+        publishingHouse, false, tamanho);
+    item.addTags(tags);
     
-    currentTransaction.commit();
+    doJob(new Job<Void>() {
+      @Override
+      public Void run(PersistenceManager pm) {
+        pm.makePersistent(item);
+        return null;
+      }
+    });
+  }
+
+  @Override
+  public void bulkUpload(String csvData) {
+    for (String csvLine : csvData.split("\n")) {
+      String[] parts = csvLine.split(",");
+      final Item item = new Item(null, "?", "", parts[0], parts[1],
+          "", false, "");
+      item.addTag(parts[2]);
+      
+      doJob(new Job<Void> () {
+
+        @Override
+        public Void run(PersistenceManager pm) {
+          pm.makePersistent(item);
+          return null;
+        }
+      });
+    }
+  }
+
+  interface Job<T> {
+    T run(PersistenceManager pm);
   }
 }

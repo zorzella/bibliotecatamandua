@@ -46,7 +46,7 @@ public class FancyItemComparatorTest extends TestCase {
 	}
 
 	private Item book(String titulo, Long paradeiro) {
-		return new Item(paradeiro, "", "", titulo, "", false, "");
+		return new Item(paradeiro, "", "", titulo, "", "pub", false, "");
 	}
 	
 }

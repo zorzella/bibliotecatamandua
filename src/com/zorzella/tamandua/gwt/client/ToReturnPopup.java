@@ -12,7 +12,7 @@ public final class ToReturnPopup extends Composite {
 
     private final ItemWidgetBundle itemWidgetBundle;
     private final Panel backing;
-    private final Label itemTitleLabel = GwtUtil.label("None", "title");
+    private final Label itemTitleLabel = GwtUtil.label("None", Styles.TITLE);
 
     private Item item;
 
@@ -20,7 +20,7 @@ public final class ToReturnPopup extends Composite {
       this.itemWidgetBundle = itemWidgetBundle;
       backing = new FlowPanel();
 
-      backing.setStyleName("demo-popup");
+      backing.setStyleName(Styles.POPUP_OUTER);
 
       Label prevButton = buildPrevButton();
       Label nextButton = buildNextButton();
@@ -31,9 +31,9 @@ public final class ToReturnPopup extends Composite {
       Label returnButton = buildReturnButton();
 
       final Panel fullPanel = new FlowPanel();
-      fullPanel.setStyleName("popup-panel");
+      fullPanel.setStyleName(Styles.POPUP_INNER);
       
-      Panel prevNextClosePanel = GwtUtil.div("prev-next-close");
+      Panel prevNextClosePanel = GwtUtil.div(Styles.PREV_NEXT_CLOSE);
       
       prevNextClosePanel.add(prevButton);
       prevNextClosePanel.add(nextButton);
@@ -59,7 +59,7 @@ public final class ToReturnPopup extends Composite {
           repaint();
         }
       };
-      Label closeButton = GwtUtil.label("Return", "borrow-prev");
+      Label closeButton = GwtUtil.label("Return", Styles.BORROW_PREV);
       closeButton.addClickHandler(handler);
       return closeButton;
     }
@@ -73,7 +73,7 @@ public final class ToReturnPopup extends Composite {
           repaint();
         }
       };
-      Label closeButton = GwtUtil.label("Return", "borrow-next");
+      Label closeButton = GwtUtil.label("Return", Styles.BORROW_NEXT);
       closeButton.addClickHandler(handler);
       return closeButton;
     }
@@ -87,7 +87,7 @@ public final class ToReturnPopup extends Composite {
           itemWidgetBundle.initiateReturn(item);
         }
       };
-      Label closeButton = GwtUtil.label("Return", "borrow");
+      Label closeButton = GwtUtil.label("Return", Styles.BORROW);
       closeButton.addClickHandler(handler);
       return closeButton;
     }
@@ -101,7 +101,7 @@ public final class ToReturnPopup extends Composite {
         }
       };
       Label closeButton = new Label("Close");
-      closeButton.setStyleName("close");
+      closeButton.setStyleName(Styles.CLOSE);
       closeButton.addClickHandler(handler);
       return closeButton;
     }
@@ -116,7 +116,7 @@ public final class ToReturnPopup extends Composite {
         }
       };
       Label closeButton = new Label("Prev");
-      closeButton.setStyleName("prev");
+      closeButton.setStyleName(Styles.PREV);
       closeButton.addClickHandler(handler);
       return closeButton;
     }
@@ -131,7 +131,7 @@ public final class ToReturnPopup extends Composite {
         }
       };
       Label closeButton = new Label("Next");
-      closeButton.setStyleName("next");
+      closeButton.setStyleName(Styles.NEXT);
       closeButton.addClickHandler(handler);
       return closeButton;
     }

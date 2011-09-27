@@ -10,8 +10,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 
-final class NewMemberPanel extends Composite {
+final class NewMemberPanel extends Composite implements FullPanel {
 
   private final FlowPanel result = new FlowPanel();
   private final TextBox parentNameInput = new TextBox();
@@ -19,13 +20,15 @@ final class NewMemberPanel extends Composite {
   private final TextBox childLastNameInput = new TextBox();
   private final TextBox codeInput = new TextBox();
   private final TextBox emailInput = new TextBox();
+  private final ListBox commonEmails = new ListBox();
 
-  void clear() {
+  public void clear() {
     parentNameInput.setText("");
     childFirstNameInput.setText("");
     childLastNameInput.setText("");
     codeInput.setText("");
     emailInput.setText("");
+    commonEmails.setSelectedIndex(0);
   }
   
   public NewMemberPanel(final MainPanel mainPanel) {
@@ -46,76 +49,92 @@ final class NewMemberPanel extends Composite {
     result.add(new Label("Email"));
     result.add(emailInput);
 
-    final ListBox commonEmails = new ListBox();
     commonEmails.addItem("");
     commonEmails.addItem("@gmail.com");
     commonEmails.addItem("@hotmail.com");
     commonEmails.addItem("@yahoo.com");
-    {
-      ChangeHandler handler = new ChangeHandler() {
-
-        public void onChange(ChangeEvent event) {
-          String value = emailInput.getValue();
-          value = value + commonEmails.getValue(commonEmails.getSelectedIndex());
-          emailInput.setValue(value);
-        }
-      };
-      commonEmails.addChangeHandler(handler);
-    }
+    commonEmails.addChangeHandler(buildCommonEmailsChangeHandler());
     result.add(commonEmails);
 
-    Label ok = new Label("Ok");
-    ok.setStyleName("prev-page");
-    {
-      ClickHandler handler = new ClickHandler() {
-
-        public void onClick(ClickEvent event) {
-          final String code = codeInput.getValue().trim();
-          if (code.equals("")) {
-            mainPanel.message.setText("Code is required.");
-            return;
-          }
-          if (mainPanel.lendingPanel.memberExistsWithCode(code)) {
-            mainPanel.message.setText("Code '" + code + "' is already in use.");
-            return;
-          }
-          
-          AsyncCallback<Void> callback = new AsyncCallback<Void>() {
-
-            public void onSuccess(Void result) {
-              mainPanel.lendingPanel.reloadMembers(code);
-              mainPanel.makeLendingVisible();
-              mainPanel.message.setText("");
-            }
-
-            public void onFailure(Throwable caught) {
-              mainPanel.message.setText("Failed!");
-            }
-          };
-          mainPanel.memberService.createNew(
-              parentNameInput.getValue(), 
-              childFirstNameInput.getValue(), 
-              childLastNameInput.getValue(), 
-              code, 
-              emailInput.getValue(), 
-              callback);
-        }
-      };
-      ok.addClickHandler(handler);
-    }
+    Label ok = new Label(Labels.OK);
+    ok.setStyleName(Styles.PREV_PAGE);
+    ok.addClickHandler(buildOkClickHandler(mainPanel));
     result.add(ok);
 
-    Label cancel = new Label("Cancel");
-    cancel.setStyleName("next-page");
-    {
-      ClickHandler handler = new ClickHandler() {
-
-        public void onClick(ClickEvent event) {
-          mainPanel.makeLendingVisible();
-        }
-      };
-      cancel.addClickHandler(handler);
-    }
+    Label cancel = new Label(Labels.CANCEL);
+    cancel.setStyleName(Styles.NEXT_PAGE);
+    cancel.addClickHandler(buildCancelClickHandler(mainPanel));
     result.add(cancel);
+  }
+
+  private ChangeHandler buildCommonEmailsChangeHandler() {
+    ChangeHandler handler = new ChangeHandler() {
+
+      public void onChange(ChangeEvent event) {
+        String value = emailInput.getValue();
+        int indexOfAtSymbol = value.indexOf('@');
+if (indexOfAtSymbol > -1) {
+          value = value.substring(0, indexOfAtSymbol);
+        }
+        value = value + commonEmails.getValue(commonEmails.getSelectedIndex());
+        emailInput.setValue(value);
+      }
+    };
+    return handler;
+  }
+
+  private ClickHandler buildCancelClickHandler(final MainPanel mainPanel) {
+    ClickHandler handler = new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        mainPanel.makeLendingVisible();
+      }
+    };
+    return handler;
+  }
+
+  private ClickHandler buildOkClickHandler(final MainPanel mainPanel) {
+    ClickHandler handler = new ClickHandler() {
+
+      public void onClick(ClickEvent event) {
+        final String code = codeInput.getValue().trim();
+        if (code.equals("")) {
+          mainPanel.showMessage("Code is required.");
+          return;
+        }
+        if (mainPanel.lendingPanel.memberExistsWithCode(code)) {
+          mainPanel.showMessage("Code '" + code + "' is already in use.");
+          return;
+        }
+        
+        AsyncCallback<Void> callback = new AsyncCallback<Void>() {
+
+          public void onSuccess(Void result) {
+            mainPanel.lendingPanel.reloadMembers(code);
+            mainPanel.makeLendingVisible();
+            mainPanel.clearMessage();
+          }
+
+          public void onFailure(Throwable caught) {
+            mainPanel.showMessage("Failed!");
+          }
+        };
+        mainPanel.memberService.createNewMember(
+            parentNameInput.getValue(), 
+            childFirstNameInput.getValue(), 
+            childLastNameInput.getValue(), 
+            code, 
+            emailInput.getValue(), 
+            callback);
+      }
+    };
+    return handler;
+  }
+
+  public String getName() {
+    return "New Member";
+  }
+
+  public Widget payload() {
+    return this;
   }
 }

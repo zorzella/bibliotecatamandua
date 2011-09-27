@@ -17,12 +17,16 @@ public final class ActivityTable extends FlowPanel {
     return result;
   }
 
+  public void addItemWarning(Label item) {
+    addItemInternal(item, Styles.ENTRY_ROW_PLUS_WARNING);
+  }
+  
   public void addItemFail(Label item) {
-    addItemInternal(item, "entry-row error");
+    addItemInternal(item, Styles.ENTRY_ROW_PLUS_ERROR);
   }
   
   public void addItemSuccess(Label item) {
-    addItemInternal(item, "entry-row read");
+    addItemInternal(item, Styles.ENTRY_ROW_PLUS_READ);
   }
   
   private void addItemInternal(Label item, String style) {
