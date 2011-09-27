@@ -32,7 +32,7 @@ final class BulkItemUploadPanel extends Composite implements FullPanel {
 //    result.add(new Label("Author Name"));
 //    result.add(authorNameInput);
 
-    result.add(new Label("csv-data"));
+    result.add(new Label("csv-data (Toca, Titulo, Autor)"));
     result.add(csvDataInput);
     
     Label ok = new Label(Labels.OK);

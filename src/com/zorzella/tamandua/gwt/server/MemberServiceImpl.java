@@ -249,7 +249,7 @@ public class MemberServiceImpl extends RemoteServiceServlet implements MemberSer
   public void bulkUpload(String csvData) {
     for (String csvLine : csvData.split("\n")) {
       String[] parts = csvLine.split(",");
-      final Item item = new Item(null, "?", "", parts[0], parts[1],
+      final Item item = new Item(null, parts[0], "", parts[1], parts[2],
           "", false, "");
       item.addTag(parts[2]);
       
