@@ -1,6 +1,6 @@
 package com.zorzella.tamandua;
 
-import com.google.appengine.repackaged.com.google.common.base.Join;
+import com.google.common.base.Joiner;
 
 import com.zorzella.tamandua.Item.Type;
 
@@ -134,7 +134,7 @@ public class ListServlet extends HttpServlet {
         maybeShow(ps, showTitulo, item.getTitulo());
         maybeShow(ps, showAutor, item.getAutor());
         maybeShow(ps, showTamanho, item.getTamanho());
-        maybeShow(ps, showTags, Join.join(" ", item.getTags()));
+        maybeShow(ps, showTags, Joiner.on(" ").join(item.getTags()));
         maybeShow(ps, showBarcode, item.getBarcode());
         maybeShow(ps, showIsbn, item.getIsbn());
         

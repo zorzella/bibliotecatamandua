@@ -1,7 +1,7 @@
 // Copyright 2008 Google Inc.  All Rights Reserved.
 package com.zorzella.tamandua;
 
-import com.google.appengine.repackaged.com.google.common.base.Join;
+import com.google.common.base.Joiner;
 
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
@@ -17,7 +17,7 @@ public class Dates {
     }
     DateTimeZone pst = DateTimeZone.forID("America/Los_Angeles");
     Instant temp = new Instant(pst.convertUTCToLocal(date.getTime()));
-    return Join.join("-",
+    return Joiner.on("-").join(
       temp.get(DateTimeFieldType.year()),
       temp.get(DateTimeFieldType.monthOfYear()),
       temp.get(DateTimeFieldType.dayOfMonth()));

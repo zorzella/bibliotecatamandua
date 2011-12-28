@@ -1,6 +1,6 @@
 package com.zorzella.tamandua.gwt.server;
 
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import com.zorzella.tamandua.AdminOrDie;

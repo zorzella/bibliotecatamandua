@@ -1,6 +1,6 @@
 package com.zorzella.tamandua;
 
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 
 import java.util.List;
 import java.util.Properties;

@@ -1,12 +1,14 @@
 package com.zorzella.tamandua;
 
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
-import com.google.appengine.repackaged.com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import com.zorzella.tamandua.Item.Type;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -85,7 +87,17 @@ public class Queries {
   }
 
   public static Collection<Item> getSortedItems(PersistenceManager pm) {
-    return Sets.newTreeSet(Items.ITEM_COMPARATOR, allItems(pm));
+    return newTreeSet(Items.ITEM_COMPARATOR, allItems(pm));
+  }
+  
+  private static <E> TreeSet<E> newTreeSet(
+      Comparator<? super E> comparator, Iterable<E> elements) {
+    TreeSet<E> set = Sets.newTreeSet(comparator);
+    Iterator<E> iterator = elements.iterator();
+    while (iterator.hasNext()) {
+      set.add(iterator.next());
+    }
+    return set;
   }
   
   public static Collection<Item> getParadeiroSortedItems(PersistenceManager pm) {

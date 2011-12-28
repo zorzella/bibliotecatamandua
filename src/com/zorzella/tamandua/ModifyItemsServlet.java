@@ -1,6 +1,6 @@
 package com.zorzella.tamandua;
 
-import com.google.appengine.repackaged.com.google.common.base.Join;
+import com.google.common.base.Joiner;
 
 import com.zorzella.tamandua.Item.Type;
 
@@ -163,7 +163,7 @@ public class ModifyItemsServlet extends HttpServlet {
           Html.td(ps, item.getTamanho());
         }
 
-        String tagsString = Join.join(" ", item.getTags());
+        String tagsString = Joiner.on(" ").join(item.getTags());
         if (modifiableTags) {
           input(ps, item, "tags", tagsString);
         } else {

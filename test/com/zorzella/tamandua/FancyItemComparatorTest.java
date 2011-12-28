@@ -3,7 +3,7 @@ package com.zorzella.tamandua;
 
 import java.util.Map;
 
-import com.google.appengine.repackaged.com.google.common.collect.Maps;
+import com.google.common.collect.Maps;
 
 import junit.framework.TestCase;
 
