@@ -25,7 +25,7 @@ public class Emails {
     Session session = Session.getDefaultInstance(props, null);
   
     try {
-      Message msg = new MimeMessage(session);
+      MimeMessage msg = new MimeMessage(session);
       msg.setFrom(new InternetAddress(from));
       msg.addRecipient(Message.RecipientType.TO,
           new InternetAddress(to));
@@ -33,7 +33,7 @@ public class Emails {
         msg.addRecipient(Message.RecipientType.CC,
             new InternetAddress(cc));
       }
-      msg.setSubject(subject);
+      msg.setSubject(subject, Constants.encoding);
       msg.setText(body.toString());
       Transport.send(msg);
   
